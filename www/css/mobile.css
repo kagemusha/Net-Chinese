@@ -1,0 +1,201 @@
+.pg{
+/*    background: green;
+/*	height: 100%;
+	display: -webkit-box;
+    -webkit-box-orient: vertical;
+	-webkit-box-align:stretch;*/
+}
+.pgContent{
+    height: 100%;
+    min-height: 600px;
+/*	display: -webkit-box;
+    -webkit-box-orient: vertical;
+	-webkit-box-align:stretch;
+    -webkit-box-flex:1;*/
+}
+.popup {
+    display: block;
+    opacity: 0.80;
+}
+
+/*set page*/
+li.card .front{
+    color: red
+}
+li.card .overlay{
+    display: none;
+}
+li.card.archived .overlay {
+    width: 100%;
+    /*height: 100%;*/
+    position: absolute;
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    opacity: 0.70;
+    left: 4px;
+    top: 12px;
+    color: gray;
+    font-size: 22px;
+}
+
+/*study page*/
+#studyStats {
+    margin-bottom: 10px;
+}
+#studyStatsMsg{
+    font-size: 14px;
+}
+
+#studyStatsMsg .stat{
+   color: red;
+}
+
+.cardPanel {
+    padding: 2px;
+    height: 320px;
+    display: -webkit-box;
+    -webkit-box-flex:1;
+    -webkit-box-orient: vertical;
+    -webkit-box-align:stretch;
+
+    /*border: 1px black solid;
+    background: yellow;
+    -moz-border-radius: 7px;
+    -webkit-border-radius: 7px;
+    border-radius: 7px;
+    -moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
+    -webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 1);*/
+}
+
+.back {
+    display: none
+}
+.cardPanel.front .card_face{
+    /*height: 48%*/
+    height: 100%;
+}
+.cardPanel #back.card_face {
+    /*height: 52%;*/
+    background: #fff9d7;
+}
+.cardPanel .card_face {
+    background: white;
+    height: 220px;
+    border: 1px black solid;
+    padding: 4px;
+    //font-size: 18px;
+    text-align: center;
+    font-size: 26px;
+    display: table;
+    width: 100%;
+    -moz-border-radius: 7px;
+    -webkit-border-radius: 7px;
+    border-radius: 7px;
+    -moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
+    -webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
+
+    /*display: -webkit-box;
+    -webkit-box-flex:1;
+    -webkit-box-orient: vertical;
+    -webkit-box-align:stretch;
+    -moz-border-radius: 7px;
+    -webkit-border-radius: 7px;
+    border-radius: 7px;*/
+}
+.textPanel{
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+  text-shadow: 2px 2px 2px #bbbbbb;
+}
+.backText{
+  color: red;
+}
+/*
+#cardPanel #back {
+    margin-bottom: 4px;
+    display: none;}
+*/
+#studyButtons{
+    /*display: none;*/
+}
+////////////////////////////**********/
+
+.headerTitle {
+  color: white;
+  font-weight: bold; }
+
+h4.mobile {
+  font-size: 1em;
+  margin-top: 10px;
+  margin-bottom: 0;
+  font-weight: bold; }
+
+ul.sets {
+  data-dividertheme: "b";
+  data-inset: true;
+  data-role: "listview";
+  data-theme: "c";
+  data-filter: true; }
+
+.status {
+  border-color: #e2c822;
+  background: #fff9d7; }
+
+.error {
+  border: solid 1px #dd3c10;
+  background: #ffebe8; }
+/*
+#card {
+  float: left;
+  width: 100%;
+  margin: 5px;
+  color: red;
+}*/
+
+#msgPanel {
+  margin: 15px 0 10px 0;
+  border: 1px #dd3c10 solid;
+  background: #fff9d7;
+  padding: 4px;
+  display: none; }
+
+#filterChoices {
+  margin: 15px 0 10px 0;
+  border: 1px black dotted;
+  padding: 4px;
+  display: none; }
+
+/*
+.container{
+    display: -webkit-box;
+    -webkit-box-flex:1;
+    -webkit-box-orient: vertical;
+    -webkit-box-align:stretch;
+    border: 1px solid #555;
+    background: yellow;
+}
+*/
+
+
+
+.caption {
+  font-size: 22px;
+  font-weight: bold;
+  color: red;
+  text-align: center; }
+  .caption #bottom {
+    color: purple; }
+
+#cardsShowing {
+    text-align: center;
+}
+#cardsShowing a{
+    text-decoration: none;
+}
+
+#editCardLink, #rightButtonTemplate {
+  display: none; }
