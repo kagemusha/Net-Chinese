@@ -24,10 +24,24 @@ choiceTmpl = ( isRadio, name, options) ->
     #log "val,o.val,o.id", val, options.val, options.id
     label = options.label || options.name
     choiceType = if isRadio then "radio" else "checkbox"
+    checked = if options.checked then "checked=checked" else ""
     """
-    <input type="#{choiceType}" name="#{name}" #{valAttr}  id="#{options.id}" >
+    <input type="#{choiceType}" name="#{name}" #{valAttr}  id="#{options.id}" #{checked}>
     <label for="#{options.id}" data-theme="c">#{label}</label>
     """
+
+yesnoChoiceTmpl = (id, label, group, yesChecked) ->
+  options = {id: id, align: "horizontal", label: label}
+  noChecked = (yesChecked != null and !yesChecked)
+  btns =  [
+            {id: "yes", name: group, val: "true", label: "Yes", checked: yesChecked},
+            {id: "no", name: group, val: "false", label: "No", checked: noChecked}
+          ]
+  choiceGroup true, group, options, btns
+
+
+
+
 
 choiceButtons = (isRadio, name, btnSpecs) ->
   (choiceTmpl(isRadio, name, spec) for spec in btnSpecs).join(" ") if btnSpecs
@@ -56,28 +70,12 @@ rightButton = (specs) -> link specs.label, specs.page, "#{specs.options} class='
 
 
 pageTmpl = (specs) ->
-    lbSpecs = specs.head.leftButton
-    if lbSpecs == "none"
-        lButton = ""
-    else if lbSpecs
-        lButton =  if lbSpecs.type == "back" then backButton(lbSpecs.label, lbSpecs.page, lbSpecs.options) else link(lbSpecs.label, lbSpecs.page, lbSpecs.options)
-    else
-        lButton = backButton()
-
-    title = specs.head.head or "Crambear"
-    rButton = if specs.head.rightButton then rightButton(specs.head.rightButton) else ""
-
+    lButton =  if specs.head.leftBtn then specs.head.leftBtn else ""
+    title = specs.head.title or "网 Net Chinese 中"
+    rButton = specs.head.rightBtn || ""
     """
     <div id="#{specs.id}" data-role="page" data-theme="e"  data-auto-back-btn='true' class='pg'>
-      <div data-role="header" data-theme="a" data-position="inline" class="pgHead"  >
-          #{lButton}
-          <h1>#{title}</h1>
-          #{rButton}
-          <div data-role="navbar" id="headNav">
-              <ul class="headButtons">
-              </ul>
-          </div>
-      </div>
+      #{ headerTmpl title, lButton, rButton }
       <div class="msg"></div>
       <div data-role="content" class="pgContent">
       </div><!-- /content -->
@@ -88,19 +86,16 @@ pageTmpl = (specs) ->
     """
 
 
-
-headerTmpl = (title, lButton, rButton, headButtons) ->
-
+headerTmpl = (title, lButton, rButton) ->
   """
   <div data-role="header" data-theme="a" data-position="inline" class="pgHead"  >
-      #{lButton}
-      <h1>#{title}</h1>
-      #{rButton}
-      <div data-role="navbar" id="headNav">
-          <ul class="headButtons">
-            #{headButtons}
-          </ul>
-      </div>
+    #{lButton}
+    <h1>#{title}</h1>
+    #{rButton}
+    <div data-role="navbar" id="headNav">
+      <ul class="headButtons">
+      </ul>
+    </div>
   </div>
   """
 
@@ -121,6 +116,7 @@ cardLiTmpl = (card) ->
     </a></li>
     """
 
+
 labelLiTmpl = (label) ->
     """
     <li>
@@ -128,16 +124,20 @@ labelLiTmpl = (label) ->
     </li>
     """
 
+ulTmpl = (id, options=null) ->
+  """
+    <ul id="#{id}" data-role="listview" data-theme="d">
+    </ul>
+  """
+
+
 setsPgTmpl = ->
     """
-    <h4>Card Sets</h4>
-    <ul id="setList" data-dividertheme="b" data-inset="true" data-role="listview" data-theme="c">
-    </ul>
+    #{ulTmpl "setList" }
     """
 
 settingsPgTmpl = ->
     """
-    <h4>Settings</h4>
     <form accept-charset="UTF-8"  id="syncForm">
         <div data-role="fieldcontain">
           <input type="submit" name="submit" value="Sync"/>
@@ -145,42 +145,26 @@ settingsPgTmpl = ->
     </form>
     """
 
-loginPgTmpl = (login) ->
-    """
-    <h4>Login</h4>
-    <form accept-charset="UTF-8"  id="loginForm">
-        <div data-role="fieldcontain">
-          <input type="text" id="email" name="email" placeholder="Email" value="#{login.email}"/>
-        </div>
-        <div data-role="fieldcontain">
-          <input type="password" id="password" name="password" value="#{login.password}" placeholder="Password"/>
-        </div>
-        <div data-role="fieldcontain">
-          <input type="submit" name="submit" value="Submit"/>
-        </div>
-        Server: <span id="server"></span>
-    </form>
-    """
-
 cardBackTmpl = (back, front) ->
   """
-  <p class='backText'>#{back}</p>
-  #{front}
+  \n
+  <div class='backText'>#{back}</div>
+  #{front}\n\n
   """
 
 setPgTmpl = (set) ->
-    """
     #{ button "Study", pageSel("study"), "id='studyButton' init_pg='study' class='study'" }
+    """
     <div id="cardsShowing">
         <a href="#" id="prevCards" class="cardList"> prev </a>
         <span id="cardsShowingMsg"></span>
         <a href="#" id="nextCards" class="cardList"> next </a>
     </div>
-    <ul id="cardList" data-dividertheme="b" data-inset="true" data-role="listview" data-theme="c">
-        <li data-role="list-divider">Cards</li>
-    </ul>
+    <br/>
+    #{ulTmpl "cardList" }
     """
-    
+
+
 labelsPgTmpl = ->
     """
     <a href="#labelPage" data-role="button" id="addLabelButton" init_pg="label" >Add Label</a>
@@ -188,6 +172,7 @@ labelsPgTmpl = ->
         <li data-role="list-divider">Labels</li>
     </ul>
     """
+
 
 labelPgTmpl = ->
     """
@@ -202,8 +187,11 @@ labelPgTmpl = ->
     #{ button "Save", "#", "obj_type='label' saveForm='labelForm' #{root.BACK_REL}" }
     """
 
+
 filterPgTmpl = ->
     """
+    <div id="backFirstOption">
+    </div>
     <div id="archivedFilter"></div>
     <div id="filtersForm"></div>
     <fieldset data-role="controlgroup" id="filterCheckboxes">
@@ -235,24 +223,38 @@ cardPgTmpl = ->
 
     """
 
-studyStatsTmpl = (stats) ->
+textInputPgTmpl = ->
+  """
+  <textarea cols=30 rows=8 id="card_front" name="front" placeholder="Front" />
+  """
+
+
+
+studyStatsTmpl = (stats, full=true) ->
     """
     <div id="studyStatsMsg">
         <span class="stat label">#{stats.leftInRun} </span>
         of
         <span class="stat label">#{stats.runCount} </span>
         left &nbsp;&nbsp;
-        Correct 1 try:
-        <span class="stat label">#{stats.tries[0]} </span>
-        &nbsp;2:
-        <span class="stat label">#{stats.tries[1]}</span>
-        &nbsp;More:
-        <span class="stat label">#{stats.tries[2]}</span>
+        #{if full then triesTmpl(stats) else ""}
     </div>
     """
 
+triesTmpl = (stats) ->
+  """
+  Correct 1 try:
+  <span class="stat label">#{stats.tries[0]} </span>
+  &nbsp;2:
+  <span class="stat label">#{stats.tries[1]}</span>
+  &nbsp;More:
+  <span class="stat label">#{stats.tries[2]}</span>
+
+  """
+
 studyPgTmpl = ->
     """
+    <div id="studyStatsFront"></div>
     <div id="studyPanel">
       <div class="cardPanel front">
          <div id="front" class="card_face">
@@ -285,3 +287,22 @@ answerPgTmpl = ->
       </div>
     </div>
     """
+
+###
+loginPgTmpl = (login) ->
+    """
+    <h4>Login</h4>
+    <form accept-charset="UTF-8"  id="loginForm">
+        <div data-role="fieldcontain">
+          <input type="text" id="email" name="email" placeholder="Email" value="#{login.email}"/>
+        </div>
+        <div data-role="fieldcontain">
+          <input type="password" id="password" name="password" value="#{login.password}" placeholder="Password"/>
+        </div>
+        <div data-role="fieldcontain">
+          <input type="submit" name="submit" value="Submit"/>
+        </div>
+        Server: <span id="server"></span>
+    </form>
+    """
+###

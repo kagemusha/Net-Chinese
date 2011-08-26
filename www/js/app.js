@@ -1,4 +1,4 @@
-var $SERVER, $atEnd, $currentSet, $dataKey, $params, $showFromCard, $showedStudyTip, $studyInit, $studyPanelHeight, $studyQueue, ARCHIVED_RB_SEL, ARCV_YES, CARDS_PER_PAGE, CARD_FORM_LABEL_GROUP, CARD_LABEL_SEL, CARD_TYPE, CLICK_EVENT, FILTER_CHG, LABEL_TYPE, MSG_SEL, NO_RESTART_FLAG, OBJ_ID_ATTR, OBJ_TYPE_ATTR, PAGES, RIGHT_BUTTON_CLASS, SET_FILTERS_SEL, SET_HEADER_BUTTONS, SET_ID_ATTR, SET_TYPE, SET_TYPE_ATTR, STUDY_HEADER_BUTTONS, SYNC_EL, Set, addArchivedLabels, cardCountMsg, deleteObj, filterChg, getData, getObj, initCallbacks, initCardPage, initLabelPage, initLabelsPage, initLoginPage, initMobile, initPages, initSetPage, initStudyPage, initStudyingCBs, loadData, nextCards, populateData, prevCards, refreshCardList, refreshCheckboxes, refreshLabels, refreshSetsPage, remakeFilterPages, setViewUpdaters, setupForm, submitSyncReq, switchFilter, switchSet, sync, testAddLogin, updateCardView, updateDelLink, updateLabelSelector, updateLabelView, valCard, valLabel, validationsInit;
+var $atEnd, $currentSet, $dataKey, $params, $showFromCard, $showedStudyTip, $studyInit, $studyQueue, ARCHIVED_RB_SEL, BACK_FIRST_SEL, CARDS_PER_PAGE, CARD_FORM_LABEL_GROUP, CARD_LABEL_SEL, CARD_TYPE, CLICK_EVENT, DATA_REL_DATE_KEY, FILTER_CHG, LABEL_TYPE, MSG_SEL, NO_RESTART_FLAG, OBJ_ID_ATTR, OBJ_TYPE_ATTR, PAGES, RIGHT_BUTTON_CLASS, SET_FILTERS_SEL, SET_HEADER_BUTTONS, SET_ID_ATTR, SET_TYPE, SET_TYPE_ATTR, STUDY_HEADER_BUTTONS, Set, addArchivedLabels, cardCountMsg, deleteObj, filterChg, getObj, initCallbacks, initCardPage, initLabelPage, initMobile, initPages, initSetPage, initStudyPage, initStudyingCBs, loadData, nextCards, populateData, prevCards, refreshCardList, refreshCheckboxes, refreshLabels, refreshSetsPage, remakeFilterPages, setViewUpdaters, setupForm, switchFilter, switchSet, updateCardView, updateDelLink, updateLabelSelector, updateLabelView, valCard, valLabel, validationsInit;
 SET_TYPE = "card_set";
 CARD_TYPE = 'card';
 LABEL_TYPE = 'label';
@@ -9,19 +9,16 @@ SET_TYPE_ATTR = "set_type";
 CARD_FORM_LABEL_GROUP = "#cardForm #labels";
 CLICK_EVENT = "tap";
 FILTER_CHG = "filChgx";
-$SERVER = "http://crambear.heroku.com";
 RIGHT_BUTTON_CLASS = ".ui-btn-right";
-ARCV_YES = "#archivedRB #yes";
 $params = new Object();
 $dataKey = "appDatKey";
-$studyPanelHeight = null;
 MSG_SEL = ".msg";
-SYNC_EL = "#setsPage a.ui-btn-right";
 NO_RESTART_FLAG = "noRstrt";
 $atEnd = false;
 ARCHIVED_RB_SEL = "#archivedRB input";
+BACK_FIRST_SEL = "#backFirstRB";
 SET_FILTERS_SEL = "#filterCheckboxes input";
-CARDS_PER_PAGE = 40;
+CARDS_PER_PAGE = 20;
 $showFromCard = 0;
 $studyInit = true;
 $showedStudyTip = false;
@@ -55,83 +52,48 @@ STUDY_HEADER_BUTTONS = [
   }
 ];
 PAGES = {
-  login: {},
   sets: {
     head: {
-      leftButton: "none",
+      title: "Sets",
       rightButton: null
     }
   },
   set: {
     head: {
-      leftButton: {
-        type: "back",
-        label: "Sets",
-        page: "#setsPage"
-      },
+      title: "Set",
+      leftBtn: backButton("Sets", "#setsPage"),
+      rightBtn: link("Study!", "#studyPage", "id='studyButton' init_pg='study' class='study'"),
       buttons: SET_HEADER_BUTTONS
     }
   },
   card: {
     head: {
-      leftButton: {
-        type: "back",
-        label: 'Cancel'
-      },
-      rightButton: {
-        label: "Delete",
-        options: "obj_type='card' class='delete' " + root.BACK_REL
-      }
+      leftBtn: backButton("Cancel"),
+      rightBtn: link("Delete", "#", "obj_type='card' class='delete' " + root.BACK_REL)
     }
   },
   labels: {},
   label: {
     head: {
-      leftButton: {
-        type: "back",
-        label: "Cancel"
-      },
-      rightButton: {
-        label: "Delete",
-        options: "obj_type='label' class='delete' " + root.BACK_REL
-      }
+      leftBtn: backButton("Cancel"),
+      rightBtn: link("Delete", "#", "obj_type='label' class='delete' " + root.BACK_REL)
     }
   },
   study: {
     head: {
-      leftButton: {
-        type: "back",
-        label: "Cards",
-        page: "#setPage"
-      },
-      rightButton: {
-        page: pageSel("filter"),
-        label: "Filter",
-        options: "data-transition=pop"
-      }
+      leftBtn: backButton("Cards", "#setPage"),
+      rightBtn: link("Filter", pageSel("filter"), "data-transition=pop")
     }
   },
   answer: {
     head: {
-      leftButton: {
-        type: "back",
-        label: "Cards",
-        page: "#setPage"
-      },
-      rightButton: {
-        page: pageSel("filter"),
-        label: "Filter",
-        options: "data-transition=pop"
-      }
+      leftBtn: backButton("Cards", "#setPage"),
+      rightBtn: link("Restart", pageSel("study"), "data-transition=pop stRestart=true")
     }
   },
   filter: {
     head: {
-      leftButton: {
-        type: "back",
-        page: "#studyPage",
-        options: "callFn=filterChg"
-      }
+      leftBtn: backButton("", "#setPage", "callFn=filterChg")
     }
   }
 };
@@ -155,7 +117,6 @@ $studyQueue = new StudyQueue({
     var back, front;
     front = this.backFirst ? card.back : card.front;
     back = this.backFirst ? card.front : card.back;
-    log("showCardFields", front, back);
     $(this.cardFrontSel).html(multiline(this.formatCardText(front)));
     return $(this.cardBackSel).html(multiline(this.formatCardText(cardBackTmpl(back, front))));
   },
@@ -168,11 +129,9 @@ $studyQueue = new StudyQueue({
     showMsg(null);
     $("#studyButtons").find("a.ui-btn-active").removeClass("ui-btn-active");
     if (toFront) {
-      log("to front");
       this.hideBack();
       return this.showFront();
     } else {
-      log("to back");
       return this.flipBack();
     }
   },
@@ -196,7 +155,8 @@ $studyQueue = new StudyQueue({
     }
   },
   updateStudyStatsView: function(studyQueue) {
-    return refreshTmplById("studyStats", studyStatsTmpl, studyQueue);
+    refreshTmplById("studyStats", studyStatsTmpl, studyQueue);
+    return refreshTmplById("studyStatsFront", studyStatsTmpl, studyQueue, false);
   },
   onFinished: function() {
     showMsg("Finished! Tap cards to restart");
@@ -209,25 +169,27 @@ initMobile = function() {
   root.msgSel = ".msg";
   loadData();
   showMsgs();
-  log("Server", $SERVER);
-  setFlag(MSG_KEY, "server: " + $SERVER);
-  testAddLogin();
   initPages();
   validationsInit();
   loginFormInit();
   initCallbacks();
   return initStudyingCBs();
 };
+DATA_REL_DATE_KEY = "dat_rel_dat";
 loadData = function() {
-  return populateData(CARD_SET_DATA);
+  var lastLoadedDate;
+  lastLoadedDate = retrieve(DATA_REL_DATE_KEY);
+  if (!lastLoadedDate || (DATA_REL_DATE > lastLoadedDate)) {
+    populateData(CARD_SET_DATA);
+    return cache(DATA_REL_DATE_KEY, DATA_REL_DATE);
+  }
 };
 initPages = function() {
   var firstPage, hasData;
   TABLES[SET_TYPE] = Table.get(SET_TYPE);
   hasData = (TABLES[SET_TYPE].recs != null) && TABLES[SET_TYPE].recs.length > 0;
-  firstPage = hasData ? "sets" : "login";
+  firstPage = "sets";
   makePages(firstPage, PAGES);
-  log("" + (pageSel('study')) + " #headNav", $("" + (pageSel('study')) + " #headNav").length);
   refreshTmpl("" + (pageSel('answer')) + " #headNav", answerPgHeadTmpl);
   if (hasData) {
     TABLES[CARD_TYPE] = Table.get(CARD_TYPE);
@@ -235,6 +197,7 @@ initPages = function() {
     setViewUpdaters();
     refreshSetsPage();
   }
+  $("#backFirstOption").append(yesnoChoiceTmpl("backFirstRB", "Show Back First", "backFirst", false));
   addArchivedLabels("#cardArchiveLabels", "Archive");
   return addArchivedLabels("#archivedFilter", "Show Archived");
 };
@@ -247,7 +210,6 @@ refreshSetsPage = function() {
   return listviewRefresh("setList");
 };
 initCallbacks = function() {
-  log("pageCount", $("*[data-role='page']").length);
   $("*[data-role='page']").live('pageshow', function(event, ui) {
     var link;
     log("pg", this.id);
@@ -257,10 +219,11 @@ initCallbacks = function() {
   });
   $('#studyPage').live('pageshow', function(event, ui) {
     if (!$showedStudyTip) {
-      popupMsg("touch card to see back");
+      popupMsg("Touch card to see answer");
       $showedStudyTip = true;
     }
     filterChg();
+    refreshTmplById("studyStatsFront", studyStatsTmpl, $studyQueue, false);
     return $studyQueue.showCard();
   });
   $("a#prevCards").live(CLICK_EVENT, function() {
@@ -281,8 +244,10 @@ initCallbacks = function() {
   $('a[callFn]').live(CLICK_EVENT, function() {
     var fn;
     fn = $(this).attr("callFn");
-    log("XXX calling fn " + fn);
     return callFn(fn);
+  });
+  $('a[stRestart]').live(CLICK_EVENT, function() {
+    return $studyQueue.restart();
   });
   $('a.result').live(CLICK_EVENT, function() {
     return $($studyQueue.cardFrontSel).html("");
@@ -302,18 +267,18 @@ initCallbacks = function() {
     log("tapped overlay");
     return $(this).parent().find("a").trigger(CLICK_EVENT);
   });
-  $(SYNC_EL).live(CLICK_EVENT, function() {
-    log("sync");
-    return $(this).removeClass("ui-btn-active");
-  });
   $("" + (pageSel('filter')) + " " + ARCHIVED_RB_SEL).live("change", function(event, ui) {
     $studyQueue.showArchived = $(this).attr("value") === "true";
     return setFlag(FILTER_CHG);
   });
-  return $("" + (pageSel('filter')) + " " + SET_FILTERS_SEL).live("change", function() {
-    log("change filter XXXX");
+  $("" + (pageSel('filter')) + " " + SET_FILTERS_SEL).live("change", function() {
     setFlag(FILTER_CHG);
     return switchFilter(SET_FILTERS_SEL);
+  });
+  return $("" + (pageSel('filter')) + " " + BACK_FIRST_SEL + " input").live("change", function(event, ui) {
+    var backFirst;
+    backFirst = $(this).attr("value") === "true";
+    return $studyQueue.backFirst = backFirst;
   });
 };
 deleteObj = function(type, id) {
@@ -335,41 +300,10 @@ switchFilter = function(checkboxElems) {
   });
   return $studyQueue.filters = filters;
 };
-getData = function() {
-  return retrieveObj($dataKey);
-};
-submitSyncReq = function(login) {
-  showMsg("Syncing...");
-  return $.post(url($SERVER, "sync"), login, function(data) {
-    return sync(data, login);
-  });
-};
-sync = function(response, credentials) {
-  log("ajaxsync", response);
-  if (response.error_msg) {
-    showMsg(response.error_msg);
-  } else {
-    populateData(response);
-    login(credentials);
-    refreshSetsPage();
-    if (onPage("loginPage")) {
-      $.mobile.changePage(pageSel("sets"));
-    }
-  }
-  return removePopup();
-};
-initLoginPage = function(params) {
-  log("LGPAGE");
-  return $("#server").html($SERVER);
-};
 initSetPage = function(params) {
   var setId;
-  log("initSetPage", params);
   setId = params["obj_id"];
   return switchSet(setId);
-};
-initLabelsPage = function() {
-  return log("initLPage");
 };
 switchSet = function(setId) {
   log("switch set", setId);
@@ -410,7 +344,6 @@ initLabelPage = function(params) {
   return updateDelLink(pageSel("label"), id);
 };
 initStudyPage = function(params) {
-  log("XXXXXXXXXXXXXXXX      init studp");
   updateLabelSelector("#filterPage", $studyQueue.showArchived, $studyQueue.filters);
   $studyInit = true;
   $studyQueue.restart();
@@ -516,28 +449,8 @@ cardCountMsg = function() {
   return $("#cardsShowingMsg").html(msg);
 };
 addArchivedLabels = function(container, archiveLbl) {
-  var arcvBtnSet, arcvBtns, options;
   $(container).empty();
-  options = {
-    id: "archivedRB",
-    align: "horizontal",
-    label: archiveLbl
-  };
-  arcvBtns = [
-    {
-      id: "yes",
-      name: "archived",
-      val: "true",
-      label: "Yes"
-    }, {
-      id: "no",
-      name: "archived",
-      val: "false",
-      label: "No"
-    }
-  ];
-  arcvBtnSet = choiceGroup(true, "archived", options, arcvBtns);
-  return $(container).append(arcvBtnSet);
+  return $(container).append(yesnoChoiceTmpl("archivedRB", archiveLbl, "archived"));
 };
 refreshLabels = function(container, lblsLbl) {
   var filterBtnSet, options;
@@ -576,15 +489,9 @@ initStudyingCBs = function() {
     return $studyQueue.result($(this).attr("id") !== "wrong");
   });
 };
-testAddLogin = function() {
-  cacheObj(root.loginKey, {
-    email: "test@test.com",
-    password: "tester"
-  });
-  return PAGES.login.content = retrieveObj(root.loginKey);
-};
 populateData = function(cardSets) {
   var cardSet, cards, labels, _i, _len;
+  log("populating data");
   TABLES[SET_TYPE] = Table.get(SET_TYPE);
   TABLES[CARD_TYPE] = Table.get(CARD_TYPE);
   TABLES[LABEL_TYPE] = Table.get(LABEL_TYPE);
@@ -621,3 +528,44 @@ valLabel = function(label) {
 valCard = function(card) {
   return fieldNotBlank(card.front) || fieldNotBlank(card.back);
 };
+/*
+#$SERVER = "http://localhost:3000"
+$SERVER = "http://crambear.heroku.com"
+
+
+initLoginPage = (params) ->
+    log "LGPAGE"
+    $("#server").html($SERVER)
+
+
+SYNC_EL = "#setsPage a.ui-btn-right"
+sync_button = {page: "#loginPage", label: "Sync", options: "init_pg=login data-transition=flip"} #for sets page
+  $(SYNC_EL).live CLICK_EVENT, ->
+      log("sync")
+      $(this).removeClass "ui-btn-active"
+      #submitSyncReq()
+
+submitSyncReq = (login) ->
+    showMsg "Syncing..."
+    $.post url($SERVER, "sync"), login, (data) ->
+        sync data, login
+
+#callback from sync op
+sync = (response, credentials) ->
+    log("ajaxsync",response)
+    if response.error_msg
+        showMsg(response.error_msg)
+    else
+        populateData(response)
+        login credentials
+        refreshSetsPage()
+        $.mobile.changePage(pageSel("sets")) if (onPage("loginPage"))
+    removePopup()    #page chg
+    #resetForm(form)
+
+testAddLogin = ->
+  cacheObj(root.loginKey, {email: "test@test.com", password: "tester"})     #test
+  PAGES.login.content = retrieveObj(root.loginKey)
+
+
+*/

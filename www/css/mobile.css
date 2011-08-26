@@ -40,7 +40,7 @@ li.card.archived .overlay {
 }
 
 /*study page*/
-#studyStats {
+#studyStats, #studyStatsFront {
     margin-bottom: 10px;
 }
 #studyStatsMsg{

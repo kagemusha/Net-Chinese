@@ -1,4 +1,4 @@
-var answerPgHeadTmpl, answerPgTmpl, backButton, button, cardBackTmpl, cardLiTmpl, cardPgTmpl, choiceButtons, choiceGroup, choiceTmpl, filterPgTmpl, genElems, headerTmpl, labelLiTmpl, labelPgTmpl, labelsPgTmpl, link, listLinkTmpl, loginPgTmpl, pageTmpl, refreshTmpl, refreshTmplById, rightButton, setLiTmpl, setPgTmpl, setsPgTmpl, settingsPgTmpl, studyPgTmpl, studyStatsTmpl;
+var answerPgHeadTmpl, answerPgTmpl, backButton, button, cardBackTmpl, cardLiTmpl, cardPgTmpl, choiceButtons, choiceGroup, choiceTmpl, filterPgTmpl, genElems, headerTmpl, labelLiTmpl, labelPgTmpl, labelsPgTmpl, link, listLinkTmpl, pageTmpl, refreshTmpl, refreshTmplById, rightButton, setLiTmpl, setPgTmpl, setsPgTmpl, settingsPgTmpl, studyPgTmpl, studyStatsTmpl, triesTmpl, ulTmpl, yesnoChoiceTmpl;
 root.BACK_REL = "data-rel='back'";
 refreshTmplById = function(id, templateFn, data, options) {
   return refreshTmpl("#" + id, templateFn, data, options);
@@ -34,12 +34,38 @@ genElems = function(fn, data, options) {
   }
 };
 choiceTmpl = function(isRadio, name, options) {
-  var choiceType, label, val, valAttr;
+  var checked, choiceType, label, val, valAttr;
   val = options.val || options.id;
   valAttr = val != null ? "value='" + val + "'" : "";
   label = options.label || options.name;
   choiceType = isRadio ? "radio" : "checkbox";
-  return "<input type=\"" + choiceType + "\" name=\"" + name + "\" " + valAttr + "  id=\"" + options.id + "\" >\n<label for=\"" + options.id + "\" data-theme=\"c\">" + label + "</label>";
+  checked = options.checked ? "checked=checked" : "";
+  return "<input type=\"" + choiceType + "\" name=\"" + name + "\" " + valAttr + "  id=\"" + options.id + "\" " + checked + ">\n<label for=\"" + options.id + "\" data-theme=\"c\">" + label + "</label>";
+};
+yesnoChoiceTmpl = function(id, label, group, yesChecked) {
+  var btns, noChecked, options;
+  options = {
+    id: id,
+    align: "horizontal",
+    label: label
+  };
+  noChecked = yesChecked !== null && !yesChecked;
+  btns = [
+    {
+      id: "yes",
+      name: group,
+      val: "true",
+      label: "Yes",
+      checked: yesChecked
+    }, {
+      id: "no",
+      name: group,
+      val: "false",
+      label: "No",
+      checked: noChecked
+    }
+  ];
+  return choiceGroup(true, group, options, btns);
 };
 choiceButtons = function(isRadio, name, btnSpecs) {
   var spec;
@@ -90,21 +116,14 @@ rightButton = function(specs) {
   return link(specs.label, specs.page, "" + specs.options + " class='ui-btn-right " + specs["class"] + "'");
 };
 pageTmpl = function(specs) {
-  var lButton, lbSpecs, rButton, title;
-  lbSpecs = specs.head.leftButton;
-  if (lbSpecs === "none") {
-    lButton = "";
-  } else if (lbSpecs) {
-    lButton = lbSpecs.type === "back" ? backButton(lbSpecs.label, lbSpecs.page, lbSpecs.options) : link(lbSpecs.label, lbSpecs.page, lbSpecs.options);
-  } else {
-    lButton = backButton();
-  }
-  title = specs.head.head || "Crambear";
-  rButton = specs.head.rightButton ? rightButton(specs.head.rightButton) : "";
-  return "<div id=\"" + specs.id + "\" data-role=\"page\" data-theme=\"e\"  data-auto-back-btn='true' class='pg'>\n  <div data-role=\"header\" data-theme=\"a\" data-position=\"inline\" class=\"pgHead\"  >\n      " + lButton + "\n      <h1>" + title + "</h1>\n      " + rButton + "\n      <div data-role=\"navbar\" id=\"headNav\">\n          <ul class=\"headButtons\">\n          </ul>\n      </div>\n  </div>\n  <div class=\"msg\"></div>\n  <div data-role=\"content\" class=\"pgContent\">\n  </div><!-- /content -->\n  <div data-role=\"footer\" data-theme=\"a\" data-position=\"fixed\" class=\"pgFoot\" class=\"ui-bar\">\n	    </div>\n  <!-- footer -->\n</div>";
+  var lButton, rButton, title;
+  lButton = specs.head.leftBtn ? specs.head.leftBtn : "";
+  title = specs.head.title || "网 Net Chinese 中";
+  rButton = specs.head.rightBtn || "";
+  return "<div id=\"" + specs.id + "\" data-role=\"page\" data-theme=\"e\"  data-auto-back-btn='true' class='pg'>\n  " + (headerTmpl(title, lButton, rButton)) + "\n  <div class=\"msg\"></div>\n  <div data-role=\"content\" class=\"pgContent\">\n  </div><!-- /content -->\n  <div data-role=\"footer\" data-theme=\"a\" data-position=\"fixed\" class=\"pgFoot\" class=\"ui-bar\">\n	    </div>\n  <!-- footer -->\n</div>";
 };
-headerTmpl = function(title, lButton, rButton, headButtons) {
-  return "<div data-role=\"header\" data-theme=\"a\" data-position=\"inline\" class=\"pgHead\"  >\n    " + lButton + "\n    <h1>" + title + "</h1>\n    " + rButton + "\n    <div data-role=\"navbar\" id=\"headNav\">\n        <ul class=\"headButtons\">\n          " + headButtons + "\n        </ul>\n    </div>\n</div>";
+headerTmpl = function(title, lButton, rButton) {
+  return "<div data-role=\"header\" data-theme=\"a\" data-position=\"inline\" class=\"pgHead\"  >\n  " + lButton + "\n  <h1>" + title + "</h1>\n  " + rButton + "\n  <div data-role=\"navbar\" id=\"headNav\">\n    <ul class=\"headButtons\">\n    </ul>\n  </div>\n</div>";
 };
 setLiTmpl = function(set) {
   return "<li><a class='set' href=\"#setPage\" obj_id=\"" + set.id + "\" init_pg='set'>" + set.name + "</a></li>";
@@ -115,20 +134,23 @@ cardLiTmpl = function(card) {
 labelLiTmpl = function(label) {
   return "<li>\n    <a href=\"#labelPage\" obj_id=\"" + label.id + "\"  init_pg=\"label\" >" + label.name + "</a>\n</li>";
 };
+ulTmpl = function(id, options) {
+  if (options == null) {
+    options = null;
+  }
+  return "<ul id=\"" + id + "\" data-role=\"listview\" data-theme=\"d\">\n</ul>";
+};
 setsPgTmpl = function() {
-  return "<h4>Card Sets</h4>\n<ul id=\"setList\" data-dividertheme=\"b\" data-inset=\"true\" data-role=\"listview\" data-theme=\"c\">\n</ul>";
+  return "" + (ulTmpl("setList"));
 };
 settingsPgTmpl = function() {
-  return "<h4>Settings</h4>\n<form accept-charset=\"UTF-8\"  id=\"syncForm\">\n    <div data-role=\"fieldcontain\">\n      <input type=\"submit\" name=\"submit\" value=\"Sync\"/>\n    </div>\n</form>";
-};
-loginPgTmpl = function(login) {
-  return "<h4>Login</h4>\n<form accept-charset=\"UTF-8\"  id=\"loginForm\">\n    <div data-role=\"fieldcontain\">\n      <input type=\"text\" id=\"email\" name=\"email\" placeholder=\"Email\" value=\"" + login.email + "\"/>\n    </div>\n    <div data-role=\"fieldcontain\">\n      <input type=\"password\" id=\"password\" name=\"password\" value=\"" + login.password + "\" placeholder=\"Password\"/>\n    </div>\n    <div data-role=\"fieldcontain\">\n      <input type=\"submit\" name=\"submit\" value=\"Submit\"/>\n    </div>\n    Server: <span id=\"server\"></span>\n</form>";
+  return "<form accept-charset=\"UTF-8\"  id=\"syncForm\">\n    <div data-role=\"fieldcontain\">\n      <input type=\"submit\" name=\"submit\" value=\"Sync\"/>\n    </div>\n</form>";
 };
 cardBackTmpl = function(back, front) {
-  return "<p class='backText'>" + back + "</p>\n" + front;
+  return "\n\n<div class='backText'>" + back + "</div>\n" + front + "\n\n";
 };
 setPgTmpl = function(set) {
-  return "" + (button("Study", pageSel("study"), "id='studyButton' init_pg='study' class='study'")) + "\n<div id=\"cardsShowing\">\n    <a href=\"#\" id=\"prevCards\" class=\"cardList\"> prev </a>\n    <span id=\"cardsShowingMsg\"></span>\n    <a href=\"#\" id=\"nextCards\" class=\"cardList\"> next </a>\n</div>\n<ul id=\"cardList\" data-dividertheme=\"b\" data-inset=\"true\" data-role=\"listview\" data-theme=\"c\">\n    <li data-role=\"list-divider\">Cards</li>\n</ul>";
+  return "<div id=\"cardsShowing\">\n    <a href=\"#\" id=\"prevCards\" class=\"cardList\"> prev </a>\n    <span id=\"cardsShowingMsg\"></span>\n    <a href=\"#\" id=\"nextCards\" class=\"cardList\"> next </a>\n</div>\n<br/>\n" + (ulTmpl("cardList"));
 };
 labelsPgTmpl = function() {
   return "<a href=\"#labelPage\" data-role=\"button\" id=\"addLabelButton\" init_pg=\"label\" >Add Label</a>\n<ul id=\"labelList\" data-dividertheme=\"b\" data-inset=\"true\" data-role=\"listview\" data-theme=\"c\">\n    <li data-role=\"list-divider\">Labels</li>\n</ul>";
@@ -137,7 +159,7 @@ labelPgTmpl = function() {
   return "<h3>Label</h3>\n<form accept-charset=\"UTF-8\"  id=\"labelForm\" obj_type=\"label\">\n    <div data-role=\"fieldcontain\">\n        <input type=\"hidden\" id=\"card_set_id\" name=\"card_set_id\" />\n        <input type=\"hidden\" id=\"id\" name=\"id\" />\n        <input type=\"text\" id=\"name\" name=\"name\" />\n    </div>\n</form>\n" + (button("Save", "#", "obj_type='label' saveForm='labelForm' " + root.BACK_REL));
 };
 filterPgTmpl = function() {
-  return "<div id=\"archivedFilter\"></div>\n<div id=\"filtersForm\"></div>\n<fieldset data-role=\"controlgroup\" id=\"filterCheckboxes\">\n</fieldset>";
+  return "<div id=\"backFirstOption\">\n</div>\n<div id=\"archivedFilter\"></div>\n<div id=\"filtersForm\"></div>\n<fieldset data-role=\"controlgroup\" id=\"filterCheckboxes\">\n</fieldset>";
 };
 listLinkTmpl = function(link, options) {
   return "<li><a href=\"" + link.link + "\" " + link.options + " >" + link.label + "</a></li>";
@@ -145,11 +167,17 @@ listLinkTmpl = function(link, options) {
 cardPgTmpl = function() {
   return "<form accept-charset=\"UTF-8\"  id=\"cardForm\" obj_type=\"card\">\n   <input type=\"hidden\" id=\"card_set_id\" name=\"card_set_id\" />\n   <input type=\"hidden\" id=\"id\" name=\"id\" />\n   <div data-role=\"fieldcontain\">\n     <textarea cols=30 rows=8 id=\"card_front\" name=\"front\" placeholder=\"Front\" />\n     <br/>\n     <textarea cols=30 rows=8 id=\"card_back\" name=\"back\" placeholder=\"Back\" />\n   </div>\n   <div id=\"cardArchiveLabels\"></div>\n   <div id=\"cardLabels\"></div>\n   </div>\n\n</form>\n" + (button("Save", "#", "obj_type='card' saveForm='cardForm' " + root.BACK_REL)) + "\n";
 };
-studyStatsTmpl = function(stats) {
-  return "<div id=\"studyStatsMsg\">\n    <span class=\"stat label\">" + stats.leftInRun + " </span>\n    of\n    <span class=\"stat label\">" + stats.runCount + " </span>\n    left &nbsp;&nbsp;\n    Correct 1 try:\n    <span class=\"stat label\">" + stats.tries[0] + " </span>\n    &nbsp;2:\n    <span class=\"stat label\">" + stats.tries[1] + "</span>\n    &nbsp;More:\n    <span class=\"stat label\">" + stats.tries[2] + "</span>\n</div>";
+studyStatsTmpl = function(stats, full) {
+  if (full == null) {
+    full = true;
+  }
+  return "<div id=\"studyStatsMsg\">\n    <span class=\"stat label\">" + stats.leftInRun + " </span>\n    of\n    <span class=\"stat label\">" + stats.runCount + " </span>\n    left &nbsp;&nbsp;\n    " + (full ? triesTmpl(stats) : "") + "\n</div>";
+};
+triesTmpl = function(stats) {
+  return "Correct 1 try:\n<span class=\"stat label\">" + stats.tries[0] + " </span>\n&nbsp;2:\n<span class=\"stat label\">" + stats.tries[1] + "</span>\n&nbsp;More:\n<span class=\"stat label\">" + stats.tries[2] + "</span>\n";
 };
 studyPgTmpl = function() {
-  return "<div id=\"studyPanel\">\n  <div class=\"cardPanel front\">\n     <div id=\"front\" class=\"card_face\">\n         <div class=\"textPanel\">\n          Please wait...\n         </div>\n     </div>\n  </div>\n</div>";
+  return "<div id=\"studyStatsFront\"></div>\n<div id=\"studyPanel\">\n  <div class=\"cardPanel front\">\n     <div id=\"front\" class=\"card_face\">\n         <div class=\"textPanel\">\n          Please wait...\n         </div>\n     </div>\n  </div>\n</div>";
 };
 answerPgHeadTmpl = function() {
   return "<ul id=\"studyButtons\" class=\"back\">\n  <li><a href=\"#\" id=\"correct\" data-transition=\"pop\" data-role=\"button\"  class=\"result\" >Correct</a></li>\n  <li><a href=\"#\" id=\"wrong\" data-transition=\"pop\" data-role=\"button\"  class=\"result\" >Wrong</a></li>\n</ul>";
@@ -157,3 +185,21 @@ answerPgHeadTmpl = function() {
 answerPgTmpl = function() {
   return "<div id=\"studyStats\"></div>\n<div id=\"studyPanel\">\n  <div class=\"cardPanel\">\n     <div id=\"front\" class=\"card_face\">\n         <div class=\"textPanel\">\n          Please wait...\n         </div>\n     </div>\n  </div>\n</div>";
 };
+/*
+loginPgTmpl = (login) ->
+    """
+    <h4>Login</h4>
+    <form accept-charset="UTF-8"  id="loginForm">
+        <div data-role="fieldcontain">
+          <input type="text" id="email" name="email" placeholder="Email" value="#{login.email}"/>
+        </div>
+        <div data-role="fieldcontain">
+          <input type="password" id="password" name="password" value="#{login.password}" placeholder="Password"/>
+        </div>
+        <div data-role="fieldcontain">
+          <input type="submit" name="submit" value="Submit"/>
+        </div>
+        Server: <span id="server"></span>
+    </form>
+    """
+*/

@@ -9,20 +9,16 @@ CARD_FORM_LABEL_GROUP = "#cardForm #labels"
 CLICK_EVENT = "tap"
 FILTER_CHG = "filChgx"
 
-#$SERVER = "http://localhost:3000"
-$SERVER = "http://crambear.heroku.com"
 RIGHT_BUTTON_CLASS = ".ui-btn-right"
-ARCV_YES = "#archivedRB #yes"
 $params = new Object()
 $dataKey = "appDatKey"
-$studyPanelHeight = null
 MSG_SEL = ".msg"
-SYNC_EL = "#setsPage a.ui-btn-right"
 NO_RESTART_FLAG = "noRstrt"
 $atEnd = false
 ARCHIVED_RB_SEL = "#archivedRB input"
+BACK_FIRST_SEL = "#backFirstRB"
 SET_FILTERS_SEL = "#filterCheckboxes input"
-CARDS_PER_PAGE = 40
+CARDS_PER_PAGE = 20
 $showFromCard = 0
 $studyInit = true
 $showedStudyTip = false
@@ -38,19 +34,21 @@ SET_HEADER_BUTTONS=[{label: "Add Card", link:"#cardPage", options: "init_pg=card
 STUDY_HEADER_BUTTONS=[{label: "Correct", link:"#study", options: "class result "},
                     {label: "Wrong", link: "#study", options: "class result"}]
 
-#sync_button = {page: "#loginPage", label: "Sync", options: "init_pg=login data-transition=flip"} #for sets page
 PAGES = {
-    #page: {pgParams: {}, content:{}, head:{}, foot:{}}
-    login: {},
-    #settings: {},
-    sets: { head: {leftButton: "none", rightButton: null}} #,
-    set: {head: {leftButton:{type: "back", label: "Sets", page: "#setsPage"},buttons: SET_HEADER_BUTTONS}}, #, rightButton: {page: "#setSettingsPage", label: "Settings"}}},
-    card: {head: leftButton: {type: "back", label: 'Cancel'}, rightButton: {label: "Delete", options: "obj_type='card' class='delete' #{root.BACK_REL}"}},
+    sets: { head: {title: "Sets", rightButton: null}},
+    set:
+      head:
+        title: "Set",
+        leftBtn: backButton("Sets", "#setsPage"),
+        rightBtn: link("Study!", "#studyPage", "id='studyButton' init_pg='study' class='study'"),
+        buttons: SET_HEADER_BUTTONS
+    ,
+    card: {head: {leftBtn: backButton("Cancel"), rightBtn: link("Delete", "#", "obj_type='card' class='delete' #{root.BACK_REL}") }},
     labels: {},
-    label: {head: leftButton: {type: "back", label: "Cancel"}, rightButton: {label: "Delete", options: "obj_type='label' class='delete' #{root.BACK_REL}" }},
-    study: {head: { leftButton:{type: "back", label: "Cards", page: "#setPage"}, rightButton: {page: pageSel("filter"), label: "Filter", options: "data-transition=pop"}      }},
-    answer: {head: { leftButton:{type: "back", label: "Cards", page: "#setPage"}, rightButton: {page: pageSel("filter"), label: "Filter", options: "data-transition=pop"}      }},
-    filter: {head: { leftButton:{type: "back",  page: "#studyPage", options: "callFn=filterChg"}} }
+    label: {head: { leftBtn: backButton("Cancel"), rightBtn: link("Delete", "#", "obj_type='label' class='delete' #{root.BACK_REL}") }},
+    study: {head: { leftBtn: backButton("Cards","#setPage"), rightBtn: link("Filter", pageSel("filter"), "data-transition=pop") }},
+    answer: {head: { leftBtn: backButton("Cards","#setPage"), rightBtn: link("Restart", pageSel("study"), "data-transition=pop stRestart=true") }},
+    filter: {head: { leftBtn: backButton("","#setPage", "callFn=filterChg") } }
 }
 
 
@@ -63,7 +61,6 @@ $studyQueue = new StudyQueue
   #beforeShowCard: (card) -> onShowStudyCard(card)  ,
   getCards: -> $currentSet.cards ,
   hideBack: (cb) ->
-    #log "HIDA BACK"
     #$.mobile.changePage(pageSel("answer"), { transition: "flip"}) if !$studyInit
     #$("#studyButtons, .cardPanel.front, #studyPanel .back" ).fadeOut 200, ->
     #  $(".cardPanel.front .card_face").css( height: '100%')
@@ -74,24 +71,18 @@ $studyQueue = new StudyQueue
   showCardFields: (card) ->
     front = if @backFirst then card.back else card.front
     back = if @backFirst then card.front else card.back
-    log "showCardFields", front, back
     $(@cardFrontSel).html(multiline(@formatCardText(front)))
     $(@cardBackSel).html multiline(@formatCardText(cardBackTmpl(back, front)))
   flipBack: ->
-    #log "FLIPA BACK"
     $.mobile.changePage pageSel("answer"), { transition: "flip"}
-    #$(".cardPanel.front .card_face").animate( height: '100px')
-    #$(".back").slideDown 300, -> $("#studyButtons").fadeIn(100)
   onFlip: (toFront) ->
     showMsg(null) #to clear other msgs, if present
     $("#studyButtons").find("a.ui-btn-active").removeClass("ui-btn-active")
 
     if toFront
-      log "to front"
       this.hideBack()
       this.showFront()
     else
-      log "to back"
       this.flipBack()
   ,
   showCardLabels: (card) ->
@@ -109,9 +100,7 @@ $studyQueue = new StudyQueue
   ,
   updateStudyStatsView:  (studyQueue) ->
       refreshTmplById "studyStats", studyStatsTmpl, studyQueue
-          #left: studyQueue.leftInRun,
-          #total: studyQueue.runCount,
-          #tries: studyQueue.tries
+      refreshTmplById "studyStatsFront", studyStatsTmpl, studyQueue, false
   ,
   onFinished: ->
       showMsg("Finished! Tap cards to restart")
@@ -123,37 +112,37 @@ initMobile = ->
   root.msgSel = ".msg"
   loadData()
   showMsgs()
-  log("Server", $SERVER)
-  setFlag(MSG_KEY, "server: #{$SERVER}")
-  testAddLogin()
   initPages()
   validationsInit()
   loginFormInit()
   initCallbacks()
   initStudyingCBs()
 
+DATA_REL_DATE_KEY = "dat_rel_dat"
+
 loadData = ->
-  #localStorage.removeItem $dataKey          #test
-  populateData(CARD_SET_DATA)
-
-
+  lastLoadedDate = retrieve DATA_REL_DATE_KEY
+  if (!lastLoadedDate or (DATA_REL_DATE > lastLoadedDate))
+    populateData CARD_SET_DATA
+    cache DATA_REL_DATE_KEY, DATA_REL_DATE
 
 initPages = ->
-  #log "initp"
   TABLES[SET_TYPE] = Table.get(SET_TYPE)
   hasData = TABLES[SET_TYPE].recs? and TABLES[SET_TYPE].recs.length > 0
-  firstPage =  if hasData then "sets" else "login"
+  firstPage =  "sets"
   makePages firstPage, PAGES
-  log "#{pageSel 'study' } #headNav", $( "#{pageSel 'study' } #headNav").length
   refreshTmpl "#{pageSel('answer') } #headNav", answerPgHeadTmpl
   if hasData
     TABLES[CARD_TYPE] = Table.get(CARD_TYPE)
     TABLES[LABEL_TYPE] = Table.get(LABEL_TYPE)
     setViewUpdaters()
     refreshSetsPage()
-  #apply js templates
+
+  $("#backFirstOption").append yesnoChoiceTmpl("backFirstRB", "Show Back First", "backFirst", false)
   addArchivedLabels "#cardArchiveLabels", "Archive"
   addArchivedLabels "#archivedFilter", "Show Archived"
+
+
 
 validationsInit = ->
   VALIDATIONS[LABEL_TYPE] = valLabel
@@ -164,7 +153,6 @@ refreshSetsPage = ->
   listviewRefresh "setList"
 
 initCallbacks = ->
-  log "pageCount", $("*[data-role='page']").length
 
   $("*[data-role='page']").live 'pageshow',(event, ui) ->
       log "pg", @.id
@@ -174,9 +162,10 @@ initCallbacks = ->
 
   $('#studyPage').live 'pageshow',(event, ui) ->
     if !$showedStudyTip
-      popupMsg "touch card to see back"
+      popupMsg "Touch card to see answer"
       $showedStudyTip = true
     filterChg()
+    refreshTmplById "studyStatsFront", studyStatsTmpl, $studyQueue, false
     $studyQueue.showCard()
 
 
@@ -190,18 +179,19 @@ initCallbacks = ->
       #log "lochash", location.hash
       log "initing", pageId(page)
       params.obj_id = $(this).attr("obj_id")
-      callFunctionType("init", pageId(page), params)
+      callFunctionType "init", pageId(page), params
 
   $('a[callFn]').live CLICK_EVENT, ->
     fn = $(this).attr("callFn")
-    log "XXX calling fn #{fn}"
     callFn fn
+
+  $('a[stRestart]').live CLICK_EVENT, ->
+    $studyQueue.restart()
 
   $('a.result').live CLICK_EVENT, ->
     $($studyQueue.cardFrontSel).html("")
 
   $('a[saveForm]').live CLICK_EVENT, ->
-      #log "saving form", $(this).attr("saveForm")
       formId = "#{ $(this).attr("saveForm") }"
       saveForm formId
 
@@ -214,22 +204,17 @@ initCallbacks = ->
       log "tapped overlay"
       $(this).parent().find("a").trigger CLICK_EVENT
 
-  $(SYNC_EL).live CLICK_EVENT, ->
-      log("sync")
-      $(this).removeClass "ui-btn-active"
-      #submitSyncReq()
-
   $("#{pageSel 'filter' } #{ARCHIVED_RB_SEL}").live "change", (event, ui) ->
-      $studyQueue.showArchived = ($(this).attr("value") == "true")  #problem
+      $studyQueue.showArchived = ($(this).attr("value") == "true")
       setFlag FILTER_CHG
-      #$studyQueue.restart()  #problem
 
   $("#{pageSel 'filter' } #{SET_FILTERS_SEL}").live "change", ->
-    log "change filter XXXX"
     setFlag FILTER_CHG
     switchFilter(SET_FILTERS_SEL)
- #formCB "#cardForm"
- #formCB "#labelForm"
+
+  $("#{pageSel 'filter' } #{BACK_FIRST_SEL} input").live "change", (event, ui) ->
+      backFirst = ($(this).attr("value") == "true")
+      $studyQueue.backFirst = backFirst
 
 deleteObj = (type, id) ->
   log "delete", type, id
@@ -248,40 +233,10 @@ switchFilter = (checkboxElems) ->
   #log("fArray", $studyQueue.filters.join(","))
   #$studyQueue.restart()
 
-getData = ->  retrieveObj($dataKey)
 
-submitSyncReq = (login) ->
-    showMsg "Syncing..."
-    $.post url($SERVER, "sync"), login, (data) ->
-        sync data, login
-
-#callback from sync op
-sync = (response, credentials) ->
-    log("ajaxsync",response)
-    if response.error_msg
-        showMsg(response.error_msg)
-    else
-        populateData(response)
-        login credentials
-        refreshSetsPage()
-        $.mobile.changePage(pageSel("sets")) if (onPage("loginPage"))
-    removePopup()    #page chg
-    #resetForm(form)
-
-initLoginPage = (params) ->
-    log "LGPAGE"
-    $("#server").html($SERVER)
-
-    
 initSetPage = (params) ->
-    log "initSetPage", params
-    setId = params["obj_id"]
-    switchSet(setId)
-
-initLabelsPage = ->
-    log "initLPage"
-
-
+  setId = params["obj_id"]
+  switchSet(setId)
 
 
 switchSet = (setId) ->
@@ -293,7 +248,6 @@ switchSet = (setId) ->
     refreshCardList()
     updateLabelView()
     $studyQueue.clearFilters()
-
     #switchFilter(SET_FILTERS_SEL)
     #remakeFilterPages()
 
@@ -302,24 +256,22 @@ remakeFilterPages = ->
   makePage "card", PAGES.card
   refreshLabels "#cardLabels", "Labels"
 
-
 initCardPage = (params) ->
-    id = params.obj_id
-    form = "#cardForm"
-    updateDelLink pageSel("card"), id
-    otherFields = {card_set_id: $currentSet.id}
-    otherFields.archived = false if !id?
-    refreshLabels "#cardLabels", "Labels"
-    setupForm form, CARD_TYPE, id, otherFields
+  id = params.obj_id
+  form = "#cardForm"
+  updateDelLink pageSel("card"), id
+  otherFields = {card_set_id: $currentSet.id}
+  otherFields.archived = false if !id?
+  refreshLabels "#cardLabels", "Labels"
+  setupForm form, CARD_TYPE, id, otherFields
 
 initLabelPage = (params) ->
-    id = params.obj_id
-    form = "#labelForm"
-    setupForm form, LABEL_TYPE, id, {card_set_id: $currentSet.id}
-    updateDelLink pageSel("label"), id
+  id = params.obj_id
+  form = "#labelForm"
+  setupForm form, LABEL_TYPE, id, {card_set_id: $currentSet.id}
+  updateDelLink pageSel("label"), id
 
 initStudyPage = (params) ->
-  log "XXXXXXXXXXXXXXXX      init studp"
   updateLabelSelector "#filterPage", $studyQueue.showArchived, $studyQueue.filters
   $studyInit = true
   $studyQueue.restart()
@@ -329,6 +281,7 @@ filterChg = ->
   filterChanged = consumeFlag FILTER_CHG
   log "filterChng", filterChanged
   $studyQueue.restart() if filterChanged
+
 
 updateLabelView = ->
   #log "updating label view"
@@ -359,10 +312,7 @@ setupForm = (form, type, id, otherProps) ->
     obj = getObj type, id
     $.extend obj, otherProps
     log "obj to form", obj
-    #fields = (field.name for field in formDataFields("#cardForm"))
-    #log "flls", fields.join()
     populateForm(form, obj)
-    #formCB form
 
 
 getObj = (type, id) ->
@@ -417,13 +367,7 @@ cardCountMsg = ->
 
 addArchivedLabels = (container, archiveLbl) ->
   $(container).empty()
-  options = {id: "archivedRB", align: "horizontal", label: archiveLbl}
-  arcvBtns =  [
-              {id: "yes", name: "archived", val: "true", label: "Yes"},
-              {id: "no", name: "archived", val: "false", label: "No"}
-  ]
-  arcvBtnSet = choiceGroup true, "archived", options, arcvBtns
-  $(container).append arcvBtnSet
+  $(container).append yesnoChoiceTmpl("archivedRB", archiveLbl, "archived")
 
 
 refreshLabels = (container, lblsLbl)->
@@ -454,11 +398,8 @@ initStudyingCBs = ->
   $(".result").bind CLICK_EVENT, -> $studyQueue.result($(this).attr("id")!="wrong")
 
 
-testAddLogin = ->
-  cacheObj(root.loginKey, {email: "test@test.com", password: "tester"})     #test
-  PAGES.login.content = retrieveObj(root.loginKey)
-
 populateData=(cardSets) ->
+  log "populating data"
   TABLES[SET_TYPE] = Table.get(SET_TYPE)
   TABLES[CARD_TYPE] = Table.get(CARD_TYPE)
   TABLES[LABEL_TYPE] = Table.get(LABEL_TYPE)
@@ -484,6 +425,49 @@ setViewUpdaters = ->
     TABLES[LABEL_TYPE].updateViews = -> updateLabelView()
 
 
-
 valLabel = (label) -> fieldNotBlank(label.name)
 valCard = (card) -> fieldNotBlank(card.front) or fieldNotBlank(card.back)
+
+
+
+###
+#$SERVER = "http://localhost:3000"
+$SERVER = "http://crambear.heroku.com"
+
+
+initLoginPage = (params) ->
+    log "LGPAGE"
+    $("#server").html($SERVER)
+
+
+SYNC_EL = "#setsPage a.ui-btn-right"
+sync_button = {page: "#loginPage", label: "Sync", options: "init_pg=login data-transition=flip"} #for sets page
+  $(SYNC_EL).live CLICK_EVENT, ->
+      log("sync")
+      $(this).removeClass "ui-btn-active"
+      #submitSyncReq()
+
+submitSyncReq = (login) ->
+    showMsg "Syncing..."
+    $.post url($SERVER, "sync"), login, (data) ->
+        sync data, login
+
+#callback from sync op
+sync = (response, credentials) ->
+    log("ajaxsync",response)
+    if response.error_msg
+        showMsg(response.error_msg)
+    else
+        populateData(response)
+        login credentials
+        refreshSetsPage()
+        $.mobile.changePage(pageSel("sets")) if (onPage("loginPage"))
+    removePopup()    #page chg
+    #resetForm(form)
+
+testAddLogin = ->
+  cacheObj(root.loginKey, {email: "test@test.com", password: "tester"})     #test
+  PAGES.login.content = retrieveObj(root.loginKey)
+
+
+###

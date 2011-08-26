@@ -7,19 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4CE41B6C13FCD8A80002AF9C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B6B13FCD8A80002AF9C /* Foundation.framework */; };
-		4CE41B6E13FCD8A80002AF9C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B6D13FCD8A80002AF9C /* UIKit.framework */; };
-		4CE41B7013FCD8A80002AF9C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B6F13FCD8A80002AF9C /* CoreGraphics.framework */; };
-		4CE41B7213FCD8A80002AF9C /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B7113FCD8A80002AF9C /* AddressBook.framework */; };
-		4CE41B7413FCD8A80002AF9C /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B7313FCD8A80002AF9C /* AddressBookUI.framework */; };
-		4CE41B7613FCD8A80002AF9C /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B7513FCD8A80002AF9C /* AudioToolbox.framework */; };
-		4CE41B7813FCD8A80002AF9C /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B7713FCD8A80002AF9C /* AVFoundation.framework */; };
-		4CE41B7A13FCD8A80002AF9C /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B7913FCD8A80002AF9C /* CoreLocation.framework */; };
-		4CE41B7C13FCD8A80002AF9C /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B7B13FCD8A80002AF9C /* MediaPlayer.framework */; };
-		4CE41B7E13FCD8A80002AF9C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B7D13FCD8A80002AF9C /* QuartzCore.framework */; };
-		4CE41B8013FCD8A80002AF9C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B7F13FCD8A80002AF9C /* SystemConfiguration.framework */; };
-		4CE41B8213FCD8A80002AF9C /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B8113FCD8A80002AF9C /* MobileCoreServices.framework */; };
-		4CE41B8413FCD8A80002AF9C /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B8313FCD8A80002AF9C /* CoreMedia.framework */; };
+		4CE41B6C13FCD8A80002AF9C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B6B13FCD8A80002AF9C /* Foundation.framework */; settings = {ATTRIBUTES = (Required, ); }; };
+		4CE41B6E13FCD8A80002AF9C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B6D13FCD8A80002AF9C /* UIKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		4CE41B7013FCD8A80002AF9C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B6F13FCD8A80002AF9C /* CoreGraphics.framework */; settings = {ATTRIBUTES = (Required, ); }; };
+		4CE41B7213FCD8A80002AF9C /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B7113FCD8A80002AF9C /* AddressBook.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		4CE41B7413FCD8A80002AF9C /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B7313FCD8A80002AF9C /* AddressBookUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		4CE41B7613FCD8A80002AF9C /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B7513FCD8A80002AF9C /* AudioToolbox.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		4CE41B7813FCD8A80002AF9C /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B7713FCD8A80002AF9C /* AVFoundation.framework */; settings = {ATTRIBUTES = (Required, ); }; };
+		4CE41B7A13FCD8A80002AF9C /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B7913FCD8A80002AF9C /* CoreLocation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		4CE41B7C13FCD8A80002AF9C /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B7B13FCD8A80002AF9C /* MediaPlayer.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		4CE41B7E13FCD8A80002AF9C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B7D13FCD8A80002AF9C /* QuartzCore.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		4CE41B8013FCD8A80002AF9C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B7F13FCD8A80002AF9C /* SystemConfiguration.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		4CE41B8213FCD8A80002AF9C /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B8113FCD8A80002AF9C /* MobileCoreServices.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		4CE41B8413FCD8A80002AF9C /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B8313FCD8A80002AF9C /* CoreMedia.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		4CE41B8A13FCD8A90002AF9C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4CE41B8813FCD8A90002AF9C /* InfoPlist.strings */; };
 		4CE41B8D13FCD8A90002AF9C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE41B8C13FCD8A90002AF9C /* main.m */; };
 		4CE41B8F13FCD8A90002AF9C /* PhoneGap.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B8E13FCD8A90002AF9C /* PhoneGap.framework */; };
@@ -401,6 +401,7 @@
 				GCC_PREFIX_HEADER = "netchinese/netchinese-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = "PHONEGAP_FRAMEWORK=YES";
 				INFOPLIST_FILE = "netchinese/netchinese-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -417,6 +418,7 @@
 				GCC_PREFIX_HEADER = "netchinese/netchinese-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = "PHONEGAP_FRAMEWORK=YES";
 				INFOPLIST_FILE = "netchinese/netchinese-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALIDATE_PRODUCT = YES;
 				WRAPPER_EXTENSION = app;
@@ -442,6 +444,7 @@
 				4CE41BB313FCD8AA0002AF9C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
