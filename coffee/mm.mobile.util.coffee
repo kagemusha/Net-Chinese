@@ -44,6 +44,9 @@ getObjFromForm = (formId, fields) ->
     delete obj.submit
     obj
 
+uncapitalize = (str) ->
+  return str if (!str or str.length < 1)
+  "#{str[0].toLowerCase()}#{str.substr 1}"
 
 makePages = (firstPage, pages) ->
     makePage(firstPage, pages[firstPage])
@@ -62,7 +65,7 @@ makePage = (id, specs) ->
     if specs.head.buttons #this are buttons below title bar like "Right","Wrong"
         btnSel = "#{pageSel(id)} ul.headButtons"
         #log("btnsel", btnSel, $(btnSel).length)
-        refreshTmpl btnSel, listLinkTmpl, specs.head.buttons
+        refreshTmpl btnSel, listLinkTmpl2, specs.head.buttons
     addFooter id, specs.foot
     refreshPage id, specs.content
 
@@ -70,6 +73,7 @@ makePage = (id, specs) ->
 refreshPage = (id, params) ->
     contentDiv = "#{pageSel(id)} .pgContent"
     refreshTmpl(contentDiv, pgTmplFn(id), params)
+
 
 
 PG_TMPL_SEL = "PgTmpl"
@@ -107,6 +111,8 @@ login = (credentials) ->
     cacheObj(credentials) if (credentials)
     retrieveObj(root.loginKey)
 
+setHeaderBtn = (page, button, left=true) ->
+
 
 selCount = (sel) -> $(sel).length
 
@@ -123,6 +129,11 @@ showMsgs = ->
     $('.pg').live('pageshow', (event, ui) ->
         showMsg()
     )
+
+showHide = (showSel, hideSel, condition=true) ->
+  ([showSel, hideSel] = [hideSel, showSe]) if !condition
+  $(showSel).show()
+  $(hideSel).hide()
 
 listviewRefresh = (list) ->
     listSel = "##{list}"

@@ -1,7 +1,7 @@
 root.BACK_REL = "data-rel='back'"
 
 refreshTmplById = (id, templateFn, data, options) ->
-    refreshTmpl "##{id}", templateFn, data, options
+    refreshTmpl "#{idSel id}", templateFn, data, options
 
 refreshTmpl = (containers, templateFn, data, options) ->
     templateFn = eval(templateFn) if typeof templateFn == 'string'
@@ -10,8 +10,32 @@ refreshTmpl = (containers, templateFn, data, options) ->
     #log "elems", elems
     $(containers).append elems
 
+refreshListById = (id, template, objs, options) ->
+  refreshTmplById id, template, objs, options
+  listviewRefresh id
+
+NOT_EDITING_CLASS = "notEditing"
+EDITING_CLASS = "editing"
+
+idSel = (id) ->
+  log "idsel no id!!" if !id or id.length < 1
+  if (id[0]=="#") then id else "##{id}"
+
+classSel = (klasses) ->
+  if (klasses[0]==".") then klasses else ".#{klasses}"
+
+toggleEditControls = (pageId="") ->
+  $("#{idSel pageId} .#{EDITING_CLASS}, #{idSel pageId} .#{NOT_EDITING_CLASS}").toggle()
+
+refreshEditableListById = (baseListId, template, editTemplate, objs) ->
+  editListId = "edit#{capitalize baseListId}"
+  $("#{idSel baseListId}").addClass NOT_EDITING_CLASS
+  $("#{idSel editListId}").addClass EDITING_CLASS
+  refreshListById baseListId, template, objs
+  refreshListById editListId, editTemplate, objs
+
 genElems = (fn, data, options) ->
-    if data instanceof Array
+    if _.isArray(data)
         elems = for elem in data
                     fn elem, options
         if elems then elems.join("") else ""
@@ -26,8 +50,8 @@ choiceTmpl = ( isRadio, name, options) ->
     choiceType = if isRadio then "radio" else "checkbox"
     checked = if options.checked then "checked=checked" else ""
     """
-    <input type="#{choiceType}" name="#{name}" #{valAttr}  id="#{options.id}" #{checked}>
-    <label for="#{options.id}" data-theme="c">#{label}</label>
+    <input type="#{choiceType}" data-theme="d" name="#{name}" #{valAttr}  id="#{options.id}" #{checked}>
+    <label for="#{options.id}" >#{label}</label>
     """
 
 yesnoChoiceTmpl = (id, label, group, yesChecked) ->
@@ -39,10 +63,6 @@ yesnoChoiceTmpl = (id, label, group, yesChecked) ->
           ]
   choiceGroup true, group, options, btns
 
-
-
-
-
 choiceButtons = (isRadio, name, btnSpecs) ->
   (choiceTmpl(isRadio, name, spec) for spec in btnSpecs).join(" ") if btnSpecs
 
@@ -50,8 +70,9 @@ choiceButtons = (isRadio, name, btnSpecs) ->
 choiceGroup = (isRadio, name, options, btnSpecs) ->
     btns = choiceButtons isRadio, name, btnSpecs
     dataType = if options.align then "data-type=#{options.align}" else ""
+    dataTheme = "d" #parametrize
     """
-        <fieldset data-role="controlgroup" #{dataType} id="#{options.id}">
+        <fieldset data-role='controlgroup' #{dataType} id='#{options.id}' data-theme='#{dataTheme}'>
             <legend>#{options.label}</legend>
             #{btns}
         </fieldset>
@@ -66,32 +87,75 @@ backButton = (label="Back", page=null, options=null) ->
     dataRel = "data-rel='back'"
     page = "#"
   link label, page, "data-icon='arrow-l' #{dataRel} #{options}"
-rightButton = (specs) -> link specs.label, specs.page, "#{specs.options} class='ui-btn-right #{specs.class}'"
 
+rightBtn = (label, url, options="", classes="") ->
+  options = "class='ui-btn-right #{classes}' #{options}"
+  but = link label, url, options
+  log "but", but
+  but
 
+DEFAULT_STYLE="d"
+DEFAULT_PG_THEME = "e"
 pageTmpl = (specs) ->
-    lButton =  if specs.head.leftBtn then specs.head.leftBtn else ""
-    title = specs.head.title or "网 Net Chinese 中"
-    rButton = specs.head.rightBtn || ""
+  if specs.head.leftBtns
+    lButtons = if _.isArray(specs.head.leftBtns) then specs.head.leftBtns.join("") else specs.head.leftBtns
+  else
+    lButtons=""
+  title = specs.head.title or "网 Net Chinese 中"
+  rButtons = specs.head.rightBtns || ""
+  footer = specs.footer || ""
+  """
+  <div id="#{specs.id}" data-role="page" data-theme="#{DEFAULT_PG_THEME}"  data-auto-back-btn='true' class='pg'>
+    #{ headerTmpl title, lButtons, rButtons }
+    <div class="msg"></div>
+    <div data-role="content" class="pgContent">
+    </div><!-- /content -->
+    #{footer}
+  </div>
+  """
+
+navBar = (buttons, listStyle=true) ->
+  buttons =  for btn in buttons
+              "<li>#{btn}</li>"
+  btns =
     """
-    <div id="#{specs.id}" data-role="page" data-theme="e"  data-auto-back-btn='true' class='pg'>
-      #{ headerTmpl title, lButton, rButton }
-      <div class="msg"></div>
-      <div data-role="content" class="pgContent">
-      </div><!-- /content -->
-      <div data-role="footer" data-theme="a" data-position="fixed" class="pgFoot" class="ui-bar">
-	    </div>
-      <!-- footer -->
-    </div>
+      <div data-role="navbar">
+        <ul>#{buttons.join()}</ul>
+      </div>
     """
 
+  btns = buttons.join(' ')
 
-headerTmpl = (title, lButton, rButton) ->
+
+
+footerTmpl = (specs, buttons...) ->
+  klass = "class='#{specs.class || ""} #{if specs.ui_bar then "ui-bar" else ""}'"
+  if buttons
+    if specs.navBar
+      buttons =  for btn in buttons
+                  "<li>#{btn}</li>"
+      btns =
+        """
+          <div data-role="navbar">
+            <ul>#{buttons.join()}</ul>
+          </div>
+        """
+    else
+      btns = buttons.join(' ')
+
+  dataPos = if specs.fixed then "data-position='fixed'" else ""
+  """
+  <div data-role="footer" data-theme="a" #{dataPos} #{klass}>
+    #{btns}
+  </div>
+  """
+
+headerTmpl = (title, lButton="", rButtons="") ->
   """
   <div data-role="header" data-theme="a" data-position="inline" class="pgHead"  >
     #{lButton}
     <h1>#{title}</h1>
-    #{rButton}
+    #{rButtons}
     <div data-role="navbar" id="headNav">
       <ul class="headButtons">
       </ul>
@@ -99,41 +163,84 @@ headerTmpl = (title, lButton, rButton) ->
   </div>
   """
 
+img = (file) ->  "css/images/#{file}"
+
+### App specific below ###
 
 setLiTmpl = (set) ->
-    """
-    <li><a class='set' href="#setPage" obj_id="#{set.id}" init_pg='set'>#{set.name}</a></li>
-    """
+  """
+  <li class='set'>
+    <a class='set' href="#setPage" obj_id="#{set.id}" init_pg='set'>
+      #{set.name}
+    </a>
+  </li>
+  """
 
+delImg = ->  "<img  class='del del_icon ui-li-icon' src='#{img('delete.png')}'/>"
 
-cardLiTmpl = (card) ->
+editSetLiTmpl = (set) ->
     """
-    <li class="card #{if toStr(card.archived)=='true' then 'archived' else ''} ">
-        <div class="overlay">ARCHIVED</div>
-        <a class="card" obj_id="#{card.id}" href="#cardPage" init_pg="card" >
-        <span class="front">#{card.front}</span><br/>
-        #{card.back}
-    </a></li>
-    """
-
-
-labelLiTmpl = (label) ->
-    """
-    <li>
-        <a href="#labelPage" obj_id="#{label.id}"  init_pg="label" >#{label.name}</a>
+    <li class='set' obj_id="#{set.id}">
+      #{delImg()}
+      #{set.name}
     </li>
     """
 
-ulTmpl = (id, options=null) ->
+cardLiTmpl = (card) ->
   """
-    <ul id="#{id}" data-role="listview" data-theme="d">
+  <li class="card #{if toStr(card.archived)=='true' then 'archived' else ''} ">
+    <div class="overlay">ARCHIVED</div>
+    <a class="card" obj_id="#{card.id}" href="#cardPage" init_pg="card" >
+    <span class="front">#{card.front}</span><br/>
+    #{card.back}
+  </a></li>
+  """
+
+editCardLiTmpl = (card) ->
+  """
+  <li class="card" obj_id="#{card.id}">
+    #{delImg()}
+    <span class="front">#{card.front}</span><br/>
+    #{card.back}
+  </li>
+  """
+
+labelLiTmpl = (label, icon="") ->
+  """
+  <li>
+      #{icon}
+      <a href="#labelPage" obj_id="#{label.id}"  init_pg="label" >#{label.name}</a>
+  </li>
+  """
+
+editLabelLiTmpl = (label) ->
+  """
+  <li class="card" obj_id="#{label.id}">
+    #{delImg()}
+    #{label.name}
+  </li>
+  """
+
+
+ul = (id, listItems=[""], dataOptions={}, options="") ->
+  dataTheme = dataOptions.dataTheme || DEFAULT_STYLE
+  dataInset = dataOptions.dataInset || "false"
+  listItems = listItems.join("")
+  #dataDividerTheme =
+  """
+    <ul id="#{id}" data-role="listview" data-inset="#{dataInset}" data-theme="#{dataTheme}" #{options}>
+      #{listItems}
     </ul>
   """
+
+editUL = (id, type, dataOptions, options) ->
+    ul id, null, dataOptions, "class='editList' obj_type='#{type}' #{options}"
 
 
 setsPgTmpl = ->
     """
-    #{ulTmpl "setList" }
+    #{ul "setList", null, null, "obj_type='card_set'"}
+    #{editUL "editSetList", "set"}
     """
 
 settingsPgTmpl = ->
@@ -153,7 +260,6 @@ cardBackTmpl = (back, front) ->
   """
 
 setPgTmpl = (set) ->
-    #{ button "Study", pageSel("study"), "id='studyButton' init_pg='study' class='study'" }
     """
     <div id="cardsShowing">
         <a href="#" id="prevCards" class="cardList"> prev </a>
@@ -161,85 +267,89 @@ setPgTmpl = (set) ->
         <a href="#" id="nextCards" class="cardList"> next </a>
     </div>
     <br/>
-    #{ulTmpl "cardList" }
+    #{ul "cardList", null, null, "obj_type='card'"}
+    #{editUL "editCardList", "card"}
     """
-
 
 labelsPgTmpl = ->
     """
-    <a href="#labelPage" data-role="button" id="addLabelButton" init_pg="label" >Add Label</a>
-    <ul id="labelList" data-dividertheme="b" data-inset="true" data-role="listview" data-theme="c">
-        <li data-role="list-divider">Labels</li>
-    </ul>
+    #{button "Add Label", "#labelPage", "id='addLabelButton' init_pg='label'"}
+    #{ul "labelList", null, {dataInset: true} }
+    #{editUL "editLabelList", "label", {dataInset: true}}
     """
 
 
 labelPgTmpl = ->
-    """
-    <h3>Label</h3>
-    <form accept-charset="UTF-8"  id="labelForm" obj_type="label">
-        <div data-role="fieldcontain">
-            <input type="hidden" id="card_set_id" name="card_set_id" />
-            <input type="hidden" id="id" name="id" />
-            <input type="text" id="name" name="name" />
-        </div>
-    </form>
-    #{ button "Save", "#", "obj_type='label' saveForm='labelForm' #{root.BACK_REL}" }
-    """
+  """
+  <form accept-charset="UTF-8"  id="labelForm" obj_type="label">
+    <div data-role="fieldcontain">
+      <input type="hidden" id="card_set_id" name="card_set_id" />
+      <input type="hidden" id="id" name="id" />
+      <input type="text" id="name" name="name" />
+    </div>
+  </form>
+  #{ button "Save", "#", "obj_type='label' saveForm='labelForm' #{root.BACK_REL}" }
+  """
 
 
 filterPgTmpl = ->
-    """
-    <div id="backFirstOption">
-    </div>
-    <div id="archivedFilter"></div>
-    <div id="filtersForm"></div>
-    <fieldset data-role="controlgroup" id="filterCheckboxes">
-    </fieldset>
-    """
+  """
+  <div id="backFirstOption">
+  </div>
+  <div id="archivedFilter"></div>
+  <div id="filtersForm"></div>
+  """
+
+listLink = (label, href, options) ->
+  """
+  <li>#{link(label, href, options)}</li>
+  """
+listLink2 = (link) ->
+  """
+  <li>#{link}</li>
+  """
 
 listLinkTmpl = (link, options) ->
-    """
-    <li><a href="#{link.link}" #{link.options} >#{link.label}</a></li>
-    """
+  listLink link.label, link.link, link.options
 
+listLinkTmpl2 = (link, options) ->
+  listLink2 link
 
 cardPgTmpl = ->
-    """
-    <form accept-charset="UTF-8"  id="cardForm" obj_type="card">
-       <input type="hidden" id="card_set_id" name="card_set_id" />
-       <input type="hidden" id="id" name="id" />
-       <div data-role="fieldcontain">
-         <textarea cols=30 rows=8 id="card_front" name="front" placeholder="Front" />
-         <br/>
-         <textarea cols=30 rows=8 id="card_back" name="back" placeholder="Back" />
-       </div>
-       <div id="cardArchiveLabels"></div>
-       <div id="cardLabels"></div>
-       </div>
+  cardSideItems = [
+    listLink("Front (Chinese)", "#textInputPage", "id='frontTALink' init_pg='cardSide'"),
+    listLink("Back (English)", "#textInputPage", "id='backTALink' init_pg='cardSide' side='back'")
+  ]
 
-    </form>
-    #{ button "Save", "#", "obj_type='card' saveForm='cardForm' #{root.BACK_REL}" }
+  """
+  <form accept-charset="UTF-8"  id="cardForm" obj_type="card">
+    <input type="hidden" id="card_set_id" name="card_set_id" />
+    <input type="hidden" id="id" name="id" />
+    <br>
+    #{ul "cardSides", cardSideItems, {dataInset: true} }
+    <div id="cardArchiveLabels">#{yesnoChoiceTmpl "archivedRB", "Archive", "archived"}</div>
+    <div id="cardLabels"></div>
 
-    """
+  </form>
+  #{ button "Save", "#", "obj_type='card' saveForm='cardForm' #{root.BACK_REL}" }
+  """
 
 textInputPgTmpl = ->
   """
-  <textarea cols=30 rows=8 id="card_front" name="front" placeholder="Front" />
+    <textarea id="tInput" class="fullPage" data-theme="d" name="tInput" placeholder="(Enter text)" />
   """
 
 
-
 studyStatsTmpl = (stats, full=true) ->
-    """
-    <div id="studyStatsMsg">
-        <span class="stat label">#{stats.leftInRun} </span>
-        of
-        <span class="stat label">#{stats.runCount} </span>
-        left &nbsp;&nbsp;
-        #{if full then triesTmpl(stats) else ""}
-    </div>
-    """
+  """
+  <div id="studyStatsMsg">
+      <span class="stat label">#{stats.leftInRun} </span>
+      of
+      <span class="stat label">#{stats.runCount} </span>
+      left &nbsp;&nbsp;
+      #{if full then triesTmpl(stats) else ""}
+  </div>
+  """
 
 triesTmpl = (stats) ->
   """
@@ -269,10 +379,11 @@ studyPgTmpl = ->
 answerPgHeadTmpl = ->
   """
   <ul id="studyButtons" class="back">
-    <li><a href="#" id="correct" data-transition="pop" data-role="button"  class="result" >Correct</a></li>
-    <li><a href="#" id="wrong" data-transition="pop" data-role="button"  class="result" >Wrong</a></li>
+    <li>#{button "Correct", "#", "id='correct' data-transition='pop' class='result'"}
+    <li>#{button "Wrong", "#", "id='wrong' data-transition='pop' class='result'"}
   </ul>
   """
+
 
 answerPgTmpl = ->
     """

@@ -1,4 +1,4 @@
-var $atEnd, $currentSet, $dataKey, $params, $showFromCard, $showedStudyTip, $studyInit, $studyQueue, ARCHIVED_RB_SEL, BACK_FIRST_SEL, CARDS_PER_PAGE, CARD_FORM_LABEL_GROUP, CARD_LABEL_SEL, CARD_TYPE, CLICK_EVENT, DATA_REL_DATE_KEY, FILTER_CHG, LABEL_TYPE, MSG_SEL, NO_RESTART_FLAG, OBJ_ID_ATTR, OBJ_TYPE_ATTR, PAGES, RIGHT_BUTTON_CLASS, SET_FILTERS_SEL, SET_HEADER_BUTTONS, SET_ID_ATTR, SET_TYPE, SET_TYPE_ATTR, STUDY_HEADER_BUTTONS, Set, addArchivedLabels, cardCountMsg, deleteObj, filterChg, getObj, initCallbacks, initCardPage, initLabelPage, initMobile, initPages, initSetPage, initStudyPage, initStudyingCBs, loadData, nextCards, populateData, prevCards, refreshCardList, refreshCheckboxes, refreshLabels, refreshSetsPage, remakeFilterPages, setViewUpdaters, setupForm, switchFilter, switchSet, updateCardView, updateDelLink, updateLabelSelector, updateLabelView, valCard, valLabel, validationsInit;
+var $atEnd, $currentCard, $currentSet, $editing, $showFromCard, $showedStudyTip, $studyInit, $studyLink, $studyQueue, ARCHIVED_RB_SEL, CARDS_PER_PAGE, CARD_LABEL_SEL, CARD_TYPE, CLICK_EVENT, DATA_REL_DATE_KEY, EDIT_BTNS, EDIT_CARD_BTN, EDIT_LABEL_BTN, EDIT_SET_BTN, FILTER_CHG, LABEL_TYPE, MSG_SEL, OBJ_ID_ATTR, OBJ_TYPE_ATTR, PAGES, SET_FILTERS_SEL, SET_HEADER_BUTTONS, SET_ID_ATTR, SET_TYPE, SET_TYPE_ATTR, STUDY_HEADER_BUTTONS, Set, addArchivedLabels, cardCountMsg, deleteFromList, deleteObj, dualId, editBtns, filterChg, getObj, initCallbacks, initCardPage, initCardSidePage, initLabelPage, initLabelsPage, initMobile, initPages, initSetPage, initStudyPage, initStudyingCBs, loadData, nextCards, populateData, prevCards, refreshCardList, refreshCheckboxes, refreshLabels, remakeFilterPages, resetDeleteItem, resetEditing, rotateDelImg, setViewUpdaters, setupForm, switchFilter, switchSet, toggleEditSet, updateCardView, updateDelLink, updateLabelSelector, updateLabelView, valCard, valLabel, validationsInit;
 SET_TYPE = "card_set";
 CARD_TYPE = 'card';
 LABEL_TYPE = 'label';
@@ -6,94 +6,105 @@ OBJ_TYPE_ATTR = "obj_type";
 OBJ_ID_ATTR = "obj_id";
 SET_ID_ATTR = "set_id";
 SET_TYPE_ATTR = "set_type";
-CARD_FORM_LABEL_GROUP = "#cardForm #labels";
 CLICK_EVENT = "tap";
 FILTER_CHG = "filChgx";
-RIGHT_BUTTON_CLASS = ".ui-btn-right";
-$params = new Object();
-$dataKey = "appDatKey";
 MSG_SEL = ".msg";
-NO_RESTART_FLAG = "noRstrt";
 $atEnd = false;
 ARCHIVED_RB_SEL = "#archivedRB input";
-BACK_FIRST_SEL = "#backFirstRB";
 SET_FILTERS_SEL = "#filterCheckboxes input";
-CARDS_PER_PAGE = 20;
+CARDS_PER_PAGE = 25;
 $showFromCard = 0;
 $studyInit = true;
 $showedStudyTip = false;
 $currentSet = null;
+$currentCard = null;
+EDIT_SET_BTN = "editSetBtn";
+EDIT_CARD_BTN = "editCardBtn";
+EDIT_LABEL_BTN = "editLabelBtn";
 Set = (function() {
   function Set() {}
   Set.prototype.labels = null;
   Set.prototype.cards = null;
   return Set;
 })();
-SET_HEADER_BUTTONS = [
-  {
-    label: "Add Card",
-    link: "#cardPage",
-    options: "init_pg=card obj_type=card "
-  }, {
-    label: "Labels",
-    link: "#labelsPage",
-    options: "init_pg=labels"
+$studyLink = link("Study!", "#studyPage", "id='studyButton' init_pg='study' class='study'");
+dualId = function(id, addedPrefix) {
+  var preLen;
+  log("dualId", id);
+  preLen = addedPrefix.length;
+  if (id.slice(0, (preLen - 1 + 1) || 9e9) === addedPrefix) {
+    return "" + (uncapitalize(id[preLen])) + (id.substr(preLen + 1));
+  } else {
+    return "" + addedPrefix + (capitalize(id));
   }
-];
-STUDY_HEADER_BUTTONS = [
-  {
-    label: "Correct",
-    link: "#study",
-    options: "class result "
-  }, {
-    label: "Wrong",
-    link: "#study",
-    options: "class result"
-  }
-];
+};
+editBtns = function(editBtnId, objList) {
+  var dualBtnId, olStr;
+  dualBtnId = dualId(editBtnId, "done");
+  olStr = "objList='" + objList + "'";
+  return [rightBtn("Done", "#", "id='" + dualBtnId + "' callfn='toggleEditSet' " + olStr, "editing"), rightBtn("Edit", "#", "id='" + editBtnId + "' callfn='toggleEditSet' " + olStr, "notEditing")].join(" ");
+};
+SET_HEADER_BUTTONS = [$studyLink, link("Add Card", "#cardPage", "init_pg=card obj_type=card"), link("Labels", "#labelsPage", "init_pg=labels ")];
+STUDY_HEADER_BUTTONS = [link("Correct", "#study", "class result "), link("Wrong", "#study", "class result")];
+EDIT_BTNS = [rightBtn("Edit", "#", "id='editSetButton' callfn='toggleEditSet' objList='setList'", NOT_EDITING_CLASS), rightBtn("Done", "#", "id='doneEditSetButton' callfn='toggleEditSet' objList='setList'", EDITING_CLASS)];
 PAGES = {
   sets: {
     head: {
-      title: "Sets",
-      rightButton: null
+      title: "Sets"
     }
   },
   set: {
     head: {
       title: "Set",
-      leftBtn: backButton("Sets", "#setsPage"),
-      rightBtn: link("Study!", "#studyPage", "id='studyButton' init_pg='study' class='study'"),
+      leftBtns: backButton("Sets", "#setsPage"),
+      rightBtns: editBtns(EDIT_CARD_BTN, "cardList"),
       buttons: SET_HEADER_BUTTONS
     }
   },
   card: {
     head: {
-      leftBtn: backButton("Cancel"),
-      rightBtn: link("Delete", "#", "obj_type='card' class='delete' " + root.BACK_REL)
+      title: "Card",
+      leftBtns: backButton("Cancel", "#setPage"),
+      rightBtns: link("Save", "#", "obj_type='card' class='save' " + root.BACK_REL)
     }
   },
-  labels: {},
+  labels: {
+    head: {
+      title: "Labels",
+      leftBtns: backButton("Back", "#setPage"),
+      rightBtns: editBtns("editLabelBtn", "labelList")
+    }
+  },
   label: {
     head: {
-      leftBtn: backButton("Cancel"),
-      rightBtn: link("Delete", "#", "obj_type='label' class='delete' " + root.BACK_REL)
+      title: "Label",
+      leftBtns: backButton("Cancel", "#labelsPage"),
+      rightBtns: link("Save", "#", "obj_type='card' class='save' " + root.BACK_REL)
     }
   },
   study: {
     head: {
-      leftBtn: backButton("Cards", "#setPage"),
-      rightBtn: link("Filter", pageSel("filter"), "data-transition=pop")
+      leftBtns: backButton("Cards", "#setPage"),
+      rightBtns: link("Filter", pageSel("filter"), "data-transition=pop")
     }
   },
   answer: {
     head: {
-      leftBtn: backButton("Cards", "#setPage"),
-      rightBtn: link("Restart", pageSel("study"), "data-transition=pop stRestart=true")
+      leftBtns: backButton("Cards", "#setPage"),
+      rightBtns: link("Restart", pageSel("study"), "data-transition=pop stRestart=true")
     }
   },
   filter: {
     head: {
-      leftBtn: backButton("", "#setPage", "callFn=filterChg")
+      title: "Filter",
+      leftBtns: backButton("Back", "#studyPage", "callfn=filterChg")
+    }
+  },
+  textInput: {
+    head: {
+      title: "Card",
+      leftBtns: backButton("Cancel", "#cardPage"),
+      rightBtns: link("Save", pageSel("card"), "save=true")
     }
   }
 };
@@ -191,23 +202,25 @@ initPages = function() {
   firstPage = "sets";
   makePages(firstPage, PAGES);
   refreshTmpl("" + (pageSel('answer')) + " #headNav", answerPgHeadTmpl);
+  $("" + (idSel(dualId(EDIT_SET_BTN, "done")))).hide();
+  $("" + (idSel(dualId(EDIT_CARD_BTN, "done")))).hide();
+  $("" + (idSel(dualId(EDIT_LABEL_BTN, "done")))).hide();
   if (hasData) {
     TABLES[CARD_TYPE] = Table.get(CARD_TYPE);
     TABLES[LABEL_TYPE] = Table.get(LABEL_TYPE);
     setViewUpdaters();
-    refreshSetsPage();
+    refreshListById("setList", setLiTmpl, TABLES[SET_TYPE].all());
   }
   $("#backFirstOption").append(yesnoChoiceTmpl("backFirstRB", "Show Back First", "backFirst", false));
-  addArchivedLabels("#cardArchiveLabels", "Archive");
-  return addArchivedLabels("#archivedFilter", "Show Archived");
+  addArchivedLabels("#archivedFilter", "Show Archived");
+  $("tInput").css("height: 300px");
+  $("tInput").css("width: 200px");
+  log("noted", classSel(NOT_EDITING_CLASS));
+  return $("" + (classSel(EDITING_CLASS))).hide();
 };
 validationsInit = function() {
   VALIDATIONS[LABEL_TYPE] = valLabel;
   return VALIDATIONS[CARD_TYPE] = valCard;
-};
-refreshSetsPage = function() {
-  refreshTmplById("setList", setLiTmpl, TABLES[SET_TYPE].all());
-  return listviewRefresh("setList");
 };
 initCallbacks = function() {
   $("*[data-role='page']").live('pageshow', function(event, ui) {
@@ -215,7 +228,8 @@ initCallbacks = function() {
     log("pg", this.id);
     link = $(ui.prevPage).find("a.ui-btn-active").removeClass("ui-btn-active");
     link = $(ui.prevPage).find("a.ui-btn-active").removeClass("ui-btn-active");
-    return showMsg();
+    showMsg();
+    return resetEditing();
   });
   $('#studyPage').live('pageshow', function(event, ui) {
     if (!$showedStudyTip) {
@@ -239,12 +253,15 @@ initCallbacks = function() {
     myHash = location.hash;
     log("initing", pageId(page));
     params.obj_id = $(this).attr("obj_id");
+    params.source = $(this);
     return callFunctionType("init", pageId(page), params);
   });
-  $('a[callFn]').live(CLICK_EVENT, function() {
+  $('a[callfn]').live(CLICK_EVENT, function() {
     var fn;
-    fn = $(this).attr("callFn");
-    return callFn(fn);
+    fn = $(this).attr("callfn");
+    if (fn && fn.length > 0) {
+      return callFn(fn, this);
+    }
   });
   $('a[stRestart]').live(CLICK_EVENT, function() {
     return $studyQueue.restart();
@@ -263,29 +280,47 @@ initCallbacks = function() {
     deleteObj(type, $(this).attr("obj_id"));
     return popupMsg("Deleted " + type);
   });
+  $('.aDeleteBtn').live(CLICK_EVENT, function() {
+    return deleteFromList(this);
+  });
   $(".overlay").live(CLICK_EVENT, function() {
     log("tapped overlay");
     return $(this).parent().find("a").trigger(CLICK_EVENT);
   });
   $("" + (pageSel('filter')) + " " + ARCHIVED_RB_SEL).live("change", function(event, ui) {
+    log("arch filter");
     $studyQueue.showArchived = $(this).attr("value") === "true";
     return setFlag(FILTER_CHG);
   });
   $("" + (pageSel('filter')) + " " + SET_FILTERS_SEL).live("change", function() {
+    log("filter chg");
     setFlag(FILTER_CHG);
     return switchFilter(SET_FILTERS_SEL);
   });
-  return $("" + (pageSel('filter')) + " " + BACK_FIRST_SEL + " input").live("change", function(event, ui) {
+  $("" + (pageSel('filter')) + " #backFirstOption input").live("change", function(event, ui) {
     var backFirst;
     backFirst = $(this).attr("value") === "true";
+    log("setBF", backFirst);
     return $studyQueue.backFirst = backFirst;
   });
+  return $('.del_icon').live(CLICK_EVENT, function() {
+    log("delicont click");
+    return rotateDelImg(this);
+  });
 };
+/*
+unrotate = ->
+  $($rotated).rotate(-90) if $rotated
+  rot = $rotated
+  $rotated = null
+  rot
+*/
 deleteObj = function(type, id) {
   var table;
   log("delete", type, id);
   table = TABLES[type];
-  return table["delete"](id);
+  table["delete"](id);
+  return log("deleted", type, id);
 };
 switchFilter = function(checkboxElems) {
   var filters;
@@ -304,6 +339,12 @@ initSetPage = function(params) {
   var setId;
   setId = params["obj_id"];
   return switchSet(setId);
+};
+initCardSidePage = function(params) {
+  var elem, side;
+  side = $(params.source).attr("side") || "front";
+  elem = "#textInputPage textArea";
+  return $(elem).text($currentCard[side]);
 };
 switchSet = function(setId) {
   log("switch set", setId);
@@ -332,7 +373,10 @@ initCardPage = function(params) {
     otherFields.archived = false;
   }
   refreshLabels("#cardLabels", "Labels");
-  return setupForm(form, CARD_TYPE, id, otherFields);
+  setupForm(form, CARD_TYPE, id, otherFields);
+  $currentCard = getObj(CARD_TYPE, id);
+  $("#frontTALink").text($currentCard.front.replace(/(<([^>]+)>)/ig, ""));
+  return $("#backTALink").text($currentCard.back.replace(/(<([^>]+)>)/ig, ""));
 };
 initLabelPage = function(params) {
   var form, id;
@@ -343,6 +387,7 @@ initLabelPage = function(params) {
   });
   return updateDelLink(pageSel("label"), id);
 };
+initLabelsPage = function(params) {};
 initStudyPage = function(params) {
   updateLabelSelector("#filterPage", $studyQueue.showArchived, $studyQueue.filters);
   $studyInit = true;
@@ -359,8 +404,7 @@ filterChg = function() {
 };
 updateLabelView = function() {
   $currentSet.labels = TABLES[LABEL_TYPE].findAll("card_set_id", $currentSet.id);
-  refreshTmplById("labelList", labelLiTmpl, $currentSet.labels);
-  listviewRefresh("labelList");
+  refreshEditableListById("labelList", labelLiTmpl, editLabelLiTmpl, $currentSet.labels);
   return refreshLabels("#filtersForm", "Filters");
 };
 updateLabelSelector = function(container, archived, filters) {
@@ -433,10 +477,11 @@ updateCardView = function() {
   displayCards = $currentSet.cards.slice($showFromCard, $showFromCard + CARDS_PER_PAGE);
   log("set id", $currentSet.id, "cardlen: ", $currentSet.cards.length);
   cardCountMsg();
-  refreshTmplById("cardList", cardLiTmpl, displayCards);
-  listviewRefresh("cardList");
+  refreshEditableListById("cardList", cardLiTmpl, editCardLiTmpl, displayCards);
   $("#studyButton").show();
-  return $("#cardList").show();
+  if (!$editing) {
+    return $("#cardList").show();
+  }
 };
 cardCountMsg = function() {
   var last, msg, multiPage, setLength;
@@ -464,7 +509,6 @@ refreshLabels = function(container, lblsLbl) {
 };
 refreshCheckboxes = function(sel) {
   try {
-    log("choice counts(rd, cb)", $("input[type='radio']").length, "input[type='checkbox']".length);
     $("input[type='radio']").checkboxradio("init");
     $("input[type='checkbox']").checkboxradio("init");
     $("input[type='radio']").checkboxradio("refresh");
@@ -491,7 +535,6 @@ initStudyingCBs = function() {
 };
 populateData = function(cardSets) {
   var cardSet, cards, labels, _i, _len;
-  log("populating data");
   TABLES[SET_TYPE] = Table.get(SET_TYPE);
   TABLES[CARD_TYPE] = Table.get(CARD_TYPE);
   TABLES[LABEL_TYPE] = Table.get(LABEL_TYPE);
@@ -522,50 +565,57 @@ setViewUpdaters = function() {
     return updateLabelView();
   };
 };
+$editing = false;
+toggleEditSet = function(link) {
+  var edit, linkId, page;
+  linkId = $(link).attr("id");
+  edit = linkId.slice(0, 4) === "edit";
+  log("$edI, edit", $editing, edit);
+  if ((!$editing && edit) || ($editing && !edit)) {
+    resetDeleteItem();
+    page = $(link).closest("div[data-role=page]");
+    log("linkPage", page.length, $(page).attr("id"));
+    toggleEditControls(page.attr("id"));
+    return setTimeout(function() {
+      return $editing = edit;
+    }, 600);
+  }
+};
+resetEditing = function() {
+  showHide(classSel(NOT_EDITING_CLASS), classSel(EDITING_CLASS));
+  return $editing = false;
+};
+resetDeleteItem = function() {
+  $('.aDeleteBtn').closest("li").find("img").rotate(0);
+  return $('.aDeleteBtn').remove();
+};
+rotateDelImg = function(img) {
+  var rotated;
+  rotated = $(img).closest("li").attr("obj_id") === $('.aDeleteBtn').closest("li").attr("obj_id");
+  log("rotated", rotated, $(img).closest("li").length, $('.aDeleteBtn').closest("li").length);
+  log("rotated", rotated, $(img).closest("li").attr("obj_id"), $('.aDeleteBtn').closest("li").attr("obj_id"));
+  resetDeleteItem();
+  if (!rotated) {
+    $(img).rotate(90);
+    return $(img).closest("li").append(link("Delete", "#", "class='aDeleteBtn ui-btn-up-r'"));
+  }
+};
+deleteFromList = function(link) {
+  var liTmpl, list, obj_id, type;
+  log("delfromRIST");
+  obj_id = $(link).closest("li").attr("obj_id");
+  list = $(link).closest("ul");
+  type = list.attr("obj_type");
+  liTmpl = list.attr("liTmpl");
+  log("adel", type, obj_id);
+  deleteObj(type, obj_id);
+  log("hmm");
+  $('.aDeleteBtn').closest("li").remove();
+  return log("soup");
+};
 valLabel = function(label) {
   return fieldNotBlank(label.name);
 };
 valCard = function(card) {
   return fieldNotBlank(card.front) || fieldNotBlank(card.back);
 };
-/*
-#$SERVER = "http://localhost:3000"
-$SERVER = "http://crambear.heroku.com"
-
-
-initLoginPage = (params) ->
-    log "LGPAGE"
-    $("#server").html($SERVER)
-
-
-SYNC_EL = "#setsPage a.ui-btn-right"
-sync_button = {page: "#loginPage", label: "Sync", options: "init_pg=login data-transition=flip"} #for sets page
-  $(SYNC_EL).live CLICK_EVENT, ->
-      log("sync")
-      $(this).removeClass "ui-btn-active"
-      #submitSyncReq()
-
-submitSyncReq = (login) ->
-    showMsg "Syncing..."
-    $.post url($SERVER, "sync"), login, (data) ->
-        sync data, login
-
-#callback from sync op
-sync = (response, credentials) ->
-    log("ajaxsync",response)
-    if response.error_msg
-        showMsg(response.error_msg)
-    else
-        populateData(response)
-        login credentials
-        refreshSetsPage()
-        $.mobile.changePage(pageSel("sets")) if (onPage("loginPage"))
-    removePopup()    #page chg
-    #resetForm(form)
-
-testAddLogin = ->
-  cacheObj(root.loginKey, {email: "test@test.com", password: "tester"})     #test
-  PAGES.login.content = retrieveObj(root.loginKey)
-
-
-*/

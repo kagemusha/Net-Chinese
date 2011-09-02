@@ -1,4 +1,4 @@
-var PAGE_FOOT_TMPL_SEL, PG_FOOT_SEL, PG_HEAD_SEL, PG_HEAD_TMPL_SEL, PG_TMPL_SEL, TABLES, VALIDATIONS, addFooter, addHeader, equalStr, fieldNotBlank, formDataFields, getObjFromForm, go, lia, listviewRefresh, login, makePage, makePages, onPage, pageId, pageSel, pgFoot, pgFootTmpl, pgHead, pgHeadTmpl, pgTmplFn, populateForm, populateList, popupMsg, refreshChoice, refreshPage, removePopup, saveForm, selCount, setPageHeaderTitle, showMsgs;
+var PAGE_FOOT_TMPL_SEL, PG_FOOT_SEL, PG_HEAD_SEL, PG_HEAD_TMPL_SEL, PG_TMPL_SEL, TABLES, VALIDATIONS, addFooter, addHeader, equalStr, fieldNotBlank, formDataFields, getObjFromForm, go, lia, listviewRefresh, login, makePage, makePages, onPage, pageId, pageSel, pgFoot, pgFootTmpl, pgHead, pgHeadTmpl, pgTmplFn, populateForm, populateList, popupMsg, refreshChoice, refreshPage, removePopup, saveForm, selCount, setHeaderBtn, setPageHeaderTitle, showHide, showMsgs, uncapitalize;
 TABLES = {};
 VALIDATIONS = {};
 fieldNotBlank = function(val) {
@@ -57,6 +57,12 @@ getObjFromForm = function(formId, fields) {
   delete obj.submit;
   return obj;
 };
+uncapitalize = function(str) {
+  if (!str || str.length < 1) {
+    return str;
+  }
+  return "" + (str[0].toLowerCase()) + (str.substr(1));
+};
 makePages = function(firstPage, pages) {
   var pageId, specs, _results;
   makePage(firstPage, pages[firstPage]);
@@ -83,7 +89,7 @@ makePage = function(id, specs) {
   $('body').append(genElems(pageTmpl, specs));
   if (specs.head.buttons) {
     btnSel = "" + (pageSel(id)) + " ul.headButtons";
-    refreshTmpl(btnSel, listLinkTmpl, specs.head.buttons);
+    refreshTmpl(btnSel, listLinkTmpl2, specs.head.buttons);
   }
   addFooter(id, specs.foot);
   return refreshPage(id, specs.content);
@@ -137,6 +143,11 @@ login = function(credentials) {
   }
   return retrieveObj(root.loginKey);
 };
+setHeaderBtn = function(page, button, left) {
+  if (left == null) {
+    left = true;
+  }
+};
 selCount = function(sel) {
   return $(sel).length;
 };
@@ -152,6 +163,17 @@ showMsgs = function() {
   return $('.pg').live('pageshow', function(event, ui) {
     return showMsg();
   });
+};
+showHide = function(showSel, hideSel, condition) {
+  var _ref;
+  if (condition == null) {
+    condition = true;
+  }
+  if (!condition) {
+    _ref = [hideSel, showSe], showSel = _ref[0], hideSel = _ref[1];
+  }
+  $(showSel).show();
+  return $(hideSel).hide();
 };
 listviewRefresh = function(list) {
   var listSel;
