@@ -7,6 +7,7 @@ fieldNotBlank = function(val) {
 saveForm = function(formId) {
   var edit, obj, table, type, valFn;
   obj = getObjFromForm(formId);
+  log("saveObj", formId, obj);
   type = $("#" + formId).attr("obj_type");
   valFn = VALIDATIONS[type];
   if (!valFn(obj)) {
@@ -89,7 +90,7 @@ makePage = function(id, specs) {
   $('body').append(genElems(pageTmpl, specs));
   if (specs.head.buttons) {
     btnSel = "" + (pageSel(id)) + " ul.headButtons";
-    refreshTmpl(btnSel, listLinkTmpl2, specs.head.buttons);
+    refreshTmpl(btnSel, li, specs.head.buttons);
   }
   addFooter(id, specs.foot);
   return refreshPage(id, specs.content);

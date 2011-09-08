@@ -1,4 +1,4 @@
-var DEFAULT_PG_THEME, DEFAULT_STYLE, EDITING_CLASS, NOT_EDITING_CLASS, answerPgHeadTmpl, answerPgTmpl, backButton, button, cardBackTmpl, cardLiTmpl, cardPgTmpl, choiceButtons, choiceGroup, choiceTmpl, classSel, delImg, editCardLiTmpl, editLabelLiTmpl, editSetLiTmpl, editUL, filterPgTmpl, footerTmpl, genElems, headerTmpl, idSel, img, labelLiTmpl, labelPgTmpl, labelsPgTmpl, link, listLink, listLink2, listLinkTmpl, listLinkTmpl2, navBar, pageTmpl, refreshEditableListById, refreshListById, refreshTmpl, refreshTmplById, rightBtn, setLiTmpl, setPgTmpl, setsPgTmpl, settingsPgTmpl, studyPgTmpl, studyStatsTmpl, textInputPgTmpl, toggleEditControls, triesTmpl, ul, yesnoChoiceTmpl;
+var DEFAULT_PG_THEME, DEFAULT_STYLE, EDITING_CLASS, NOT_EDITING_CLASS, backButton, button, choiceButtons, choiceGroup, choiceTmpl, classSel, delImg, editUL, footerTmpl, genElems, headerTmpl, idSel, img, input, label, li, link, linkReverseAttr, navBar, pageTmpl, refreshEditableListById, refreshListById, refreshTmpl, refreshTmplById, rightBtn, saveButton, setLiTmpl, textInputPgTmpl, ul, yesnoChoiceTmpl;
 var __slice = Array.prototype.slice;
 root.BACK_REL = "data-rel='back'";
 refreshTmplById = function(id, templateFn, data, options) {
@@ -29,18 +29,12 @@ idSel = function(id) {
     return "#" + id;
   }
 };
-classSel = function(klasses) {
-  if (klasses[0] === ".") {
-    return klasses;
+classSel = function(klass) {
+  if (klass[0] === ".") {
+    return klass;
   } else {
-    return "." + klasses;
+    return "." + klass;
   }
-};
-toggleEditControls = function(pageId) {
-  if (pageId == null) {
-    pageId = "";
-  }
-  return $("" + (idSel(pageId)) + " ." + EDITING_CLASS + ", " + (idSel(pageId)) + " ." + NOT_EDITING_CLASS).toggle();
 };
 refreshEditableListById = function(baseListId, template, editTemplate, objs) {
   var editListId;
@@ -72,13 +66,31 @@ genElems = function(fn, data, options) {
   }
 };
 choiceTmpl = function(isRadio, name, options) {
-  var checked, choiceType, label, val, valAttr;
+  var checked, choiceType, lbl, val, valAttr;
   val = options.val || options.id;
   valAttr = val != null ? "value='" + val + "'" : "";
-  label = options.label || options.name;
+  lbl = options.label || options.name;
   choiceType = isRadio ? "radio" : "checkbox";
   checked = options.checked ? "checked=checked" : "";
-  return "<input type=\"" + choiceType + "\" data-theme=\"d\" name=\"" + name + "\" " + valAttr + "  id=\"" + options.id + "\" " + checked + ">\n<label for=\"" + options.id + "\" >" + label + "</label>";
+  return "" + (input(choiceType, options.id, "data-theme='d' name='" + name + "' " + valAttr + " " + checked + " ")) + "\n" + (label(lbl, options.id));
+};
+label = function(text, forAttr, options) {
+  if (options == null) {
+    options = "";
+  }
+  return "<label for='" + forAttr + "' " + options + " >" + text + "</label>";
+};
+input = function(type, id, options) {
+  var hasName;
+  if (options == null) {
+    options = "";
+  }
+  hasName = options.search(/\s+name\s*=/) > 0;
+  log("input", hasName);
+  if (!hasName) {
+    options = "" + options + " name='" + id + "'";
+  }
+  return "<input type='" + type + "' id='" + id + "' " + options + " />";
 };
 yesnoChoiceTmpl = function(id, label, group, yesChecked) {
   var btns, noChecked, options;
@@ -129,6 +141,13 @@ choiceGroup = function(isRadio, name, options, btnSpecs) {
 link = function(label, url, options) {
   return "<a href='" + (url || "#") + "' " + (options || "") + " >" + (label || "<blank>") + "</a>";
 };
+linkReverseAttr = function(page) {
+  if (!page || (page = "#")) {
+    return "data-direction='reverse'";
+  } else {
+    return "data-rel='back'";
+  }
+};
 button = function(label, page, options) {
   return link(label, page, "" + options + " data-role='button'");
 };
@@ -143,13 +162,23 @@ backButton = function(label, page, options) {
   if (options == null) {
     options = null;
   }
-  if (page) {
-    dataRel = "data-direction='reverse'";
-  } else {
-    dataRel = "data-rel='back'";
+  dataRel = linkReverseAttr(page);
+  if (!page) {
     page = "#";
   }
   return link(label, page, "data-icon='arrow-l' " + dataRel + " " + options);
+};
+saveButton = function(form, objType, page, reverse, label) {
+  if (page == null) {
+    page = "#";
+  }
+  if (reverse == null) {
+    reverse = true;
+  }
+  if (label == null) {
+    label = "Save";
+  }
+  return link(label, page, "obj_type='" + objType + "' saveform='" + form + "' " + (linkReverseAttr(page)));
 };
 rightBtn = function(label, url, options, classes) {
   var but;
@@ -161,7 +190,6 @@ rightBtn = function(label, url, options, classes) {
   }
   options = "class='ui-btn-right " + classes + "' " + options;
   but = link(label, url, options);
-  log("but", but);
   return but;
 };
 DEFAULT_STYLE = "d";
@@ -188,7 +216,7 @@ navBar = function(buttons, listStyle) {
     _results = [];
     for (_i = 0, _len = buttons.length; _i < _len; _i++) {
       btn = buttons[_i];
-      _results.push("<li>" + btn + "</li>");
+      _results.push(li(btn));
     }
     return _results;
   })();
@@ -206,7 +234,7 @@ footerTmpl = function() {
         _results = [];
         for (_i = 0, _len = buttons.length; _i < _len; _i++) {
           btn = buttons[_i];
-          _results.push("<li>" + btn + "</li>");
+          _results.push(li(btn));
         }
         return _results;
       })();
@@ -232,28 +260,10 @@ img = function(file) {
 };
 /* App specific below */
 setLiTmpl = function(set) {
-  return "<li class='set'>\n  <a class='set' href=\"#setPage\" obj_id=\"" + set.id + "\" init_pg='set'>\n    " + set.name + "\n  </a>\n</li>";
+  return li(link(set.name, "#setPage", "class='set' obj_id='" + set.id + "' init_pg='set'"), "class='set'");
 };
 delImg = function() {
   return "<img  class='del del_icon ui-li-icon' src='" + (img('delete.png')) + "'/>";
-};
-editSetLiTmpl = function(set) {
-  return "<li class='set' obj_id=\"" + set.id + "\">\n  " + (delImg()) + "\n  " + set.name + "\n</li>";
-};
-cardLiTmpl = function(card) {
-  return "<li class=\"card " + (toStr(card.archived) === 'true' ? 'archived' : '') + " \">\n  <div class=\"overlay\">ARCHIVED</div>\n  <a class=\"card\" obj_id=\"" + card.id + "\" href=\"#cardPage\" init_pg=\"card\" >\n  <span class=\"front\">" + card.front + "</span><br/>\n  " + card.back + "\n</a></li>";
-};
-editCardLiTmpl = function(card) {
-  return "<li class=\"card\" obj_id=\"" + card.id + "\">\n  " + (delImg()) + "\n  <span class=\"front\">" + card.front + "</span><br/>\n  " + card.back + "\n</li>";
-};
-labelLiTmpl = function(label, icon) {
-  if (icon == null) {
-    icon = "";
-  }
-  return "<li>\n    " + icon + "\n    <a href=\"#labelPage\" obj_id=\"" + label.id + "\"  init_pg=\"label\" >" + label.name + "</a>\n</li>";
-};
-editLabelLiTmpl = function(label) {
-  return "<li class=\"card\" obj_id=\"" + label.id + "\">\n  " + (delImg()) + "\n  " + label.name + "\n</li>";
 };
 ul = function(id, listItems, dataOptions, options) {
   var dataInset, dataTheme;
@@ -274,86 +284,9 @@ ul = function(id, listItems, dataOptions, options) {
 editUL = function(id, type, dataOptions, options) {
   return ul(id, null, dataOptions, "class='editList' obj_type='" + type + "' " + options);
 };
-setsPgTmpl = function() {
-  return "" + (ul("setList", null, null, "obj_type='card_set'")) + "\n" + (editUL("editSetList", "set"));
-};
-settingsPgTmpl = function() {
-  return "<form accept-charset=\"UTF-8\"  id=\"syncForm\">\n    <div data-role=\"fieldcontain\">\n      <input type=\"submit\" name=\"submit\" value=\"Sync\"/>\n    </div>\n</form>";
-};
-cardBackTmpl = function(back, front) {
-  return "\n\n<div class='backText'>" + back + "</div>\n" + front + "\n\n";
-};
-setPgTmpl = function(set) {
-  return "<div id=\"cardsShowing\">\n    <a href=\"#\" id=\"prevCards\" class=\"cardList\"> prev </a>\n    <span id=\"cardsShowingMsg\"></span>\n    <a href=\"#\" id=\"nextCards\" class=\"cardList\"> next </a>\n</div>\n<br/>\n" + (ul("cardList", null, null, "obj_type='card'")) + "\n" + (editUL("editCardList", "card"));
-};
-labelsPgTmpl = function() {
-  return "" + (button("Add Label", "#labelPage", "id='addLabelButton' init_pg='label'")) + "\n" + (ul("labelList", null, {
-    dataInset: true
-  })) + "\n" + (editUL("editLabelList", "label", {
-    dataInset: true
-  }));
-};
-labelPgTmpl = function() {
-  return "<form accept-charset=\"UTF-8\"  id=\"labelForm\" obj_type=\"label\">\n  <div data-role=\"fieldcontain\">\n    <input type=\"hidden\" id=\"card_set_id\" name=\"card_set_id\" />\n    <input type=\"hidden\" id=\"id\" name=\"id\" />\n    <input type=\"text\" id=\"name\" name=\"name\" />\n  </div>\n</form>\n" + (button("Save", "#", "obj_type='label' saveForm='labelForm' " + root.BACK_REL));
-};
-filterPgTmpl = function() {
-  return "<div id=\"backFirstOption\">\n</div>\n<div id=\"archivedFilter\"></div>\n<div id=\"filtersForm\"></div>";
-};
-listLink = function(label, href, options) {
-  return "<li>" + (link(label, href, options)) + "</li>";
-};
-listLink2 = function(link) {
-  return "<li>" + link + "</li>";
-};
-listLinkTmpl = function(link, options) {
-  return listLink(link.label, link.link, link.options);
-};
-listLinkTmpl2 = function(link, options) {
-  return listLink2(link);
-};
-cardPgTmpl = function() {
-  var cardSideItems;
-  cardSideItems = [listLink("Front (Chinese)", "#textInputPage", "id='frontTALink' init_pg='cardSide'"), listLink("Back (English)", "#textInputPage", "id='backTALink' init_pg='cardSide' side='back'")];
-  return "<form accept-charset=\"UTF-8\"  id=\"cardForm\" obj_type=\"card\">\n  <input type=\"hidden\" id=\"card_set_id\" name=\"card_set_id\" />\n  <input type=\"hidden\" id=\"id\" name=\"id\" />\n  <br>\n  " + (ul("cardSides", cardSideItems, {
-    dataInset: true
-  })) + "\n  <div id=\"cardArchiveLabels\">" + (yesnoChoiceTmpl("archivedRB", "Archive", "archived")) + "</div>\n  <div id=\"cardLabels\"></div>\n\n</form>\n" + (button("Save", "#", "obj_type='card' saveForm='cardForm' " + root.BACK_REL));
+li = function(text, options) {
+  return "<li " + options + ">" + text + "</li>";
 };
 textInputPgTmpl = function() {
   return "<textarea id=\"tInput\" class=\"fullPage\" data-theme=\"d\" name=\"tInput\" placeholder=\"(Enter text)\" />";
 };
-studyStatsTmpl = function(stats, full) {
-  if (full == null) {
-    full = true;
-  }
-  return "<div id=\"studyStatsMsg\">\n    <span class=\"stat label\">" + stats.leftInRun + " </span>\n    of\n    <span class=\"stat label\">" + stats.runCount + " </span>\n    left &nbsp;&nbsp;\n    " + (full ? triesTmpl(stats) : "") + "\n</div>";
-};
-triesTmpl = function(stats) {
-  return "Correct 1 try:\n<span class=\"stat label\">" + stats.tries[0] + " </span>\n&nbsp;2:\n<span class=\"stat label\">" + stats.tries[1] + "</span>\n&nbsp;More:\n<span class=\"stat label\">" + stats.tries[2] + "</span>\n";
-};
-studyPgTmpl = function() {
-  return "<div id=\"studyStatsFront\"></div>\n<div id=\"studyPanel\">\n  <div class=\"cardPanel front\">\n     <div id=\"front\" class=\"card_face\">\n         <div class=\"textPanel\">\n          Please wait...\n         </div>\n     </div>\n  </div>\n</div>";
-};
-answerPgHeadTmpl = function() {
-  return "<ul id=\"studyButtons\" class=\"back\">\n  <li>" + (button("Correct", "#", "id='correct' data-transition='pop' class='result'")) + "\n  <li>" + (button("Wrong", "#", "id='wrong' data-transition='pop' class='result'")) + "\n</ul>";
-};
-answerPgTmpl = function() {
-  return "<div id=\"studyStats\"></div>\n<div id=\"studyPanel\">\n  <div class=\"cardPanel\">\n     <div id=\"front\" class=\"card_face\">\n         <div class=\"textPanel\">\n          Please wait...\n         </div>\n     </div>\n  </div>\n</div>";
-};
-/*
-loginPgTmpl = (login) ->
-    """
-    <h4>Login</h4>
-    <form accept-charset="UTF-8"  id="loginForm">
-        <div data-role="fieldcontain">
-          <input type="text" id="email" name="email" placeholder="Email" value="#{login.email}"/>
-        </div>
-        <div data-role="fieldcontain">
-          <input type="password" id="password" name="password" value="#{login.password}" placeholder="Password"/>
-        </div>
-        <div data-role="fieldcontain">
-          <input type="submit" name="submit" value="Submit"/>
-        </div>
-        Server: <span id="server"></span>
-    </form>
-    """
-*/

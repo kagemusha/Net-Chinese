@@ -1,16 +1,6 @@
 var Table, toStr;
 var __slice = Array.prototype.slice;
 Table = (function() {
-  Table.get = function(name) {
-    var table, tableProps;
-    table = new Table(name);
-    tableProps = retrieveObj(table.tableName());
-    if (tableProps != null) {
-      table.recs = tableProps.recs;
-      table.counter = tableProps.counter;
-    }
-    return table;
-  };
   Table.prototype.lastSeed = "" + ((new Date()).getTime());
   Table.prototype.count = 0;
   Table.prototype.recs = new Array();
@@ -21,24 +11,15 @@ Table = (function() {
     this.name = name;
     this.recs = new Array();
   }
-  Table.prototype.bulkAdd = function(addRecs, empty) {
-    var count, idSeed, rec, _i, _len;
-    if (empty == null) {
-      empty = false;
+  Table.get = function(name) {
+    var table, tableProps;
+    table = new Table(name);
+    tableProps = retrieveObj(table.tableName());
+    if (tableProps != null) {
+      table.recs = tableProps.recs;
+      table.counter = tableProps.counter;
     }
-    if (empty) {
-      this.recs = new Array;
-    }
-    idSeed = (new Date()).getTime();
-    count = 0;
-    for (_i = 0, _len = addRecs.length; _i < _len; _i++) {
-      rec = addRecs[_i];
-      if (!rec.id) {
-        rec.id = "" + idSeed + (count++);
-      }
-      this.add(rec, false);
-    }
-    return this.saveTable();
+    return table;
   };
   Table.prototype.findAll = function() {
     var options, prop, val;
@@ -74,8 +55,28 @@ Table = (function() {
     this.recs.unshift(rec);
     this.updateViews();
     if (save != null) {
-      return this.saveTable();
+      this.saveTable();
     }
+    return rec;
+  };
+  Table.prototype.bulkAdd = function(addRecs, empty) {
+    var count, idSeed, rec, _i, _len;
+    if (empty == null) {
+      empty = false;
+    }
+    if (empty) {
+      this.recs = new Array;
+    }
+    idSeed = (new Date()).getTime();
+    count = 0;
+    for (_i = 0, _len = addRecs.length; _i < _len; _i++) {
+      rec = addRecs[_i];
+      if (!rec.id) {
+        rec.id = "" + idSeed + (count++);
+      }
+      this.add(rec, false);
+    }
+    return this.saveTable();
   };
   Table.prototype.replace = function(rec, save, originalPos) {
     if (save == null) {
@@ -91,26 +92,31 @@ Table = (function() {
     }
     this.updateViews();
     if (save != null) {
-      return this.saveTable();
+      this.saveTable();
     }
+    return rec;
   };
-  Table.prototype.updateAttrs = function(newRec, save) {
+  Table.prototype.updateAttrs = function(newRec, save, originalPos) {
     var original;
     if (save == null) {
       save = true;
     }
-    original = findById(rec.idProp);
+    if (originalPos == null) {
+      originalPos = false;
+    }
+    original = findById(newRec.idProp);
     if (!original) {
       return;
     }
-    $.extend(original, newRec);
-    rec.updated_at = (new Date()).getTime();
+    _.extend(original, newRec);
+    replace(original, save, originalPos);
     if (save != null) {
-      return this.saveTable();
+      this.saveTable();
     }
+    return original;
   };
   Table.prototype["delete"] = function(id, save) {
-    var index;
+    var deleted, index;
     if (save == null) {
       save = true;
     }
@@ -124,19 +130,27 @@ Table = (function() {
     if (index < 0) {
       return;
     }
+    deleted = this.recs[index];
     this.recs.splice(index, 1);
     this.updateViews();
     if (save != null) {
-      return this.saveTable();
+      this.saveTable();
     }
+    return deleted;
   };
   Table.prototype.deleteAll = function(prop, val) {
     if (typeof save !== "undefined" && save !== null) {
       return this.saveTable();
     }
   };
-  Table.prototype.nuke = function() {
-    return this.recs = new Array();
+  Table.prototype.nuke = function(save) {
+    if (save == null) {
+      save = true;
+    }
+    this.recs = new Array();
+    if (save != null) {
+      return this.saveTable();
+    }
   };
   Table.prototype.saveTable = function() {
     return cacheObj(this.tableName(), this);

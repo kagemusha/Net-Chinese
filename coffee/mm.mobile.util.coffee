@@ -5,6 +5,7 @@ fieldNotBlank = (val) ->  val and val.length > 0
 
 saveForm = (formId) ->
     obj = getObjFromForm formId
+    log "saveObj", formId, obj
     type = $("##{formId}").attr "obj_type"
     valFn = VALIDATIONS[type]
     if !valFn(obj)
@@ -65,7 +66,7 @@ makePage = (id, specs) ->
     if specs.head.buttons #this are buttons below title bar like "Right","Wrong"
         btnSel = "#{pageSel(id)} ul.headButtons"
         #log("btnsel", btnSel, $(btnSel).length)
-        refreshTmpl btnSel, listLinkTmpl2, specs.head.buttons
+        refreshTmpl btnSel, li, specs.head.buttons
     addFooter id, specs.foot
     refreshPage id, specs.content
 

@@ -1,4 +1,4 @@
-var $atEnd, $currentCard, $currentSet, $editing, $showFromCard, $showedStudyTip, $studyInit, $studyLink, $studyQueue, ARCHIVED_RB_SEL, CARDS_PER_PAGE, CARD_LABEL_SEL, CARD_TYPE, CLICK_EVENT, DATA_REL_DATE_KEY, EDIT_BTNS, EDIT_CARD_BTN, EDIT_LABEL_BTN, EDIT_SET_BTN, FILTER_CHG, LABEL_TYPE, MSG_SEL, OBJ_ID_ATTR, OBJ_TYPE_ATTR, PAGES, SET_FILTERS_SEL, SET_HEADER_BUTTONS, SET_ID_ATTR, SET_TYPE, SET_TYPE_ATTR, STUDY_HEADER_BUTTONS, Set, addArchivedLabels, cardCountMsg, deleteFromList, deleteObj, dualId, editBtns, filterChg, getObj, initCallbacks, initCardPage, initCardSidePage, initLabelPage, initLabelsPage, initMobile, initPages, initSetPage, initStudyPage, initStudyingCBs, loadData, nextCards, populateData, prevCards, refreshCardList, refreshCheckboxes, refreshLabels, remakeFilterPages, resetDeleteItem, resetEditing, rotateDelImg, setViewUpdaters, setupForm, switchFilter, switchSet, toggleEditSet, updateCardView, updateDelLink, updateLabelSelector, updateLabelView, valCard, valLabel, validationsInit;
+var $atEnd, $currentCard, $currentSet, $editing, $saveAttr, $showFromCard, $showedStudyTip, $studyInit, $studyLink, $studyQueue, ARCHIVED_RB_SEL, CARDS_PER_PAGE, CARD_LABEL_SEL, CARD_TYPE, CLICK_EVENT, DATA_REL_DATE_KEY, EDIT_BTNS, EDIT_CARD_BTN, EDIT_LABEL_BTN, EDIT_SET_BTN, FILTER_CHG, LABEL_TYPE, MSG_SEL, OBJ_ID_ATTR, OBJ_TYPE_ATTR, PAGES, SAVE_TEXT_LINK, SET_FILTERS_SEL, SET_HEADER_BUTTONS, SET_ID_ATTR, SET_TYPE, SET_TYPE_ATTR, Set, TEXT_AREA_ELEM, addArchivedLabels, cardCountMsg, deleteFromList, deleteObj, dualId, editBtns, filterChg, getObj, initCallbacks, initCardPage, initCardSidePage, initLabelPage, initLabelsPage, initMobile, initPages, initSetPage, initStudyPage, initStudyingCBs, loadData, modCardText, nextCards, populateData, prevCards, refreshCardList, refreshCheckboxes, refreshLabels, remakeFilterPages, resetDeleteItem, resetEditing, rotateDelImg, saveCard, saveCardTextField, setViewUpdaters, setupForm, switchFilter, switchSet, toggleEditControls, toggleEditSet, updateCardView, updateDelLink, updateLabelSelector, updateLabelView, valCard, valLabel, validationsInit;
 SET_TYPE = "card_set";
 CARD_TYPE = 'card';
 LABEL_TYPE = 'label';
@@ -18,6 +18,9 @@ $studyInit = true;
 $showedStudyTip = false;
 $currentSet = null;
 $currentCard = null;
+TEXT_AREA_ELEM = "#textInputPage textArea";
+SAVE_TEXT_LINK = "saveTextField";
+$saveAttr = null;
 EDIT_SET_BTN = "editSetBtn";
 EDIT_CARD_BTN = "editCardBtn";
 EDIT_LABEL_BTN = "editLabelBtn";
@@ -30,7 +33,6 @@ Set = (function() {
 $studyLink = link("Study!", "#studyPage", "id='studyButton' init_pg='study' class='study'");
 dualId = function(id, addedPrefix) {
   var preLen;
-  log("dualId", id);
   preLen = addedPrefix.length;
   if (id.slice(0, (preLen - 1 + 1) || 9e9) === addedPrefix) {
     return "" + (uncapitalize(id[preLen])) + (id.substr(preLen + 1));
@@ -45,7 +47,10 @@ editBtns = function(editBtnId, objList) {
   return [rightBtn("Done", "#", "id='" + dualBtnId + "' callfn='toggleEditSet' " + olStr, "editing"), rightBtn("Edit", "#", "id='" + editBtnId + "' callfn='toggleEditSet' " + olStr, "notEditing")].join(" ");
 };
 SET_HEADER_BUTTONS = [$studyLink, link("Add Card", "#cardPage", "init_pg=card obj_type=card"), link("Labels", "#labelsPage", "init_pg=labels ")];
-STUDY_HEADER_BUTTONS = [link("Correct", "#study", "class result "), link("Wrong", "#study", "class result")];
+/*
+STUDY_HEADER_BUTTONS=[link("Correct","#study","class result "),
+                      link("Wrong", "#study", "class result")]
+*/
 EDIT_BTNS = [rightBtn("Edit", "#", "id='editSetButton' callfn='toggleEditSet' objList='setList'", NOT_EDITING_CLASS), rightBtn("Done", "#", "id='doneEditSetButton' callfn='toggleEditSet' objList='setList'", EDITING_CLASS)];
 PAGES = {
   sets: {
@@ -65,7 +70,7 @@ PAGES = {
     head: {
       title: "Card",
       leftBtns: backButton("Cancel", "#setPage"),
-      rightBtns: link("Save", "#", "obj_type='card' class='save' " + root.BACK_REL)
+      rightBtns: saveButton('cardForm', 'card', "#setPage")
     }
   },
   labels: {
@@ -79,7 +84,7 @@ PAGES = {
     head: {
       title: "Label",
       leftBtns: backButton("Cancel", "#labelsPage"),
-      rightBtns: link("Save", "#", "obj_type='card' class='save' " + root.BACK_REL)
+      rightBtns: saveButton('labelForm', 'label', "#labelsPage")
     }
   },
   study: {
@@ -103,8 +108,7 @@ PAGES = {
   textInput: {
     head: {
       title: "Card",
-      leftBtns: backButton("Cancel", "#cardPage"),
-      rightBtns: link("Save", pageSel("card"), "save=true")
+      leftBtns: backButton("Back", "#cardPage", " id='" + SAVE_TEXT_LINK + "' ")
     }
   }
 };
@@ -113,6 +117,9 @@ CARD_LABEL_SEL = '#cardPanel #labels input:checkbox';
 $studyQueue = new StudyQueue({
   cardFrontSel: "#studyPage .cardPanel .textPanel",
   cardBackSel: "#answerPage .cardPanel .textPanel",
+  beforeRestart: function() {
+    return $("#studyButtons").show();
+  },
   getCards: function() {
     return $currentSet.cards;
   },
@@ -269,9 +276,10 @@ initCallbacks = function() {
   $('a.result').live(CLICK_EVENT, function() {
     return $($studyQueue.cardFrontSel).html("");
   });
-  $('a[saveForm]').live(CLICK_EVENT, function() {
+  $('a[saveform]').live(CLICK_EVENT, function() {
     var formId;
-    formId = "" + ($(this).attr("saveForm"));
+    log("saveform!!");
+    formId = "" + ($(this).attr("saveform"));
     return saveForm(formId);
   });
   $("a.delete").live(CLICK_EVENT, function() {
@@ -300,24 +308,14 @@ initCallbacks = function() {
   $("" + (pageSel('filter')) + " #backFirstOption input").live("change", function(event, ui) {
     var backFirst;
     backFirst = $(this).attr("value") === "true";
-    log("setBF", backFirst);
     return $studyQueue.backFirst = backFirst;
   });
   return $('.del_icon').live(CLICK_EVENT, function() {
-    log("delicont click");
     return rotateDelImg(this);
   });
 };
-/*
-unrotate = ->
-  $($rotated).rotate(-90) if $rotated
-  rot = $rotated
-  $rotated = null
-  rot
-*/
 deleteObj = function(type, id) {
   var table;
-  log("delete", type, id);
   table = TABLES[type];
   table["delete"](id);
   return log("deleted", type, id);
@@ -340,12 +338,6 @@ initSetPage = function(params) {
   setId = params["obj_id"];
   return switchSet(setId);
 };
-initCardSidePage = function(params) {
-  var elem, side;
-  side = $(params.source).attr("side") || "front";
-  elem = "#textInputPage textArea";
-  return $(elem).text($currentCard[side]);
-};
 switchSet = function(setId) {
   log("switch set", setId);
   if (!$currentSet || ($currentSet && (setId !== $currentSet.id))) {
@@ -362,29 +354,56 @@ remakeFilterPages = function() {
   return refreshLabels("#cardLabels", "Labels");
 };
 initCardPage = function(params) {
-  var form, id, otherFields;
-  id = params.obj_id;
-  form = "#cardForm";
-  updateDelLink(pageSel("card"), id);
-  otherFields = {
+  var cardId;
+  cardId = params.obj_id;
+  log("initCardPage id", cardId);
+  $currentCard = cardId ? getObj(CARD_TYPE, cardId) : $currentCard = {
     card_set_id: $currentSet.id
   };
-  if (!(id != null)) {
-    otherFields.archived = false;
+  if (!$currentCard.archived) {
+    $currentCard.archived = false;
   }
+  log("initCardPage", $currentCard);
   refreshLabels("#cardLabels", "Labels");
-  setupForm(form, CARD_TYPE, id, otherFields);
-  $currentCard = getObj(CARD_TYPE, id);
-  $("#frontTALink").text($currentCard.front.replace(/(<([^>]+)>)/ig, ""));
-  return $("#backTALink").text($currentCard.back.replace(/(<([^>]+)>)/ig, ""));
+  return setupForm("#cardForm", $currentCard, modCardText);
+};
+modCardText = function(obj) {
+  $("#frontTALink").text(obj.front ? obj.front.replace(/(<([^>]+)>)/ig, "") : "Front (Chinese)");
+  return $("#backTALink").text(obj.back ? obj.back.replace(/(<([^>]+)>)/ig, "") : "Back (English)");
+};
+initCardSidePage = function(params) {
+  var side, source;
+  source = $(params.source);
+  side = source.attr("side") || "front";
+  $saveAttr = side;
+  $(TEXT_AREA_ELEM).val($currentCard[side] || "");
+  return $("" + (idSel(SAVE_TEXT_LINK))).attr('callfn', 'saveCardTextField');
+};
+saveCardTextField = function() {
+  var newVal;
+  log("sctf", $saveAttr, $("#cardForm #" + $saveAttr).length);
+  newVal = $("#textInputPage #tInput").val();
+  $currentCard[$saveAttr] = newVal;
+  $("#cardForm #" + $saveAttr).val(newVal);
+  return modCardText($currentCard);
+};
+saveCard = function() {
+  return log("save card!");
+};
+setupForm = function(form, obj, postSetup) {
+  log("obj to form", obj);
+  populateForm(form, obj);
+  if (postSetup) {
+    return postSetup(obj);
+  }
 };
 initLabelPage = function(params) {
-  var form, id;
+  var id, label;
   id = params.obj_id;
-  form = "#labelForm";
-  setupForm(form, LABEL_TYPE, id, {
+  label = id ? getObj(LABEL_TYPE, id) : {
     card_set_id: $currentSet.id
-  });
+  };
+  setupForm("#labelForm", label);
   return updateDelLink(pageSel("label"), id);
 };
 initLabelsPage = function(params) {};
@@ -429,18 +448,14 @@ updateDelLink = function(container, objId) {
     return delLink.hide();
   }
 };
-setupForm = function(form, type, id, otherProps) {
-  var obj;
-  obj = getObj(type, id);
-  $.extend(obj, otherProps);
-  log("obj to form", obj);
-  return populateForm(form, obj);
-};
 getObj = function(type, id) {
   var obj;
-  if (id) {
-    obj = TABLES[type].findById(id);
+  if (!id) {
+    return null;
   }
+  log("getObj t id", type, id);
+  obj = TABLES[type].findById(id);
+  log("getObj", obj, type, id);
   return obj || {};
 };
 prevCards = function() {
@@ -478,7 +493,6 @@ updateCardView = function() {
   log("set id", $currentSet.id, "cardlen: ", $currentSet.cards.length);
   cardCountMsg();
   refreshEditableListById("cardList", cardLiTmpl, editCardLiTmpl, displayCards);
-  $("#studyButton").show();
   if (!$editing) {
     return $("#cardList").show();
   }
@@ -518,18 +532,18 @@ refreshCheckboxes = function(sel) {
   }
 };
 initStudyingCBs = function() {
-  $("#front").bind(CLICK_EVENT, function() {
+  $("#studyPage #front").bind(CLICK_EVENT, function() {
     if (!$studyQueue.flipped) {
       return $studyQueue.flip(false);
     }
   });
-  $(".card_face").bind(CLICK_EVENT, function() {
+  $("#answerPage .card_face").bind(CLICK_EVENT, function() {
     if ($atEnd) {
       $studyQueue.restart();
       return $atEnd = false;
     }
   });
-  return $(".result").bind(CLICK_EVENT, function() {
+  return $("#answerPage .result").bind(CLICK_EVENT, function() {
     return $studyQueue.result($(this).attr("id") !== "wrong");
   });
 };
@@ -585,6 +599,12 @@ resetEditing = function() {
   showHide(classSel(NOT_EDITING_CLASS), classSel(EDITING_CLASS));
   return $editing = false;
 };
+toggleEditControls = function(pageId) {
+  if (pageId == null) {
+    pageId = "";
+  }
+  return $("" + (idSel(pageId)) + " ." + EDITING_CLASS + ", " + (idSel(pageId)) + " ." + NOT_EDITING_CLASS).toggle();
+};
 resetDeleteItem = function() {
   $('.aDeleteBtn').closest("li").find("img").rotate(0);
   return $('.aDeleteBtn').remove();
@@ -602,16 +622,12 @@ rotateDelImg = function(img) {
 };
 deleteFromList = function(link) {
   var liTmpl, list, obj_id, type;
-  log("delfromRIST");
   obj_id = $(link).closest("li").attr("obj_id");
   list = $(link).closest("ul");
   type = list.attr("obj_type");
   liTmpl = list.attr("liTmpl");
-  log("adel", type, obj_id);
   deleteObj(type, obj_id);
-  log("hmm");
-  $('.aDeleteBtn').closest("li").remove();
-  return log("soup");
+  return $('.aDeleteBtn').closest("li").remove();
 };
 valLabel = function(label) {
   return fieldNotBlank(label.name);
