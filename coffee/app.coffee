@@ -32,7 +32,7 @@ class Set
   labels: null
   cards: null
 
-$studyLink = link("Study!", "#studyPage", "id='studyButton' init_pg='study' class='study'")
+$studyLink = link "Study!", "#studyPage", {id: 'studyButton', init_pg: 'study', class: 'study'}
 
 dualId = (id, addedPrefix) ->
   #log "dualId", id
@@ -42,27 +42,16 @@ dualId = (id, addedPrefix) ->
   else
     "#{addedPrefix}#{capitalize id}"
 
-
 editBtns = (editBtnId, objList) ->
   dualBtnId = dualId editBtnId, "done"
-  olStr = "objList='#{objList}'"
   [
-    rightBtn("Done", "#", "id='#{dualBtnId}' callfn='toggleEditSet' #{olStr}", "editing"),
-    rightBtn("Edit", "#", "id='#{editBtnId}' callfn='toggleEditSet' #{olStr}", "notEditing")
+    rightButton("Done", "#", {id: dualBtnId, callfn: 'toggleEditSet', objList: objList, class: "editing"} ),
+    rightButton("Edit", "#", {id: editBtnId, callfn: 'toggleEditSet', objList: objList, class: "notEditing"} )
   ].join(" ")
 
 SET_HEADER_BUTTONS=[ $studyLink,
-                      link("Add Card","#cardPage", "init_pg=card obj_type=card"),
-                      link("Labels","#labelsPage","init_pg=labels ")]
-                    
-###
-STUDY_HEADER_BUTTONS=[link("Correct","#study","class result "),
-                      link("Wrong", "#study", "class result")]
-###
-EDIT_BTNS = [
-  rightBtn("Edit", "#", "id='editSetButton' callfn='toggleEditSet' objList='setList'", NOT_EDITING_CLASS),
-  rightBtn("Done", "#", "id='doneEditSetButton' callfn='toggleEditSet' objList='setList'", EDITING_CLASS)
-]
+                      link("Add Card","#cardPage", {init_pg: "card", obj_type: CARD_TYPE}),
+                      link("Labels","#labelsPage", {init_pg: "labels"} )]
 
 PAGES = {
   sets:
@@ -93,13 +82,13 @@ PAGES = {
       leftBtns: backButton("Cancel", "#labelsPage"),
       rightBtns: saveButton( 'labelForm', 'label', "#labelsPage"),
       #rightBtns: link("Delete", "#", "obj_type='label' class='delete' #{root.BACK_REL}") }},
-  study: {head: { leftBtns: backButton("Cards","#setPage"), rightBtns: link("Filter", pageSel("filter"), "data-transition=pop") }},
-  answer: {head: { leftBtns: backButton("Cards","#setPage"), rightBtns: link("Restart", pageSel("study"), "data-transition=pop stRestart=true") }},
-  filter: {head: { title: "Filter", leftBtns: backButton("Back","#studyPage", "callfn=filterChg") } },
+  study: {head: { leftBtns: backButton("Cards","#setPage"), rightBtns: link("Filter", pageSel("filter"), {"data-transition": "pop"}) }},
+  answer: {head: { leftBtns: backButton("Cards","#setPage"), rightBtns: link("Restart", pageSel("study"), {"data-transition": 'pop', stRestart: 'true'}) }},
+  filter: {head: { title: "Filter", leftBtns: backButton("Back","#studyPage", {callfn: 'filterChg'} ) } },
   textInput:
     head:
       title: "Card",
-      leftBtns: backButton("Back","#cardPage", " id='#{SAVE_TEXT_LINK}' "),
+      leftBtns: backButton("Back","#cardPage", {id: SAVE_TEXT_LINK }),
 }
 
 
@@ -159,6 +148,7 @@ $studyQueue = new StudyQueue
 
 initMobile = ->
   env()
+  test()
   root.msgSel = ".msg"
   loadData()
   showMsgs()
@@ -532,24 +522,19 @@ resetEditing = ->
   showHide classSel(NOT_EDITING_CLASS), classSel(EDITING_CLASS)
   $editing = false
 
-toggleEditControls = (pageId="") ->
-  $("#{idSel pageId} .#{EDITING_CLASS}, #{idSel pageId} .#{NOT_EDITING_CLASS}").toggle()
-
 
 resetDeleteItem = ->
   $('.aDeleteBtn').closest("li").find("img").rotate(0)
   $('.aDeleteBtn').remove()
 
 rotateDelImg = (img)->
-  #log "rotated class", (if $rotated then $rotated else "null")
-  #$(img).append link("Delete", "#", "class='aDeleteBtn ui-btn-up-r'")
   rotated = ( $(img).closest("li").attr("obj_id") == $('.aDeleteBtn').closest("li").attr("obj_id") )
-  log "rotated", rotated, $(img).closest("li").length, $('.aDeleteBtn').closest("li").length
-  log "rotated", rotated, $(img).closest("li").attr("obj_id"), $('.aDeleteBtn').closest("li").attr("obj_id")
+  #log "rotated", rotated, $(img).closest("li").length, $('.aDeleteBtn').closest("li").length
+  #log "rotated", rotated, $(img).closest("li").attr("obj_id"), $('.aDeleteBtn').closest("li").attr("obj_id")
   resetDeleteItem()
   if !rotated #unrotate
     $(img).rotate(90)
-    $(img).closest("li").append link("Delete", "#", "class='aDeleteBtn ui-btn-up-r'")
+    $(img).closest("li").append link("Delete", "#", {class: 'aDeleteBtn ui-btn-up-r'})
 
 
 deleteFromList = (link) ->
@@ -565,4 +550,5 @@ deleteFromList = (link) ->
 valLabel = (label) -> fieldNotBlank(label.name)
 valCard = (card) -> fieldNotBlank(card.front) or fieldNotBlank(card.back)
 
-
+test = ->
+  log "OSS", optionStr({name: "michael", age: 38})

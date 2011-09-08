@@ -1,8 +1,11 @@
+#, ,
 setsPgTmpl = ->
-    """
-    #{ul "setList", null, null, "obj_type='card_set'"}
-    #{editUL "editSetList", "set"}
-    """
+  haml= """
+        #{hUL "setList", { obj_type: 'card_set'} }
+        #{heditUL "editSetList", "set"}
+        """
+  hamlHtml(haml)
+
 
 settingsPgTmpl = ->
     """
@@ -28,15 +31,15 @@ setPgTmpl = (set) ->
       #{link "Next", "#", "id='nextCards' class='cardList'"}
     </div>
     <br/>
-    #{ul "cardList", null, null, "obj_type='card'"}
-    #{editUL "editCardList", "card"}
+    #{ ul "cardList", null, {obj_type: 'card'} }
+    #{ editUL "editCardList", "card" }
     """
 
 labelsPgTmpl = ->
     """
     #{button "Add Label", "#labelPage", "id='addLabelButton' init_pg='label'"}
-    #{ul "labelList", null, {dataInset: true} }
-    #{editUL "editLabelList", "label", {dataInset: true}}
+    #{ul "labelList", null, {"data-inset": 'true'} }
+    #{editUL "editLabelList", "label", {"data-inset": true}}
     """
 
 
@@ -77,7 +80,7 @@ cardPgTmpl = ->
     #{input "hidden", "front"}
     #{input "hidden", "back"}
     <br>
-    #{ul "cardSides", cardSideItems, {dataInset: true} }
+    #{ul "cardSides", cardSideItems, {"data-inset": true} }
     <div id="cardArchiveLabels">#{yesnoChoiceTmpl "archivedRB", "Archive", "archived"}</div>
     <div id="cardLabels"></div>
 
@@ -126,7 +129,7 @@ studyPgTmpl = ->
 answerPgHeadTmpl = ->
   btns = [li(button "Correct", "#", "id='correct' data-transition='pop' class='result'"),
           li(button "Wrong", "#", "id='wrong' data-transition='pop' class='result'")]
-  ul "studyButtons", btns, "", "class='back'"
+  ul "studyButtons", btns,  {class: 'back'}
 ###
 
 answerPgHeadTmpl = ->

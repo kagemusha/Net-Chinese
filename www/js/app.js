@@ -1,4 +1,4 @@
-var $atEnd, $currentCard, $currentSet, $editing, $saveAttr, $showFromCard, $showedStudyTip, $studyInit, $studyLink, $studyQueue, ARCHIVED_RB_SEL, CARDS_PER_PAGE, CARD_LABEL_SEL, CARD_TYPE, CLICK_EVENT, DATA_REL_DATE_KEY, EDIT_BTNS, EDIT_CARD_BTN, EDIT_LABEL_BTN, EDIT_SET_BTN, FILTER_CHG, LABEL_TYPE, MSG_SEL, OBJ_ID_ATTR, OBJ_TYPE_ATTR, PAGES, SAVE_TEXT_LINK, SET_FILTERS_SEL, SET_HEADER_BUTTONS, SET_ID_ATTR, SET_TYPE, SET_TYPE_ATTR, Set, TEXT_AREA_ELEM, addArchivedLabels, cardCountMsg, deleteFromList, deleteObj, dualId, editBtns, filterChg, getObj, initCallbacks, initCardPage, initCardSidePage, initLabelPage, initLabelsPage, initMobile, initPages, initSetPage, initStudyPage, initStudyingCBs, loadData, modCardText, nextCards, populateData, prevCards, refreshCardList, refreshCheckboxes, refreshLabels, remakeFilterPages, resetDeleteItem, resetEditing, rotateDelImg, saveCard, saveCardTextField, setViewUpdaters, setupForm, switchFilter, switchSet, toggleEditControls, toggleEditSet, updateCardView, updateDelLink, updateLabelSelector, updateLabelView, valCard, valLabel, validationsInit;
+var $atEnd, $currentCard, $currentSet, $editing, $saveAttr, $showFromCard, $showedStudyTip, $studyInit, $studyLink, $studyQueue, ARCHIVED_RB_SEL, CARDS_PER_PAGE, CARD_LABEL_SEL, CARD_TYPE, CLICK_EVENT, DATA_REL_DATE_KEY, EDIT_CARD_BTN, EDIT_LABEL_BTN, EDIT_SET_BTN, FILTER_CHG, LABEL_TYPE, MSG_SEL, OBJ_ID_ATTR, OBJ_TYPE_ATTR, PAGES, SAVE_TEXT_LINK, SET_FILTERS_SEL, SET_HEADER_BUTTONS, SET_ID_ATTR, SET_TYPE, SET_TYPE_ATTR, Set, TEXT_AREA_ELEM, addArchivedLabels, cardCountMsg, deleteFromList, deleteObj, dualId, editBtns, filterChg, getObj, initCallbacks, initCardPage, initCardSidePage, initLabelPage, initLabelsPage, initMobile, initPages, initSetPage, initStudyPage, initStudyingCBs, loadData, modCardText, nextCards, populateData, prevCards, refreshCardList, refreshCheckboxes, refreshLabels, remakeFilterPages, resetDeleteItem, resetEditing, rotateDelImg, saveCard, saveCardTextField, setViewUpdaters, setupForm, switchFilter, switchSet, test, toggleEditSet, updateCardView, updateDelLink, updateLabelSelector, updateLabelView, valCard, valLabel, validationsInit;
 SET_TYPE = "card_set";
 CARD_TYPE = 'card';
 LABEL_TYPE = 'label';
@@ -30,7 +30,11 @@ Set = (function() {
   Set.prototype.cards = null;
   return Set;
 })();
-$studyLink = link("Study!", "#studyPage", "id='studyButton' init_pg='study' class='study'");
+$studyLink = link("Study!", "#studyPage", {
+  id: 'studyButton',
+  init_pg: 'study',
+  "class": 'study'
+});
 dualId = function(id, addedPrefix) {
   var preLen;
   preLen = addedPrefix.length;
@@ -41,17 +45,30 @@ dualId = function(id, addedPrefix) {
   }
 };
 editBtns = function(editBtnId, objList) {
-  var dualBtnId, olStr;
+  var dualBtnId;
   dualBtnId = dualId(editBtnId, "done");
-  olStr = "objList='" + objList + "'";
-  return [rightBtn("Done", "#", "id='" + dualBtnId + "' callfn='toggleEditSet' " + olStr, "editing"), rightBtn("Edit", "#", "id='" + editBtnId + "' callfn='toggleEditSet' " + olStr, "notEditing")].join(" ");
+  return [
+    rightButton("Done", "#", {
+      id: dualBtnId,
+      callfn: 'toggleEditSet',
+      objList: objList,
+      "class": "editing"
+    }), rightButton("Edit", "#", {
+      id: editBtnId,
+      callfn: 'toggleEditSet',
+      objList: objList,
+      "class": "notEditing"
+    })
+  ].join(" ");
 };
-SET_HEADER_BUTTONS = [$studyLink, link("Add Card", "#cardPage", "init_pg=card obj_type=card"), link("Labels", "#labelsPage", "init_pg=labels ")];
-/*
-STUDY_HEADER_BUTTONS=[link("Correct","#study","class result "),
-                      link("Wrong", "#study", "class result")]
-*/
-EDIT_BTNS = [rightBtn("Edit", "#", "id='editSetButton' callfn='toggleEditSet' objList='setList'", NOT_EDITING_CLASS), rightBtn("Done", "#", "id='doneEditSetButton' callfn='toggleEditSet' objList='setList'", EDITING_CLASS)];
+SET_HEADER_BUTTONS = [
+  $studyLink, link("Add Card", "#cardPage", {
+    init_pg: "card",
+    obj_type: CARD_TYPE
+  }), link("Labels", "#labelsPage", {
+    init_pg: "labels"
+  })
+];
 PAGES = {
   sets: {
     head: {
@@ -90,25 +107,34 @@ PAGES = {
   study: {
     head: {
       leftBtns: backButton("Cards", "#setPage"),
-      rightBtns: link("Filter", pageSel("filter"), "data-transition=pop")
+      rightBtns: link("Filter", pageSel("filter"), {
+        "data-transition": "pop"
+      })
     }
   },
   answer: {
     head: {
       leftBtns: backButton("Cards", "#setPage"),
-      rightBtns: link("Restart", pageSel("study"), "data-transition=pop stRestart=true")
+      rightBtns: link("Restart", pageSel("study"), {
+        "data-transition": 'pop',
+        stRestart: 'true'
+      })
     }
   },
   filter: {
     head: {
       title: "Filter",
-      leftBtns: backButton("Back", "#studyPage", "callfn=filterChg")
+      leftBtns: backButton("Back", "#studyPage", {
+        callfn: 'filterChg'
+      })
     }
   },
   textInput: {
     head: {
       title: "Card",
-      leftBtns: backButton("Back", "#cardPage", " id='" + SAVE_TEXT_LINK + "' ")
+      leftBtns: backButton("Back", "#cardPage", {
+        id: SAVE_TEXT_LINK
+      })
     }
   }
 };
@@ -184,6 +210,7 @@ $studyQueue = new StudyQueue({
 });
 initMobile = function() {
   env();
+  test();
   root.msgSel = ".msg";
   loadData();
   showMsgs();
@@ -599,12 +626,6 @@ resetEditing = function() {
   showHide(classSel(NOT_EDITING_CLASS), classSel(EDITING_CLASS));
   return $editing = false;
 };
-toggleEditControls = function(pageId) {
-  if (pageId == null) {
-    pageId = "";
-  }
-  return $("" + (idSel(pageId)) + " ." + EDITING_CLASS + ", " + (idSel(pageId)) + " ." + NOT_EDITING_CLASS).toggle();
-};
 resetDeleteItem = function() {
   $('.aDeleteBtn').closest("li").find("img").rotate(0);
   return $('.aDeleteBtn').remove();
@@ -612,12 +633,12 @@ resetDeleteItem = function() {
 rotateDelImg = function(img) {
   var rotated;
   rotated = $(img).closest("li").attr("obj_id") === $('.aDeleteBtn').closest("li").attr("obj_id");
-  log("rotated", rotated, $(img).closest("li").length, $('.aDeleteBtn').closest("li").length);
-  log("rotated", rotated, $(img).closest("li").attr("obj_id"), $('.aDeleteBtn').closest("li").attr("obj_id"));
   resetDeleteItem();
   if (!rotated) {
     $(img).rotate(90);
-    return $(img).closest("li").append(link("Delete", "#", "class='aDeleteBtn ui-btn-up-r'"));
+    return $(img).closest("li").append(link("Delete", "#", {
+      "class": 'aDeleteBtn ui-btn-up-r'
+    }));
   }
 };
 deleteFromList = function(link) {
@@ -634,4 +655,10 @@ valLabel = function(label) {
 };
 valCard = function(card) {
   return fieldNotBlank(card.front) || fieldNotBlank(card.back);
+};
+test = function() {
+  return log("OSS", optionStr({
+    name: "michael",
+    age: 38
+  }));
 };

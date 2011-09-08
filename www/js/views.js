@@ -1,6 +1,10 @@
 var answerPgHeadTmpl, answerPgTmpl, cardBackTmpl, cardLiTmpl, cardPgTmpl, editCardLiTmpl, editLabelLiTmpl, editSetLiTmpl, filterPgTmpl, labelLiTmpl, labelPgTmpl, labelsPgTmpl, setPgTmpl, setsPgTmpl, settingsPgTmpl, studyPgTmpl, studyStatsTmpl, triesTmpl;
 setsPgTmpl = function() {
-  return "" + (ul("setList", null, null, "obj_type='card_set'")) + "\n" + (editUL("editSetList", "set"));
+  var haml;
+  haml = "" + (hUL("setList", {
+    obj_type: 'card_set'
+  })) + "\n" + (heditUL("editSetList", "set"));
+  return hamlHtml(haml);
 };
 settingsPgTmpl = function() {
   return "<form accept-charset=\"UTF-8\"  id=\"syncForm\">\n    <div data-role=\"fieldcontain\">\n      <input type=\"submit\" name=\"submit\" value=\"Sync\"/>\n    </div>\n</form>";
@@ -9,13 +13,15 @@ cardBackTmpl = function(back, front) {
   return "\n\n<div class='backText'>" + back + "</div>\n" + front + "\n\n";
 };
 setPgTmpl = function(set) {
-  return "<div id=\"cardsShowing\">\n  " + (link("Prev", "#", "id='prevCards' class='cardList'")) + "\n  <span id=\"cardsShowingMsg\"></span>\n  " + (link("Next", "#", "id='nextCards' class='cardList'")) + "\n</div>\n<br/>\n" + (ul("cardList", null, null, "obj_type='card'")) + "\n" + (editUL("editCardList", "card"));
+  return "<div id=\"cardsShowing\">\n  " + (link("Prev", "#", "id='prevCards' class='cardList'")) + "\n  <span id=\"cardsShowingMsg\"></span>\n  " + (link("Next", "#", "id='nextCards' class='cardList'")) + "\n</div>\n<br/>\n" + (ul("cardList", null, {
+    obj_type: 'card'
+  })) + "\n" + (editUL("editCardList", "card"));
 };
 labelsPgTmpl = function() {
   return "" + (button("Add Label", "#labelPage", "id='addLabelButton' init_pg='label'")) + "\n" + (ul("labelList", null, {
-    dataInset: true
+    "data-inset": 'true'
   })) + "\n" + (editUL("editLabelList", "label", {
-    dataInset: true
+    "data-inset": true
   }));
 };
 labelPgTmpl = function() {
@@ -28,7 +34,7 @@ cardPgTmpl = function() {
   var cardSideItems;
   cardSideItems = [li(link("Front (Chinese)", "#textInputPage", "id='frontTALink' init_pg='cardSide' saveCB='saveCardFront'")), li(link("Back (English)", "#textInputPage", "id='backTALink' init_pg='cardSide' side='back' saveCB='saveCardBack'"))];
   return "<form accept-charset=\"UTF-8\"  id=\"cardForm\" obj_type=\"card\">\n  " + (input("hidden", "card_set_id")) + "\n  " + (input("hidden", "id")) + "\n  " + (input("hidden", "front")) + "\n  " + (input("hidden", "back")) + "\n  <br>\n  " + (ul("cardSides", cardSideItems, {
-    dataInset: true
+    "data-inset": true
   })) + "\n  <div id=\"cardArchiveLabels\">" + (yesnoChoiceTmpl("archivedRB", "Archive", "archived")) + "</div>\n  <div id=\"cardLabels\"></div>\n\n</form>";
 };
 studyStatsTmpl = function(stats, full) {
@@ -47,7 +53,7 @@ studyPgTmpl = function() {
 answerPgHeadTmpl = ->
   btns = [li(button "Correct", "#", "id='correct' data-transition='pop' class='result'"),
           li(button "Wrong", "#", "id='wrong' data-transition='pop' class='result'")]
-  ul "studyButtons", btns, "", "class='back'"
+  ul "studyButtons", btns,  {class: 'back'}
 */
 answerPgHeadTmpl = function() {
   return "<ul id=\"studyButtons\" class=\"back\">\n  " + (li(button("Correct", "#", "id='correct' data-transition='pop' class='result'"))) + "\n  " + (li(button("Wrong", "#", "id='wrong' data-transition='pop' class='result'"))) + "\n</ul>";
