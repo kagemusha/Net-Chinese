@@ -1,4 +1,4 @@
-var DEFAULT_PG_THEME, DEFAULT_STYLE, EDITING_CLASS, NOT_EDITING_CLASS, classSel, delImg, editUL, genElems, heditUL, idSel, img, refreshEditableListById, refreshListById, refreshTmpl, refreshTmplById, setLiTmpl, textInputPgTmpl, toggleEditControls;
+var DEFAULT_PG_THEME, DEFAULT_STYLE, EDITING_CLASS, NOT_EDITING_CLASS, classSel, genElems, idSel, img, refreshEditableListById, refreshListById, refreshTmpl, refreshTmplById, textInputPgTmpl, toggleEditControls;
 root.BACK_REL = "data-rel='back'";
 refreshTmplById = function(id, templateFn, data, options) {
   return refreshTmpl("" + (idSel(id)), templateFn, data, options);
@@ -76,28 +76,12 @@ img = function(file) {
   return "css/images/" + file;
 };
 /* App specific below */
-setLiTmpl = function(set) {
-  return li(link(set.name, "#setPage", "class='set' obj_id='" + set.id + "' init_pg='set'"), "class='set'");
-};
-delImg = function() {
-  return "<img  class='del del_icon ui-li-icon' src='" + (img('delete.png')) + "'/>";
-};
-editUL = function(id, type, options) {
-  if (options == null) {
-    options = {};
-  }
-  options["class"] = " " + (options["class"] || "") + " editList";
-  options.obj_type = type;
-  return ul(id, null, options);
-};
-heditUL = function(id, type, options) {
-  if (options == null) {
-    options = {};
-  }
-  options["class"] = " " + (options["class"] || "") + " editList";
-  options.obj_type = type;
-  return hUL(id, options);
-};
+/*
+editUL = (id, type, options={}) ->
+  options["class"] = " #{options.class || ""} editList"
+  options.obj_type = type
+  ul id, null,  options
+*/
 textInputPgTmpl = function() {
   return "<textarea id=\"tInput\" class=\"fullPage\" data-theme=\"d\" name=\"tInput\" placeholder=\"(Enter text)\" />";
 };

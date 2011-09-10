@@ -1,4 +1,4 @@
-var PAGE_FOOT_TMPL_SEL, PG_FOOT_SEL, PG_HEAD_SEL, PG_HEAD_TMPL_SEL, PG_TMPL_SEL, TABLES, VALIDATIONS, addFooter, addHeader, equalStr, fieldNotBlank, formDataFields, getObjFromForm, go, lia, listviewRefresh, login, makePage, makePages, onPage, pageId, pageSel, pgFoot, pgFootTmpl, pgHead, pgHeadTmpl, pgTmplFn, populateForm, populateList, popupMsg, refreshChoice, refreshPage, removePopup, saveForm, selCount, setHeaderBtn, setPageHeaderTitle, showHide, showMsgs, uncapitalize;
+var PAGE_FOOT_TMPL_SEL, PG_FOOT_SEL, PG_HEAD_SEL, PG_HEAD_TMPL_SEL, PG_TMPL_SEL, TABLES, VALIDATIONS, addFooter, addHeader, equalStr, fieldNotBlank, formDataFields, getObjFromForm, go, lia, listviewRefresh, login, makePages, onPage, pageId, pageSel, pgFoot, pgFootTmpl, pgHead, pgHeadTmpl, pgTmplFn, populateForm, populateList, popupMsg, refreshChoice, refreshPage, removePopup, saveForm, selCount, setHeaderBtn, setPageHeaderTitle, showHide, showMsgs, uncapitalize;
 TABLES = {};
 VALIDATIONS = {};
 fieldNotBlank = function(val) {
@@ -64,36 +64,14 @@ uncapitalize = function(str) {
   }
   return "" + (str[0].toLowerCase()) + (str.substr(1));
 };
-makePages = function(firstPage, pages) {
-  var pageId, specs, _results;
-  makePage(firstPage, pages[firstPage]);
+makePages = function(pages) {
+  var page, _i, _len, _results;
   _results = [];
-  for (pageId in pages) {
-    specs = pages[pageId];
-    if (pageId !== firstPage) {
-      _results.push(makePage(pageId, specs));
-    }
+  for (_i = 0, _len = pages.length; _i < _len; _i++) {
+    page = pages[_i];
+    _results.push(h_makePage(page));
   }
   return _results;
-};
-makePage = function(id, specs) {
-  var btnSel;
-  if (!(specs.head != null)) {
-    specs.head = {};
-  }
-  specs.head.back = !specs.head.noback;
-  if (!(specs.foot != null)) {
-    specs.foot = {};
-  }
-  specs.id = pageId(id);
-  $('body').remove(specs.id);
-  $('body').append(genElems(pageTmpl, specs));
-  if (specs.head.buttons) {
-    btnSel = "" + (pageSel(id)) + " ul.headButtons";
-    refreshTmpl(btnSel, li, specs.head.buttons);
-  }
-  addFooter(id, specs.foot);
-  return refreshPage(id, specs.content);
 };
 refreshPage = function(id, params) {
   var contentDiv;
@@ -314,5 +292,20 @@ handleForm = (form) ->
         table.add obj
     $('.ui-dialog').dialog('close')
     log "Saved"
+
+makePage = (id, specs) ->
+    specs.head={}   if !specs.head?
+    specs.head.back = !specs.head.noback
+    specs.foot={} if !specs.foot?
+    specs.id = pageId(id)
+    $('body').remove(specs.id)
+    $('body').append(genElems(pageTmpl, specs))
+    #addHeader(id, specs.head)
+    if specs.head.buttons #this are buttons below title bar like "Right","Wrong"
+        btnSel = "#{pageSel(id)} ul.headButtons"
+        #log("btnsel", btnSel, $(btnSel).length)
+        refreshTmpl btnSel, li, specs.head.buttons
+    addFooter id, specs.foot
+    refreshPage id, specs.content
 
 */

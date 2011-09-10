@@ -49,26 +49,9 @@ uncapitalize = (str) ->
   return str if (!str or str.length < 1)
   "#{str[0].toLowerCase()}#{str.substr 1}"
 
-makePages = (firstPage, pages) ->
-    makePage(firstPage, pages[firstPage])
-    #log("makgpage", firstPage)
-    for pageId, specs of pages when pageId != firstPage
-        makePage(pageId, specs)
-
-makePage = (id, specs) ->
-    specs.head={}   if !specs.head?
-    specs.head.back = !specs.head.noback
-    specs.foot={} if !specs.foot?
-    specs.id = pageId(id)
-    $('body').remove(specs.id)
-    $('body').append(genElems(pageTmpl, specs))
-    #addHeader(id, specs.head)
-    if specs.head.buttons #this are buttons below title bar like "Right","Wrong"
-        btnSel = "#{pageSel(id)} ul.headButtons"
-        #log("btnsel", btnSel, $(btnSel).length)
-        refreshTmpl btnSel, li, specs.head.buttons
-    addFooter id, specs.foot
-    refreshPage id, specs.content
+makePages = (pages) ->
+  for page in pages
+    h_makePage page
 
 
 refreshPage = (id, params) ->
@@ -261,5 +244,20 @@ handleForm = (form) ->
         table.add obj
     $('.ui-dialog').dialog('close')
     log "Saved"
+
+makePage = (id, specs) ->
+    specs.head={}   if !specs.head?
+    specs.head.back = !specs.head.noback
+    specs.foot={} if !specs.foot?
+    specs.id = pageId(id)
+    $('body').remove(specs.id)
+    $('body').append(genElems(pageTmpl, specs))
+    #addHeader(id, specs.head)
+    if specs.head.buttons #this are buttons below title bar like "Right","Wrong"
+        btnSel = "#{pageSel(id)} ul.headButtons"
+        #log("btnsel", btnSel, $(btnSel).length)
+        refreshTmpl btnSel, li, specs.head.buttons
+    addFooter id, specs.foot
+    refreshPage id, specs.content
 
 ###

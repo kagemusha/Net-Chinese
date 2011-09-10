@@ -53,24 +53,18 @@ img = (file) ->  "css/images/#{file}"
 
 ### App specific below ###
 
-setLiTmpl = (set) ->
-  li link(set.name, "#setPage", "class='set' obj_id='#{set.id}' init_pg='set'"), "class='set'"
 
-delImg = ->  "<img  class='del del_icon ui-li-icon' src='#{img('delete.png')}'/>"
-
+###
 editUL = (id, type, options={}) ->
   options["class"] = " #{options.class || ""} editList"
   options.obj_type = type
   ul id, null,  options
-
-heditUL = (id, type, options={}) ->
-  options["class"] = " #{options.class || ""} editList"
-  options.obj_type = type
-  hUL id, options
-
+###
 
 textInputPgTmpl = ->
   """
   <textarea id="tInput" class="fullPage" data-theme="d" name="tInput" placeholder="(Enter text)" />
   """
+
+
 

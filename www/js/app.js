@@ -1,4 +1,4 @@
-var $atEnd, $currentCard, $currentSet, $editing, $saveAttr, $showFromCard, $showedStudyTip, $studyInit, $studyLink, $studyQueue, ARCHIVED_RB_SEL, CARDS_PER_PAGE, CARD_LABEL_SEL, CARD_TYPE, CLICK_EVENT, DATA_REL_DATE_KEY, EDIT_CARD_BTN, EDIT_LABEL_BTN, EDIT_SET_BTN, FILTER_CHG, LABEL_TYPE, MSG_SEL, OBJ_ID_ATTR, OBJ_TYPE_ATTR, PAGES, SAVE_TEXT_LINK, SET_FILTERS_SEL, SET_HEADER_BUTTONS, SET_ID_ATTR, SET_TYPE, SET_TYPE_ATTR, Set, TEXT_AREA_ELEM, addArchivedLabels, cardCountMsg, deleteFromList, deleteObj, dualId, editBtns, filterChg, getObj, initCallbacks, initCardPage, initCardSidePage, initLabelPage, initLabelsPage, initMobile, initPages, initSetPage, initStudyPage, initStudyingCBs, loadData, modCardText, nextCards, populateData, prevCards, refreshCardList, refreshCheckboxes, refreshLabels, remakeFilterPages, resetDeleteItem, resetEditing, rotateDelImg, saveCard, saveCardTextField, setViewUpdaters, setupForm, switchFilter, switchSet, test, toggleEditSet, updateCardView, updateDelLink, updateLabelSelector, updateLabelView, valCard, valLabel, validationsInit;
+var $atEnd, $currentCard, $currentSet, $editing, $saveAttr, $showFromCard, $showedStudyTip, $studyInit, $studyQueue, ARCHIVED_RB_SEL, CARDS_PER_PAGE, CARD_LABEL_SEL, CARD_TYPE, CLICK_EVENT, DATA_REL_DATE_KEY, EDIT_CARD_BTN, EDIT_LABEL_BTN, EDIT_SET_BTN, FILTER_CHG, LABEL_TYPE, MSG_SEL, OBJ_ID_ATTR, OBJ_TYPE_ATTR, PAGES, SAVE_TEXT_LINK, SET_FILTERS_SEL, SET_ID_ATTR, SET_TYPE, SET_TYPE_ATTR, Set, TEXT_AREA_ELEM, addArchivedLabels, cardCountMsg, deleteFromList, deleteObj, filterChg, getObj, initCallbacks, initCardPage, initCardSidePage, initLabelPage, initLabelsPage, initMobile, initPages, initSetPage, initStudyPage, initStudyingCBs, loadData, modCardText, nextCards, populateData, prevCards, refreshCardList, refreshCheckboxes, refreshLabels, remakeFilterPages, resetDeleteItem, resetEditing, rotateDelImg, saveCard, saveCardTextField, setViewUpdaters, setupForm, switchFilter, switchSet, test, toggleEditSet, updateCardView, updateDelLink, updateLabelSelector, updateLabelView, valCard, valLabel, validationsInit;
 SET_TYPE = "card_set";
 CARD_TYPE = 'card';
 LABEL_TYPE = 'label';
@@ -30,114 +30,6 @@ Set = (function() {
   Set.prototype.cards = null;
   return Set;
 })();
-$studyLink = link("Study!", "#studyPage", {
-  id: 'studyButton',
-  init_pg: 'study',
-  "class": 'study'
-});
-dualId = function(id, addedPrefix) {
-  var preLen;
-  preLen = addedPrefix.length;
-  if (id.slice(0, (preLen - 1 + 1) || 9e9) === addedPrefix) {
-    return "" + (uncapitalize(id[preLen])) + (id.substr(preLen + 1));
-  } else {
-    return "" + addedPrefix + (capitalize(id));
-  }
-};
-editBtns = function(editBtnId, objList) {
-  var dualBtnId;
-  dualBtnId = dualId(editBtnId, "done");
-  return [
-    rightButton("Done", "#", {
-      id: dualBtnId,
-      callfn: 'toggleEditSet',
-      objList: objList,
-      "class": "editing"
-    }), rightButton("Edit", "#", {
-      id: editBtnId,
-      callfn: 'toggleEditSet',
-      objList: objList,
-      "class": "notEditing"
-    })
-  ].join(" ");
-};
-SET_HEADER_BUTTONS = [
-  $studyLink, link("Add Card", "#cardPage", {
-    init_pg: "card",
-    obj_type: CARD_TYPE
-  }), link("Labels", "#labelsPage", {
-    init_pg: "labels"
-  })
-];
-PAGES = {
-  sets: {
-    head: {
-      title: "Sets"
-    }
-  },
-  set: {
-    head: {
-      title: "Set",
-      leftBtns: backButton("Sets", "#setsPage"),
-      rightBtns: editBtns(EDIT_CARD_BTN, "cardList"),
-      buttons: SET_HEADER_BUTTONS
-    }
-  },
-  card: {
-    head: {
-      title: "Card",
-      leftBtns: backButton("Cancel", "#setPage"),
-      rightBtns: saveButton('cardForm', 'card', "#setPage")
-    }
-  },
-  labels: {
-    head: {
-      title: "Labels",
-      leftBtns: backButton("Back", "#setPage"),
-      rightBtns: editBtns("editLabelBtn", "labelList")
-    }
-  },
-  label: {
-    head: {
-      title: "Label",
-      leftBtns: backButton("Cancel", "#labelsPage"),
-      rightBtns: saveButton('labelForm', 'label', "#labelsPage")
-    }
-  },
-  study: {
-    head: {
-      leftBtns: backButton("Cards", "#setPage"),
-      rightBtns: link("Filter", pageSel("filter"), {
-        "data-transition": "pop"
-      })
-    }
-  },
-  answer: {
-    head: {
-      leftBtns: backButton("Cards", "#setPage"),
-      rightBtns: link("Restart", pageSel("study"), {
-        "data-transition": 'pop',
-        stRestart: 'true'
-      })
-    }
-  },
-  filter: {
-    head: {
-      title: "Filter",
-      leftBtns: backButton("Back", "#studyPage", {
-        callfn: 'filterChg'
-      })
-    }
-  },
-  textInput: {
-    head: {
-      title: "Card",
-      leftBtns: backButton("Back", "#cardPage", {
-        id: SAVE_TEXT_LINK
-      })
-    }
-  }
-};
 /* studymanager conversion related */
 CARD_LABEL_SEL = '#cardPanel #labels input:checkbox';
 $studyQueue = new StudyQueue({
@@ -229,13 +121,12 @@ loadData = function() {
     return cache(DATA_REL_DATE_KEY, DATA_REL_DATE);
   }
 };
+PAGES = ["sets", "set", "labels", "label", "filter", "study", "answer", "card", "textInput"];
 initPages = function() {
-  var firstPage, hasData;
+  var hasData;
   TABLES[SET_TYPE] = Table.get(SET_TYPE);
   hasData = (TABLES[SET_TYPE].recs != null) && TABLES[SET_TYPE].recs.length > 0;
-  firstPage = "sets";
-  makePages(firstPage, PAGES);
-  refreshTmpl("" + (pageSel('answer')) + " #headNav", answerPgHeadTmpl);
+  makePages(PAGES);
   $("" + (idSel(dualId(EDIT_SET_BTN, "done")))).hide();
   $("" + (idSel(dualId(EDIT_CARD_BTN, "done")))).hide();
   $("" + (idSel(dualId(EDIT_LABEL_BTN, "done")))).hide();
@@ -539,14 +430,12 @@ addArchivedLabels = function(container, archiveLbl) {
   return $(container).append(yesnoChoiceTmpl("archivedRB", archiveLbl, "archived"));
 };
 refreshLabels = function(container, lblsLbl) {
-  var filterBtnSet, options;
+  var options;
   $(container).empty();
-  options = {
+  return options = {
     id: "filterCheckboxes",
     label: lblsLbl
   };
-  filterBtnSet = choiceGroup(false, "labels", options, $currentSet.labels);
-  return $(container).append(filterBtnSet);
 };
 refreshCheckboxes = function(sel) {
   try {
@@ -657,8 +546,13 @@ valCard = function(card) {
   return fieldNotBlank(card.front) || fieldNotBlank(card.back);
 };
 test = function() {
-  return log("OSS", optionStr({
-    name: "michael",
-    age: 38
-  }));
+  /*
+    log "%test"
+    x = null
+    x ?= "orig"
+    log x
+    x ?= "new"
+    log x
+    log "%end test"
+    */
 };

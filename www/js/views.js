@@ -1,99 +1,167 @@
-var answerPgHeadTmpl, answerPgTmpl, cardBackTmpl, cardLiTmpl, cardPgTmpl, editCardLiTmpl, editLabelLiTmpl, editSetLiTmpl, filterPgTmpl, labelLiTmpl, labelPgTmpl, labelsPgTmpl, setPgTmpl, setsPgTmpl, settingsPgTmpl, studyPgTmpl, studyStatsTmpl, triesTmpl;
-setsPgTmpl = function() {
-  var haml;
-  haml = "" + (hUL("setList", {
+var PG_DEFAULTS, cardBackTmpl, cardLiTmpl, delImg, editCardLiTmpl, editLabelLiTmpl, editSetLiTmpl, h_answerPgTmpl, h_cardPgTmpl, h_filterPgTmpl, h_labelPgTmpl, h_labelsPgTmpl, h_setPgTmpl, h_setsPgTmpl, h_studyPgTmpl, h_textInputPgTmpl, labelLiTmpl, setLiTmpl, studyStatsTmpl, triesTmpl;
+PG_DEFAULTS = {
+  "data-theme": "e"
+};
+h_setsPgTmpl = function() {
+  return hamlHtml("" + (h_page("setsPage", PG_DEFAULTS)) + "\n  " + (h_pageHeader("Sets")) + "\n  " + (h_content({
+    "class": "pgContent"
+  })) + "\n    " + (h_ul("setList", {
     obj_type: 'card_set'
-  })) + "\n" + (heditUL("editSetList", "set"));
-  return hamlHtml(haml);
+  })));
 };
-settingsPgTmpl = function() {
-  return "<form accept-charset=\"UTF-8\"  id=\"syncForm\">\n    <div data-role=\"fieldcontain\">\n      <input type=\"submit\" name=\"submit\" value=\"Sync\"/>\n    </div>\n</form>";
-};
-cardBackTmpl = function(back, front) {
-  return "\n\n<div class='backText'>" + back + "</div>\n" + front + "\n\n";
-};
-setPgTmpl = function(set) {
-  return "<div id=\"cardsShowing\">\n  " + (link("Prev", "#", "id='prevCards' class='cardList'")) + "\n  <span id=\"cardsShowingMsg\"></span>\n  " + (link("Next", "#", "id='nextCards' class='cardList'")) + "\n</div>\n<br/>\n" + (ul("cardList", null, {
+h_setPgTmpl = function(set) {
+  return hamlHtml("" + (h_page("setPage", PG_DEFAULTS)) + "\n  " + (h_pageHeader("Set")) + "\n    " + (h_backButton("Sets", "#setsPage")) + "\n    " + (editBtns(EDIT_CARD_BTN, "cardList")) + "\n    " + (h_navbar()) + "\n      %ul\n        %li " + (h_link("Study!", "#studyPage", {
+    id: 'studyButton',
+    init_pg: 'study',
+    "class": 'study'
+  })) + "\n        %li " + (h_link("Add Card", "#cardPage", {
+    init_pg: "card",
+    obj_type: CARD_TYPE
+  })) + "\n        %li " + (h_link("Labels", "#labelsPage", {
+    init_pg: "labels"
+  })) + "\n  " + (h_content({
+    "class": "pgContent"
+  })) + "\n    #cardsShowing\n      %a#prevCards.cardList{href: \"#\", } Prev\n      %span#cardsShowingMsg\n      %a#nextCards.cardList{href: \"#\", } Next\n    %br\n    " + (h_ul("cardList", {
     obj_type: 'card'
-  })) + "\n" + (editUL("editCardList", "card"));
+  })) + "\n    " + (heditUL("editCardList", "card")));
 };
-labelsPgTmpl = function() {
-  return "" + (button("Add Label", "#labelPage", "id='addLabelButton' init_pg='label'")) + "\n" + (ul("labelList", null, {
+/*
+
+*/
+h_labelsPgTmpl = function() {
+  return hamlHtml("" + (h_page("labelsPage", PG_DEFAULTS)) + "\n  " + (h_pageHeader("Labels")) + "\n    " + (h_backButton("Back", "#setPage")) + "\n    " + (editBtns(EDIT_LABEL_BTN, "labelList")) + "\n  " + (h_content({
+    "class": "pgContent"
+  })) + "\n    " + (h_button("Add Label", "#labelPage", {
+    id: 'addLabelButton',
+    init_pg: 'label'
+  })) + "\n    " + (h_ul("labelList", {
     "data-inset": 'true'
-  })) + "\n" + (editUL("editLabelList", "label", {
+  })) + "\n    " + (heditUL("editLabelList", "label", {
     "data-inset": true
-  }));
+  })));
 };
-labelPgTmpl = function() {
-  return "<form accept-charset=\"UTF-8\"  id=\"labelForm\" obj_type=\"label\">\n  <div data-role=\"fieldcontain\">\n    " + (input("hidden", "card_set_id")) + "\n    " + (input("hidden", "id")) + "\n    " + (input("text", "name")) + "\n  </div>\n</form>";
+h_labelPgTmpl = function() {
+  return hamlHtml("" + (h_page("labelPage", PG_DEFAULTS)) + "\n  " + (h_pageHeader("Label")) + "\n    " + (h_backButton("Cancel", "#labelsPage")) + "\n    " + (h_saveButton('labelForm', 'label', "#labelsPage")) + "\n  " + (h_content({
+    "class": "pgContent"
+  })) + "\n    " + (hForm("labelForm", {
+    obj_type: "label"
+  })) + "\n      %div{ data-role=\"fieldcontain\" }\n        " + (h_input("hidden", "card_set_id")) + "\n        " + (h_input("hidden", "id")) + "\n        " + (h_input("text", "name", {
+    placeholder: "Label Name"
+  })));
 };
-filterPgTmpl = function() {
-  return "<div id=\"backFirstOption\">\n</div>\n<div id=\"archivedFilter\"></div>\n<div id=\"filtersForm\"></div>";
-};
-cardPgTmpl = function() {
-  var cardSideItems;
-  cardSideItems = [li(link("Front (Chinese)", "#textInputPage", "id='frontTALink' init_pg='cardSide' saveCB='saveCardFront'")), li(link("Back (English)", "#textInputPage", "id='backTALink' init_pg='cardSide' side='back' saveCB='saveCardBack'"))];
-  return "<form accept-charset=\"UTF-8\"  id=\"cardForm\" obj_type=\"card\">\n  " + (input("hidden", "card_set_id")) + "\n  " + (input("hidden", "id")) + "\n  " + (input("hidden", "front")) + "\n  " + (input("hidden", "back")) + "\n  <br>\n  " + (ul("cardSides", cardSideItems, {
-    "data-inset": true
-  })) + "\n  <div id=\"cardArchiveLabels\">" + (yesnoChoiceTmpl("archivedRB", "Archive", "archived")) + "</div>\n  <div id=\"cardLabels\"></div>\n\n</form>";
+h_filterPgTmpl = function() {
+  return hamlHtml("" + (h_page("filterPage", PG_DEFAULTS)) + "\n  " + (h_pageHeader("Filters")) + "\n    " + (h_backButton("Back", "#studyPage", {
+    callfn: 'filterChg'
+  })) + "\n  " + (h_content({
+    "class": "pgContent"
+  })) + "\n    #backFirstOption\n    #archivedFilter\n    #filtersForm");
 };
 studyStatsTmpl = function(stats, full) {
   if (full == null) {
     full = true;
   }
-  return "<div id=\"studyStatsMsg\">\n    <span class=\"stat label\">" + stats.leftInRun + " </span>\n    of\n    <span class=\"stat label\">" + stats.runCount + " </span>\n    left &nbsp;&nbsp;\n    " + (full ? triesTmpl(stats) : "") + "\n</div>";
+  return hamlHtml("#studyStatsMsg\n  %span.stat.label " + stats.leftInRun + "\n  of\n  %span.stat.label " + stats.runCount + "\n  left &nbsp;&nbsp;\n  " + (full ? triesTmpl(stats) : ""));
 };
 triesTmpl = function(stats) {
-  return "Correct 1 try:\n<span class=\"stat label\">" + stats.tries[0] + " </span>\n&nbsp;2:\n<span class=\"stat label\">" + stats.tries[1] + "</span>\n&nbsp;More:\n<span class=\"stat label\">" + stats.tries[2] + "</span>\n";
+  return hamlHtml("Correct 1 try:\n%span.stat.label " + stats.tries[0] + "\n&nbsp;2:\n%span.stat.label " + stats.tries[1] + "\n&nbsp;More:\n%span.stat.label " + stats.tries[2]);
 };
-studyPgTmpl = function() {
-  return "<div id=\"studyStatsFront\"></div>\n<div id=\"studyPanel\">\n  <div class=\"cardPanel front\">\n     <div id=\"front\" class=\"card_face\">\n         <div class=\"textPanel\">\n          Please wait...\n         </div>\n     </div>\n  </div>\n</div>";
+h_studyPgTmpl = function() {
+  return hamlHtml("" + (h_page("studyPage", PG_DEFAULTS)) + "\n  " + (h_pageHeader("Study")) + "\n    " + (h_backButton("Cards", "#setPage")) + "\n    " + (h_rightButton("Filter", "#filterPage", {
+    "data-transition": "pop"
+  })) + "\n  " + (h_content({
+    "class": "pgContent"
+  })) + "\n    #studyStatsFront\n    #studyPanel\n      .cardPanel.front\n         #front.card_face\n             .textPanel\n                Please wait...");
 };
-/*
-answerPgHeadTmpl = ->
-  btns = [li(button "Correct", "#", "id='correct' data-transition='pop' class='result'"),
-          li(button "Wrong", "#", "id='wrong' data-transition='pop' class='result'")]
-  ul "studyButtons", btns,  {class: 'back'}
-*/
-answerPgHeadTmpl = function() {
-  return "<ul id=\"studyButtons\" class=\"back\">\n  " + (li(button("Correct", "#", "id='correct' data-transition='pop' class='result'"))) + "\n  " + (li(button("Wrong", "#", "id='wrong' data-transition='pop' class='result'"))) + "\n</ul>";
+h_cardPgTmpl = function() {
+  return hamlHtml("" + (h_page("cardPage", PG_DEFAULTS)) + "\n  " + (h_pageHeader("Card")) + "\n    " + (h_backButton("Cards", "#setPage")) + "\n    " + (h_saveButton('cardForm', 'card', "#setPage")) + "\n  " + (h_content({
+    "class": "pgContent"
+  })) + "\n    " + (hForm("cardForm", {
+    obj_type: "card"
+  })) + "\n      " + (h_input("hidden", "card_set_id")) + "\n      " + (h_input("hidden", "id")) + "\n      " + (h_input("hidden", "front")) + "\n      " + (h_input("hidden", "back")) + "\n      %br\n      " + (h_ul("cardSides", {
+    "data-inset": true
+  })) + "\n        %li " + (h_link("Front (Chinese)", "#textInputPage", {
+    id: 'frontTALink',
+    init_pg: 'cardSide',
+    saveCB: 'saveCardFront'
+  })) + "\n        %li " + (h_link("Back (English)", "#textInputPage", {
+    id: 'backTALink',
+    init_pg: 'cardSide',
+    saveCB: 'saveCardBack',
+    side: 'back'
+  })) + "\n      #cardLabels");
 };
-answerPgTmpl = function() {
-  return "<div id=\"studyStats\"></div>\n<div id=\"studyPanel\">\n  <div class=\"cardPanel\">\n     <div id=\"front\" class=\"card_face\">\n         <div class=\"textPanel\">\n          Please wait...\n         </div>\n     </div>\n  </div>\n</div>";
+h_answerPgTmpl = function() {
+  return hamlHtml("" + (h_page("answerPage", PG_DEFAULTS)) + "\n  " + (h_pageHeader("Answer")) + "\n    " + (h_navbar()) + "\n      %ul#studyButtons.back\n        %li " + (h_link("Correct", "#", {
+    id: 'correct',
+    "data-transition": 'pop',
+    "class": 'result'
+  })) + "\n        %li " + (h_link("Wrong", "#", {
+    id: 'wrong',
+    "data-transition": 'pop',
+    "class": 'result'
+  })) + "\n  " + (h_content({
+    "class": "pgContent"
+  })) + "\n    #studyStats\n    #studyPanel\n      .cardPanel\n         #front.card_face\n             .textPanel\n                Please wait...");
+};
+h_textInputPgTmpl = function(id, options) {
+  if (options == null) {
+    options = {};
+  }
+  _.extend({
+    name: "tInput",
+    placeholder: "(Enter text)"
+  }, options);
+  options["class"] = "" + (options["class"] || "") + " tInput";
+  return hamlHtml("" + (h_page("textInputPage", PG_DEFAULTS)) + "\n  " + (h_pageHeader("Card")) + "\n    " + (h_backButton("Back", "#cardPage", {
+    id: SAVE_TEXT_LINK
+  })) + "\n  " + (h_content({
+    "class": "pgContent"
+  })) + "\n    " + (hTag("textarea", id || "tInput", options)));
+};
+setLiTmpl = function(set) {
+  return hamlHtml("%li.set " + (h_link(set.name, "#setPage", {
+    "class": 'set',
+    obj_id: set.id,
+    init_pg: 'set'
+  })));
 };
 editSetLiTmpl = function(set) {
-  return li("" + (delImg()) + " " + set.name, "'class='set' obj_id='" + set.id + "'");
+  return hamlHtml("%li.set{obj_id='" + set.id + "'} " + (delImg()) + " " + set.name);
 };
 cardLiTmpl = function(card) {
-  return "<li class=\"card " + (toStr(card.archived) === 'true' ? 'archived' : '') + " \">\n  <div class=\"overlay\">ARCHIVED</div>\n  <a class=\"card\" obj_id=\"" + card.id + "\" href=\"#cardPage\" init_pg=\"card\" >\n  <span class=\"front\">" + card.front + "</span><br/>\n  " + card.back + "\n</a></li>";
+  var archClass;
+  archClass = toStr(card.archived) === 'true' ? 'archived' : '';
+  return "<li class='card " + archClass + "' >\n  <div class='overlay'>ARCHIVED</div>\n  <a class='card' obj_id='" + card.id + "' href='#cardPage' init_pg: 'card'>\n    <span class='front'> " + card.front + "</span><br/>\n    " + card.back + "\n  </a>\n</li>";
 };
 editCardLiTmpl = function(card) {
-  return li("" + (delImg()) + "<span class='front'>" + card.front + "</span><br/>" + card.back, "class='card' obj_id='" + card.id + "'");
+  return hamlHtml("<li class='card' obj_id='" + card.id + "' >\n  " + (delImg()) + "\n  <span class='front'> " + card.front + "</span><br/>\n  " + card.back + "\"\n</li>");
 };
 labelLiTmpl = function(label, icon) {
   if (icon == null) {
     icon = "";
   }
-  return li("" + icon + " " + (link(label.name, '#labelPage', "obj_id='" + label.id + "'  init_pg='label'")));
+  return hamlHtml("%li " + icon + " " + (h_link(label.name, '#labelPage', {
+    obj_id: '#{label.id}',
+    init_pg: 'label'
+  })));
 };
 editLabelLiTmpl = function(label) {
-  return li("" + (delImg()) + " " + label.name, "class='card' obj_id='" + label.id + "'");
+  return hamlHtml("%li{class: 'card', obj_id='" + label.id + "'} " + (delImg()) + " " + label.name);
+};
+delImg = function() {
+  return "%img.del.del_icon.ui-li-icon{src: '" + (img('delete.png')) + "' }";
+};
+cardBackTmpl = function(back, front) {
+  return "\n\n<div class='backText'>" + back + "</div>\n" + front + "\n\n";
 };
 /*
-loginPgTmpl = (login) ->
-    """
-    <h4>Login</h4>
-    <form accept-charset="UTF-8"  id="loginForm">
-        <div data-role="fieldcontain">
-          <input type="text" id="email" name="email" placeholder="Email" value="#{login.email}"/>
-        </div>
-        <div data-role="fieldcontain">
-          <input type="password" id="password" name="password" value="#{login.password}" placeholder="Password"/>
-        </div>
-        <div data-role="fieldcontain">
-          <input type="submit" name="submit" value="Submit"/>
-        </div>
-        Server: <span id="server"></span>
-    </form>
-    """
+cardBackTmpl = (back, front) ->
+  hamlHtml  """
+            %br
+            .backText
+              #{back}
+            #{front}
+            %br
+            %br
+            """
 */

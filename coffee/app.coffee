@@ -32,65 +32,6 @@ class Set
   labels: null
   cards: null
 
-$studyLink = link "Study!", "#studyPage", {id: 'studyButton', init_pg: 'study', class: 'study'}
-
-dualId = (id, addedPrefix) ->
-  #log "dualId", id
-  preLen =  addedPrefix.length
-  if id[0..preLen-1] == addedPrefix
-    "#{uncapitalize(id[preLen])}#{id.substr(preLen+1)}"
-  else
-    "#{addedPrefix}#{capitalize id}"
-
-editBtns = (editBtnId, objList) ->
-  dualBtnId = dualId editBtnId, "done"
-  [
-    rightButton("Done", "#", {id: dualBtnId, callfn: 'toggleEditSet', objList: objList, class: "editing"} ),
-    rightButton("Edit", "#", {id: editBtnId, callfn: 'toggleEditSet', objList: objList, class: "notEditing"} )
-  ].join(" ")
-
-SET_HEADER_BUTTONS=[ $studyLink,
-                      link("Add Card","#cardPage", {init_pg: "card", obj_type: CARD_TYPE}),
-                      link("Labels","#labelsPage", {init_pg: "labels"} )]
-
-PAGES = {
-  sets:
-    head:
-      title: "Sets",
-      #rightBtns: editBtns("editSetBtn", "setList")
-  set:
-    head:
-      title: "Set",
-      leftBtns: backButton("Sets", "#setsPage"),
-      rightBtns: editBtns(EDIT_CARD_BTN, "cardList"),
-      buttons: SET_HEADER_BUTTONS,
-    #footer: footerTmpl {ui_bar: true, fixed: true, navBar: true}, $studyLink
-  card:
-    head:
-      title: "Card",
-      leftBtns: backButton("Cancel", "#setPage"),
-      rightBtns: saveButton( 'cardForm', 'card', "#setPage"),
-  labels:
-    head:
-      title: "Labels",
-      leftBtns: backButton("Back", "#setPage"),
-      rightBtns: editBtns("editLabelBtn", "labelList"),
-      #buttons: SET_HEADER_BUTTONS,
-  label:
-    head:
-      title: "Label",
-      leftBtns: backButton("Cancel", "#labelsPage"),
-      rightBtns: saveButton( 'labelForm', 'label', "#labelsPage"),
-      #rightBtns: link("Delete", "#", "obj_type='label' class='delete' #{root.BACK_REL}") }},
-  study: {head: { leftBtns: backButton("Cards","#setPage"), rightBtns: link("Filter", pageSel("filter"), {"data-transition": "pop"}) }},
-  answer: {head: { leftBtns: backButton("Cards","#setPage"), rightBtns: link("Restart", pageSel("study"), {"data-transition": 'pop', stRestart: 'true'}) }},
-  filter: {head: { title: "Filter", leftBtns: backButton("Back","#studyPage", {callfn: 'filterChg'} ) } },
-  textInput:
-    head:
-      title: "Card",
-      leftBtns: backButton("Back","#cardPage", {id: SAVE_TEXT_LINK }),
-}
-
 
 ### studymanager conversion related ###
 CARD_LABEL_SEL = '#cardPanel #labels input:checkbox'
@@ -166,12 +107,13 @@ loadData = ->
     populateData CARD_SET_DATA
     cache DATA_REL_DATE_KEY, DATA_REL_DATE
 
+PAGES = [ "sets", "set", "labels", "label", "filter",
+          "study", "answer", "card", "textInput"]
 initPages = ->
   TABLES[SET_TYPE] = Table.get(SET_TYPE)
   hasData = TABLES[SET_TYPE].recs? and TABLES[SET_TYPE].recs.length > 0
-  firstPage =  "sets"
-  makePages firstPage, PAGES
-  refreshTmpl "#{pageSel('answer') } #headNav", answerPgHeadTmpl
+  makePages PAGES
+  #refreshTmpl "#{pageSel('answer') } #headNav", answerPgHeadTmpl
   $("#{ idSel(dualId EDIT_SET_BTN, "done" ) }").hide()
   $("#{ idSel(dualId EDIT_CARD_BTN, "done" )}").hide()
   $("#{ idSel(dualId EDIT_LABEL_BTN, "done" )}").hide()
@@ -425,6 +367,9 @@ updateCardView = ->
   log "set id", $currentSet.id, "cardlen: ", $currentSet.cards.length
   cardCountMsg()
   refreshEditableListById "cardList", cardLiTmpl, editCardLiTmpl, displayCards
+  #fix should be editable
+  #refreshListById "cardList", cardLiTmpl, displayCards
+
   $("#cardList").show() if !$editing
 
 
@@ -449,8 +394,8 @@ addArchivedLabels = (container, archiveLbl) ->
 refreshLabels = (container, lblsLbl)->
   $(container).empty()
   options = {id: "filterCheckboxes", label: lblsLbl}
-  filterBtnSet = choiceGroup false, "labels", options, $currentSet.labels
-  $(container).append filterBtnSet
+  #fix choicgroup!!###  filterBtnSet = choiceGroup false, "labels", options, $currentSet.labels
+  #fix $(container).append filterBtnSet
 
 
 refreshCheckboxes = (sel) ->
@@ -551,4 +496,12 @@ valLabel = (label) -> fieldNotBlank(label.name)
 valCard = (card) -> fieldNotBlank(card.front) or fieldNotBlank(card.back)
 
 test = ->
-  log "OSS", optionStr({name: "michael", age: 38})
+  ###
+  log "%test"
+  x = null
+  x ?= "orig"
+  log x
+  x ?= "new"
+  log x
+  log "%end test"
+  ###
