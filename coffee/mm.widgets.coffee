@@ -14,11 +14,19 @@ dualId = (id, addedPrefix) ->
 EDIT_CARD_BTN = "editCardBtn"
 EDIT_LABEL_BTN = "editLabelBtn"
 
-editBtns = (editBtnId, objList) ->
+h_editBtns = (editBtnId, objList) ->
   dualBtnId = dualId editBtnId, "done"
   """
     #{ h_rightButton "Done", "#", {id: dualBtnId, callfn: 'toggleEditSet', objList: objList, class: "editing"}  }
     #{ h_rightButton "Edit", "#", {id: editBtnId, callfn: 'toggleEditSet', objList: objList, class: "notEditing"}  }
   """
+
+editBtns = (editBtnId, objList) ->
+  dualBtnId = dualId editBtnId, "done"
+  [
+    rightButton("Done", "#", {id: dualBtnId, callfn: 'toggleEditSet', objList: objList, class: "editing"} ),
+    rightButton("Edit", "#", {id: editBtnId, callfn: 'toggleEditSet', objList: objList, class: "notEditing"} )
+  ].join(" ")
+
 
 

@@ -1,11 +1,8 @@
-$(document).bind("mobileinit", function(){
-  //apply overrides here
-  $.extend(  $.mobile,
-    {
-      //ajaxEnabled: false,   //for jqm b1
-      loadingMessage: "Syncing..."
-    }
-  );
-  $.mobile.page.prototype.options.addBackBtn = true;
+$(document).bind("mobileinit", function() {
+  $.extend($.mobile, $.mobile.page.prototype.options.headerTheme = "a");
+  $.mobile.page.prototype.options.contentTheme = "e";
+  $.mobile.listview.prototype.options.headerTheme = "a";
+  $.mobile.listview.prototype.options.theme = "d";
+  $.mobile.checkboxradio.prototype.options.theme = "d";
+  return $.mobile.button.prototype.options.theme = "d";
 });
-

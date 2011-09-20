@@ -1,46 +1,31 @@
-########################
-#########################
-labelPgTmpl = ->
-  hamlHtml    """
-    #{ hForm "labelForm", {obj_type: "label"} }
-      %div{ data-role="fieldcontain" }
-        #{h_input "hidden", "card_set_id"}
-        #{h_input "hidden", "id"}
-        #{h_input "text", "name", {placeholder: "Label Name"} }
-    """
-
-filterPgTmpl = ->
-  hamlHtml """
-    #backFirstOption
-    #archivedFilter
-    #filtersForm
-    """
-
-cardPgTmpl = ->
-  hamlHtml """
-    #{hForm "cardForm", {obj_type: "card"} }
-      #{h_input "hidden", "card_set_id"}
-      #{h_input "hidden", "id"}
-      #{h_input "hidden", "front"}
-      #{h_input "hidden", "back"}
-      %br
-      #{h_ul "cardSides", {"data-inset": true} }
-        %li
-          #{h_link "Front (Chinese)", "#textInputPage", {id: 'frontTALink', init_pg: 'cardSide', saveCB: 'saveCardFront'} }
-        %li
-          #{h_link "Back (English)", "#textInputPage", {id: 'backTALink', init_pg: 'cardSide', saveCB: 'saveCardBack', side: 'back'} }
-
-      #cardLabels
-    """
-
-
-
-
-#cardArchiveLabels #{yesnoChoiceTmpl "archivedRB", "Archive", "archived"}
-
-
-
-###
+var answerPgHeadTmpl, answerPgTmpl, cardPgTmpl, filterPgTmpl, labelPgTmpl, labelsPgTmpl, setPgTmpl, setsPgTmpl, studyPgTmpl;
+labelPgTmpl = function() {
+  return hamlHtml("" + (hForm("labelForm", {
+    obj_type: "label"
+  })) + "\n  %div{ data-role=\"fieldcontain\" }\n    " + (h_input("hidden", "card_set_id")) + "\n    " + (h_input("hidden", "id")) + "\n    " + (h_input("text", "name", {
+    placeholder: "Label Name"
+  })));
+};
+filterPgTmpl = function() {
+  return hamlHtml("#backFirstOption\n#archivedFilter\n#filtersForm");
+};
+cardPgTmpl = function() {
+  return hamlHtml("" + (hForm("cardForm", {
+    obj_type: "card"
+  })) + "\n  " + (h_input("hidden", "card_set_id")) + "\n  " + (h_input("hidden", "id")) + "\n  " + (h_input("hidden", "front")) + "\n  " + (h_input("hidden", "back")) + "\n  %br\n  " + (h_ul("cardSides", {
+    "data-inset": true
+  })) + "\n    %li\n      " + (h_link("Front (Chinese)", "#textInputPage", {
+    id: 'frontTALink',
+    init_pg: 'cardSide',
+    saveCB: 'saveCardFront'
+  })) + "\n    %li\n      " + (h_link("Back (English)", "#textInputPage", {
+    id: 'backTALink',
+    init_pg: 'cardSide',
+    saveCB: 'saveCardBack',
+    side: 'back'
+  })) + "\n\n  #cardLabels");
+};
+/*
 cardPgTmpl = ->
   cardSideItems = [
     li(link "Front (Chinese)", "#textInputPage", "id='frontTALink' init_pg='cardSide' saveCB='saveCardFront'"),
@@ -61,55 +46,23 @@ cardPgTmpl = ->
 
   </form>
   """
-###
-
-
-studyPgTmpl = ->
-    """
-    <div id="studyStatsFront"></div>
-    <div id="studyPanel">
-      <div class="cardPanel front">
-         <div id="front" class="card_face">
-             <div class="textPanel">
-              Please wait...
-             </div>
-         </div>
-      </div>
-    </div>
-    """
-
-###
+*/
+studyPgTmpl = function() {
+  return "<div id=\"studyStatsFront\"></div>\n<div id=\"studyPanel\">\n  <div class=\"cardPanel front\">\n     <div id=\"front\" class=\"card_face\">\n         <div class=\"textPanel\">\n          Please wait...\n         </div>\n     </div>\n  </div>\n</div>";
+};
+/*
 answerPgHeadTmpl = ->
   btns = [li(button "Correct", "#", "id='correct' data-transition='pop' class='result'"),
           li(button "Wrong", "#", "id='wrong' data-transition='pop' class='result'")]
   ul "studyButtons", btns,  {class: 'back'}
-###
-
-answerPgHeadTmpl = ->
-  """
-  <ul id="studyButtons" class="back">
-    #{li(button "Correct", "#", "id='correct' data-transition='pop' class='result'")}
-    #{li(button "Wrong", "#", "id='wrong' data-transition='pop' class='result'")}
-  </ul>
-  """
-
-
-answerPgTmpl = ->
-    """
-    <div id="studyStats"></div>
-    <div id="studyPanel">
-      <div class="cardPanel">
-         <div id="front" class="card_face">
-             <div class="textPanel">
-              Please wait...
-             </div>
-         </div>
-      </div>
-    </div>
-    """
-
-
-###
+*/
+answerPgHeadTmpl = function() {
+  return "<ul id=\"studyButtons\" class=\"back\">\n  " + (li(button("Correct", "#", "id='correct' data-transition='pop' class='result'"))) + "\n  " + (li(button("Wrong", "#", "id='wrong' data-transition='pop' class='result'"))) + "\n</ul>";
+};
+answerPgTmpl = function() {
+  return "<div id=\"studyStats\"></div>\n<div id=\"studyPanel\">\n  <div class=\"cardPanel\">\n     <div id=\"front\" class=\"card_face\">\n         <div class=\"textPanel\">\n          Please wait...\n         </div>\n     </div>\n  </div>\n</div>";
+};
+/*
 loginPgTmpl = (login) ->
     """
     <h4>Login</h4>
@@ -159,35 +112,28 @@ triesTmpl = (stats) ->
   """
 
 
-###
-
-
-labelsPgTmpl = ->
-  hamlHtml """
-    #{h_button "Add Label", "#labelPage", {id: 'addLabelButton', init_pg: 'label'} }
-    #{h_ul "labelList", {"data-inset": 'true'} }
-    #{heditUL "editLabelList", "label", {"data-inset": true}}
-    """
-
-setsPgTmpl = ->
-  hamlHtml  """
-    #{h_ul "setList", { obj_type: 'card_set'} }
-    #{heditUL "editSetList", "set"}
-    """
-
-setPgTmpl = (set) ->
-  hamlHtml  """
-    #cardsShowing
-      %a#prevCards.cardList{href: "#", } Prev
-      %span#cardsShowingMsg
-      %a#nextCards.cardList{href: "#", } Next
-    %br
-    #{ h_ul "cardList", {obj_type: 'card'} }
-    #{ heditUL "editCardList", "card"  }
-    """
-
-#from app.coffee
-###
+*/
+labelsPgTmpl = function() {
+  return hamlHtml("" + (h_button("Add Label", "#labelPage", {
+    id: 'addLabelButton',
+    init_pg: 'label'
+  })) + "\n" + (h_ul("labelList", {
+    "data-inset": 'true'
+  })) + "\n" + (heditUL("editLabelList", "label", {
+    "data-inset": true
+  })));
+};
+setsPgTmpl = function() {
+  return hamlHtml("" + (h_ul("setList", {
+    obj_type: 'card_set'
+  })) + "\n" + (heditUL("editSetList", "set")));
+};
+setPgTmpl = function(set) {
+  return hamlHtml("#cardsShowing\n  %a#prevCards.cardList{href: \"#\", } Prev\n  %span#cardsShowingMsg\n  %a#nextCards.cardList{href: \"#\", } Next\n%br\n" + (h_ul("cardList", {
+    obj_type: 'card'
+  })) + "\n" + (heditUL("editCardList", "card")));
+};
+/*
 $studyLink = link "Study!", "#studyPage", {id: 'studyButton', init_pg: 'study', class: 'study'}
 
 editBtns = (editBtnId, objList) ->
@@ -241,11 +187,8 @@ PAGES = {
       title: "Card",
       leftBtns: backButton("Back","#cardPage", {id: SAVE_TEXT_LINK }),
 }
-###
-
-
-#mm.mobile.util
-###
+*/
+/*
 formCB = (formId, options) ->
     log "formCB", formId
     vOptions = {
@@ -302,8 +245,8 @@ refreshPage = (id, params) ->
 
 
 
-###
-###
+*/
+/*
 yesnoChoiceTmpl = (id, label, group, yesChecked) ->
   options = {id: id, align: "horizontal", label: label}
   noChecked = (yesChecked != null and !yesChecked)
@@ -312,10 +255,8 @@ yesnoChoiceTmpl = (id, label, group, yesChecked) ->
             {id: "no", name: group, val: "false", label: "No", checked: noChecked}
           ]
   choiceGroup true, group, options, btns
-###
-
-
-###
+*/
+/*
 yesnoChoiceTmpl = (id, label, group, yesChecked) ->
   options = {"data-type": "horizontal", "data-theme": "d"}
   """
@@ -323,9 +264,8 @@ yesnoChoiceTmpl = (id, label, group, yesChecked) ->
     #{ h_checkbox "Yes", "yes", {"data-theme": "d", name: "labels", value: "yes"}, yesChecked }
     #{ h_checkbox "No", "no", {"data-theme": "d", name: "labels", value: "no"}, !yesChecked }
   """
-###
-
-###
+*/
+/*
 cg = (isRadio, label, fieldName, choices=[], options )->
   btns = for choice in choices
     h_choice isRadio, choice.label, fieldName, choice.id, choice.options, choice.checked, choice.lbl_options, false
@@ -334,9 +274,8 @@ cg = (isRadio, label, fieldName, choices=[], options )->
   #{h_controlgroup label, options}
     #{btns || ""}
   """
-###
-
-###
+*/
+/*
 h_checkboxGroup = (name, options, choices) -> h_choiceGroup false, name, options, choices
 
 h_choiceGroup = (isRadio, label, fieldName, choices, options) ->
@@ -349,4 +288,4 @@ h_choiceGroup = (isRadio, label, fieldName, choices, options) ->
   #{h_controlgroup label, options}
     #{btns || ""}
   """
-###
+*/

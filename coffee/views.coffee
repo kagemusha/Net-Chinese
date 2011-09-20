@@ -1,10 +1,5 @@
 PG_DEFAULTS = {"data-theme": "e"}
 
-#          $studyLink = link "Study!", "#studyPage", {id: 'studyButton', init_pg: 'study', class: 'study'}
-#                            link("Add Card","#cardPage", {init_pg: "card", obj_type: CARD_TYPE}),
-#                            link("Labels","#labelsPage", {init_pg: "labels"} )]
-
-
 h_setsPgTmpl = ->
   hamlHtml  """
     #{h_page "setsPage", PG_DEFAULTS}
@@ -12,7 +7,7 @@ h_setsPgTmpl = ->
       #{h_content {class: "pgContent"}}
         #{h_ul "setList", { obj_type: 'card_set'} }
     """
-        #{heditUL "editSetList", "set"}
+
 
 h_setPgTmpl = (set) ->
   hamlHtml  """
@@ -27,17 +22,13 @@ h_setPgTmpl = (set) ->
             %li #{h_link "Labels","#labelsPage", {init_pg: "labels"}  }
       #{h_content {class: "pgContent"}}
         #cardsShowing
-          %a#prevCards.cardList{href: "#", } Prev
+          %a#prevCards.cardList{href: "#", } Prev&nbsp;
           %span#cardsShowingMsg
-          %a#nextCards.cardList{href: "#", } Next
+          %a#nextCards.cardList{href: "#", } &nbsp;Next
         %br
-        #{ h_ul "cardList", {obj_type: 'card'} }
+        #{ h_ul "cardList", {obj_type: "card"} }
         #{ heditUL "editCardList", "card" }
     """
-
-###
-
-###
 
 h_labelsPgTmpl = ->
   hamlHtml """
@@ -63,6 +54,7 @@ h_labelPgTmpl = ->
             #{h_input "hidden", "card_set_id"}
             #{h_input "hidden", "id"}
             #{h_input "text", "name", {placeholder: "Label Name"} }
+
     """
 
 h_filterPgTmpl = ->
@@ -71,18 +63,47 @@ h_filterPgTmpl = ->
       #{h_pageHeader "Filters"}
         #{ h_backButton "Back","#studyPage", {callfn: 'filterChg'} }
       #{h_content {class: "pgContent"}}
-        #backFirstOption
-        #archivedFilter
-        #filtersForm
+        #{yesnoChoiceTmpl "Show Back First", "backFirst" }
+        #{yesnoChoiceTmpl "Show Archived", "filterArchived"}
+        #{h_controlgroup "Labels",{id: "filterLabels"} }
     """
+
+h_cardPgTmpl = ->
+  #do we need fieldcontains() on form fields?
+  #h_choice isRadio, choice.label, fieldName, choice.id, choice.options, choice.checked
+  pg = """
+  #{h_page "cardPage", PG_DEFAULTS}
+    #{h_pageHeader "Card"}
+      #{ h_backButton "Cancel","#setPage" }
+      #{ h_saveButton( 'cardForm', 'card', "#setPage") }
+    #{h_content {class: "pgContent"}}
+      #{hForm "cardForm", {obj_type: "card"} }
+        #{h_input "hidden", "card_set_id"}
+        #{h_input "hidden", "id"}
+        #{h_input "hidden", "front"}
+        #{h_input "hidden", "back"}
+        %br
+        #{h_ul "cardSides", {"data-inset": true} }
+          %li #{h_link "enter front text (Chinese)", "#textInputPage", {id: 'frontTALink', init_pg: 'cardSide', saveCB: 'saveCardFront'} }
+          %li #{h_link "enter back text (English)", "#textInputPage", {id: 'backTALink', init_pg: 'cardSide', saveCB: 'saveCardBack', side: 'back'} }
+        %br
+        #{yesnoChoiceTmpl "Archived", "archived" , false}
+        #{h_controlgroup "Labels",{id: "cardFormLabels", "data-theme": "d"} }
+  """
+  #{h_choiceGroup false, "Labels", "labels", choices }
+  #log "haml cardForm"
+  #log pg
+  #log "html cardForm"
+  #log hamlHtml(pg)
+  hamlHtml pg
 
 studyStatsTmpl = (stats, full=true) ->
   hamlHtml """
   #studyStatsMsg
     %span.stat.label #{stats.leftInRun}
-    of
+    &nbsp;of&nbsp;
     %span.stat.label #{stats.runCount}
-    left &nbsp;&nbsp;
+    &nbsp;left&nbsp;&nbsp;
     #{if full then triesTmpl(stats) else ""}
   """
 
@@ -92,7 +113,7 @@ triesTmpl = (stats) ->
     %span.stat.label #{stats.tries[0]}
     &nbsp;2:
     %span.stat.label #{stats.tries[1]}
-    &nbsp;More:
+    &nbsp;more:
     %span.stat.label #{stats.tries[2]}
   """
 
@@ -108,33 +129,17 @@ h_studyPgTmpl = ->
         #studyPanel
           .cardPanel.front
              #front.card_face
-                 .textPanel
-                    Please wait...
+               .textPanel
+                  Please wait...
   """
 
-h_cardPgTmpl = ->
-  hamlHtml """
-    #{h_page "cardPage", PG_DEFAULTS}
-      #{h_pageHeader "Card"}
-        #{ h_backButton "Cards","#setPage" }
-        #{ h_saveButton( 'cardForm', 'card', "#setPage") }
-      #{h_content {class: "pgContent"}}
-        #{hForm "cardForm", {obj_type: "card"} }
-          #{h_input "hidden", "card_set_id"}
-          #{h_input "hidden", "id"}
-          #{h_input "hidden", "front"}
-          #{h_input "hidden", "back"}
-          %br
-          #{h_ul "cardSides", {"data-inset": true} }
-            %li #{h_link "Front (Chinese)", "#textInputPage", {id: 'frontTALink', init_pg: 'cardSide', saveCB: 'saveCardFront'} }
-            %li #{h_link "Back (English)", "#textInputPage", {id: 'backTALink', init_pg: 'cardSide', saveCB: 'saveCardBack', side: 'back'} }
-          #cardLabels
-    """
 
 h_answerPgTmpl = ->
   hamlHtml """
     #{h_page "answerPage", PG_DEFAULTS}
       #{h_pageHeader "Answer"}
+        #{ h_backButton "Cards","#setPage" }
+        #{ h_rightButton "Restart", "#studyPage", {"data-transition": "pop", stRestart: 'true'} }
         #{h_navbar() }
           %ul#studyButtons.back
             %li #{ h_link "Correct", "#", {id: 'correct', "data-transition": 'pop', class: 'result'} }
@@ -144,14 +149,17 @@ h_answerPgTmpl = ->
         #studyPanel
           .cardPanel
              #front.card_face
-                 .textPanel
-                    Please wait...
+               .textPanel
+                  Please wait...
     """
 
+h_labelGroup = (name, options, labels) ->
 
 h_textInputPgTmpl = (id, options={}) ->
-  _.extend {name: "tInput", placeholder: "(Enter text)"}, options
+  options["data-theme"] = "d"
   options["class"] = "#{options["class"] || ""} tInput"
+  _.extend options, {name: "tInput", placeholder: "Enter card text"}
+  log "tInputOpts", options
   hamlHtml """
     #{h_page "textInputPage", PG_DEFAULTS}
       #{h_pageHeader "Card"}
@@ -176,7 +184,7 @@ cardLiTmpl = (card) ->
   """
     <li class='card #{archClass}' >
       <div class='overlay'>ARCHIVED</div>
-      <a class='card' obj_id='#{card.id}' href='#cardPage' init_pg: 'card'>
+      <a class='card' obj_id='#{card.id}' href='#cardPage'  init_pg='card' >
         <span class='front'> #{card.front}</span><br/>
         #{card.back}
       </a>
@@ -192,23 +200,19 @@ editCardLiTmpl = (card) ->
     </li>
   """
 
-
-
 labelLiTmpl = (label, icon="") ->
   hamlHtml """
-    %li #{icon} #{h_link label.name, '#labelPage', {obj_id: '#{label.id}',  init_pg: 'label'} }
+    %li #{icon} #{h_link label.name, '#labelPage', {obj_id: label.id,  init_pg: 'label'} }
   """
 
-#li "#{icon} #{h_link label.name, '#labelPage', {obj_id: '#{label.id}',  init_pg: 'label'}
-
 editLabelLiTmpl = (label) ->
-  hamlHtml "%li{class: 'card', obj_id='#{label.id}'} #{delImg()} #{label.name}"
-
+  hamlHtml """
+    %li{class: 'card', obj_id: '#{label.id}'}
+      #{delImg()}
+      #{label.name}
+  """
 
 delImg = ->  "%img.del.del_icon.ui-li-icon{src: '#{img 'delete.png'}' }"
-
-
-
 
 cardBackTmpl = (back, front) ->
   """
@@ -227,4 +231,29 @@ cardBackTmpl = (back, front) ->
             %br
             """
 ###
+
+###
+h_setPgTmpl = (set) ->
+  lButton = backButton("Sets", "#setsPage")
+  rButton = editBtns(EDIT_CARD_BTN, "cardList")
+  navbar = hamlHtml """
+    %ul
+      %li #{h_link "Study!", "#studyPage", {id: 'studyButton', init_pg: 'study', class: 'study'} }
+      %li #{h_link "Add Card","#cardPage", {init_pg: "card", obj_type: CARD_TYPE} }
+      %li #{h_link "Labels","#labelsPage", {init_pg: "labels"}  }
+  """
+  header = headerTmpl("Set", lButton, rButton, navbar)
+  content = hamlHtml  """
+      #{h_content {class: "pgContent"}}
+        #cardsShowing
+          %a#prevCards.cardList{href: "#", } Prev
+          %span#cardsShowingMsg
+          %a#nextCards.cardList{href: "#", } Next
+        %br
+        #{ h_ul "cardList", {obj_type: 'card'} }
+        #{ heditUL "editCardList", "card" }
+      """
+  pageTmpl "setPage", header, content
+###
+
 

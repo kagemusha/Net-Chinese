@@ -1,4 +1,4 @@
-var backButton, button, choiceButtons, choiceGroup, choiceTmpl, controlGroup, footerTmpl, headerTmpl, input, label, li, link, linkReverseAttr, navbar, optionStr, pageTmpl, rightButton, ul, yesnoChoiceTmpl;
+var backButton, button, checkboxGroup, choiceButtons, choiceTmpl, footerTmpl, headerTmpl, input, label, li, link, linkReverseAttr, navbar, optionStr, pageTmpl, rightButton, ul;
 var __slice = Array.prototype.slice;
 optionStr = function(options) {
   var key, opts, val;
@@ -116,7 +116,7 @@ headerTmpl = function(title, lButton, rButtons, navBar, options) {
   if (options == null) {
     options = {};
   }
-  return "<div data-role=\"header\" " + (optionStr(options)) + " >\n  " + lButton + "\n  <h1>" + title + "</h1>\n  " + rButtons + "\n  <div data-role=\"navbar\" id=\"headNav\">\n    <ul class=\"headButtons\">\n    </ul>\n  </div>\n</div>";
+  return "<div data-role=\"header\" " + (optionStr(options)) + " >\n  <h1>" + title + "</h1>\n  " + lButton + "\n  " + rButtons + "\n  <div data-role=\"navbar\" id=\"headNav\">\n    <ul class=\"headButtons\">\n    </ul>\n  </div>\n</div>";
 };
 footerTmpl = function() {
   var btn, btns, buttons, dataPos, klass, specs;
@@ -144,17 +144,14 @@ footerTmpl = function() {
 navbar = function(buttonList, options) {
   return "<div data-role=\"navbar\", " + (optionStr(options)) + ">\n  " + buttonList + "\n</div>";
 };
-pageTmpl = function(specs) {
-  var footer, lButtons, rButtons, title;
-  if (specs.head.leftBtns) {
-    lButtons = _.isArray(specs.head.leftBtns) ? specs.head.leftBtns.join("") : specs.head.leftBtns;
-  } else {
-    lButtons = "";
+pageTmpl = function(id, header, content, footer, options) {
+  if (footer == null) {
+    footer = "";
   }
-  title = specs.head.title || "网 Net Chinese 中";
-  rButtons = specs.head.rightBtns || "";
-  footer = specs.footer || "";
-  return "<div id=\"" + specs.id + "\" data-role=\"page\" data-theme=\"" + DEFAULT_PG_THEME + "\"  data-auto-back-btn='true' class='pg'>\n  " + (headerTmpl(title, lButtons, rButtons)) + "\n  <div class=\"msg\"></div>\n  <div data-role=\"content\" class=\"pgContent\">\n  </div><!-- /content -->\n  " + footer + "\n</div>";
+  if (options == null) {
+    options = {};
+  }
+  return "<div id=\"" + id + "\" data-role=\"page\" data-theme=\"" + DEFAULT_PG_THEME + "\"  data-auto-back-btn='true' class='pg'>\n  " + header + "\n  " + content + "\n  " + footer + "\n</div>";
 };
 choiceTmpl = function(isRadio, name, options) {
   var checked, choiceType, lbl, val, valAttr;
@@ -164,31 +161,6 @@ choiceTmpl = function(isRadio, name, options) {
   choiceType = isRadio ? "radio" : "checkbox";
   checked = options.checked ? "checked=checked" : "";
   return "" + (input(choiceType, options.id, "data-theme='d' name='" + name + "' " + valAttr + " " + checked + " ")) + "\n" + (label(lbl, options.id));
-};
-yesnoChoiceTmpl = function(id, label, group, yesChecked) {
-  var btns, noChecked, options;
-  options = {
-    id: id,
-    align: "horizontal",
-    label: label
-  };
-  noChecked = yesChecked !== null && !yesChecked;
-  btns = [
-    {
-      id: "yes",
-      name: group,
-      val: "true",
-      label: "Yes",
-      checked: yesChecked
-    }, {
-      id: "no",
-      name: group,
-      val: "false",
-      label: "No",
-      checked: noChecked
-    }
-  ];
-  return choiceGroup(true, group, options, btns);
 };
 choiceButtons = function(isRadio, name, btnSpecs) {
   var spec;
@@ -204,27 +176,34 @@ choiceButtons = function(isRadio, name, btnSpecs) {
     })()).join(" ");
   }
 };
-choiceGroup = function(isRadio, name, options, btnSpecs) {
-  var btns, dataType, horiz, lbl;
-  btns = choiceButtons(isRadio, name, btnSpecs);
-  dataType = options.align ? "data-type=" + options.align : "";
-  options["data-theme"] = "d";
-  horiz = options.align;
-  delete options.align;
-  lbl = options.label;
-  delete options.label;
-  return "<fieldset data-role='controlgroup' " + dataType + " id='" + options.id + "' data-theme='" + options["data-theme"] + "'>\n    <legend>" + lbl + "</legend>\n    " + btns + "\n</fieldset>";
+checkboxGroup = function(name, options, choices) {
+  return choiceGroup(false, name, options, choices);
 };
-controlGroup = function(legend, buttons, horizontal, options) {
-  if (legend == null) {
-    legend = null;
-  }
-  if (horizontal == null) {
-    horizontal = false;
-  }
-  if (horizontal) {
-    options["data-type"] = "horizontal";
-  }
-  legend = legend ? "<legend>" + legend + "</legend>" : "";
-  return "<fieldset data-role='controlgroup' " + (optionStr(options)) + " >\n    " + legend + "\n    " + buttons + "\n</fieldset>";
-};
+/*
+choiceGroup = (isRadio, name, options, btnSpecs) ->
+  btns = choiceButtons isRadio, name, btnSpecs
+  dataType = if options.align then "data-type=#{options.align}" else ""
+  options["data-theme"] = "d" #parametrize
+  horiz = options.align
+  delete options.align
+  lbl = options.label
+  delete options.label
+  #controlGroup lbl, btns, options.align, options
+
+  """
+  <fieldset data-role='controlgroup' #{dataType} id='#{options.id}' data-theme='#{options["data-theme"]}'>
+      <legend>#{lbl}</legend>
+      #{btns}
+  </fieldset>
+  """
+
+controlGroup = (legend=null, buttons, horizontal=false, options) ->
+  options["data-type"]="horizontal" if horizontal
+  legend = if legend then "<legend>#{legend}</legend>" else ""
+  """
+  <fieldset data-role='controlgroup' #{optionStr options} >
+      #{legend}
+      #{buttons}
+  </fieldset>
+  """
+*/

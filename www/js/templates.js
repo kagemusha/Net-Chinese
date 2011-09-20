@@ -44,6 +44,7 @@ toggleEditControls = function(pageId) {
 refreshEditableListById = function(baseListId, template, editTemplate, objs) {
   var editListId;
   editListId = "edit" + (capitalize(baseListId));
+  log("refreshEditList", baseListId, editListId, template, editTemplate);
   $("" + (idSel(baseListId))).addClass(NOT_EDITING_CLASS);
   $("" + (idSel(editListId))).addClass(EDITING_CLASS);
   refreshListById(baseListId, template, objs);

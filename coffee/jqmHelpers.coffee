@@ -49,8 +49,8 @@ ul = (id, listItems=[""], options={}) ->
 headerTmpl = (title, lButton="", rButtons="", navBar="", options={}) ->
   """
   <div data-role="header" #{optionStr options} >
-    #{lButton}
     <h1>#{title}</h1>
+    #{lButton}
     #{rButtons}
     <div data-role="navbar" id="headNav">
       <ul class="headButtons">
@@ -90,20 +90,11 @@ navbar = (buttonList, options) ->
   """
 
 
-pageTmpl = (specs) ->
-  if specs.head.leftBtns
-    lButtons = if _.isArray(specs.head.leftBtns) then specs.head.leftBtns.join("") else specs.head.leftBtns
-  else
-    lButtons=""
-  title = specs.head.title or "网 Net Chinese 中"
-  rButtons = specs.head.rightBtns || ""
-  footer = specs.footer || ""
+pageTmpl = (id, header, content, footer="", options={}) ->
   """
-  <div id="#{specs.id}" data-role="page" data-theme="#{DEFAULT_PG_THEME}"  data-auto-back-btn='true' class='pg'>
-    #{ headerTmpl title, lButtons, rButtons }
-    <div class="msg"></div>
-    <div data-role="content" class="pgContent">
-    </div><!-- /content -->
+  <div id="#{id}" data-role="page" data-theme="#{DEFAULT_PG_THEME}"  data-auto-back-btn='true' class='pg'>
+    #{header}
+    #{content}
     #{footer}
   </div>
   """
@@ -120,20 +111,14 @@ choiceTmpl = ( isRadio, name, options) ->
     #{label(lbl, options.id)}
     """
 
-
-yesnoChoiceTmpl = (id, label, group, yesChecked) ->
-  options = {id: id, align: "horizontal", label: label}
-  noChecked = (yesChecked != null and !yesChecked)
-  btns =  [
-            {id: "yes", name: group, val: "true", label: "Yes", checked: yesChecked},
-            {id: "no", name: group, val: "false", label: "No", checked: noChecked}
-          ]
-  choiceGroup true, group, options, btns
-
 choiceButtons = (isRadio, name, btnSpecs) ->
   (choiceTmpl(isRadio, name, spec) for spec in btnSpecs).join(" ") if btnSpecs
 
+checkboxGroup = (name, options, choices) ->
+  choiceGroup false, name, options, choices
+
 #choiceType: radio or checkbox
+###
 choiceGroup = (isRadio, name, options, btnSpecs) ->
   btns = choiceButtons isRadio, name, btnSpecs
   dataType = if options.align then "data-type=#{options.align}" else ""
@@ -160,3 +145,4 @@ controlGroup = (legend=null, buttons, horizontal=false, options) ->
       #{buttons}
   </fieldset>
   """
+###
