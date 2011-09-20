@@ -298,13 +298,13 @@ appendTmpl = function(containers, templateFn, data, options) {
   elems = genElems(templateFn, data, options);
   return $(containers).append(elems);
 };
-heditUL = function(id, type, options) {
+heditUL = function(type, options) {
   if (options == null) {
     options = {};
   }
   options["class"] = " " + (options["class"] || "") + " editList";
   options.obj_type = type;
-  return h_ul(id, options);
+  return h_ul(options);
 };
 delProp = function(obj, prop) {
   var objProp;

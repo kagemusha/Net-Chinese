@@ -25,7 +25,9 @@ h_setPgTmpl = function(set) {
   })) + "\n    #cardsShowing\n      %a#prevCards.cardList{href: \"#\", } Prev&nbsp;\n      %span#cardsShowingMsg\n      %a#nextCards.cardList{href: \"#\", } &nbsp;Next\n    %br\n    " + (h_ul({
     id: "cardList",
     obj_type: "card"
-  })) + "\n    " + (heditUL("editCardList", "card")));
+  })) + "\n    " + (heditUL("card", {
+    id: "editCardList"
+  })));
 };
 h_labelsPgTmpl = function() {
   return hamlHtml("" + (h_page("labelsPage", PG_DEFAULTS)) + "\n  " + (h_pageHeader("Labels")) + "\n    " + (h_backButton("Back", "#setPage")) + "\n    " + (editBtns(EDIT_LABEL_BTN, "labelList")) + "\n  " + (h_content({
@@ -36,7 +38,8 @@ h_labelsPgTmpl = function() {
   })) + "\n    " + (h_ul({
     id: "labelList",
     "data-inset": 'true'
-  })) + "\n    " + (heditUL("editLabelList", "label", {
+  })) + "\n    " + (heditUL("label", {
+    id: "editLabelList",
     "data-inset": true
   })));
 };

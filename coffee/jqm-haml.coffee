@@ -179,10 +179,10 @@ appendTmpl = (containers, templateFn, data, options) ->
   elems = genElems(templateFn, data, options)
   $(containers).append elems
 
-heditUL = (id, type, options={}) ->
+heditUL = (type, options={}) ->
   options["class"] = " #{options.class || ""} editList"
   options.obj_type = type
-  h_ul id, options
+  h_ul options
 
 
 

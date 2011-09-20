@@ -27,7 +27,7 @@ h_setPgTmpl = (set) ->
           %a#nextCards.cardList{href: "#", } &nbsp;Next
         %br
         #{ h_ul {id: "cardList", obj_type: "card"} }
-        #{ heditUL "editCardList", "card" }
+        #{ heditUL "card", id: "editCardList" }
     """
 
 h_labelsPgTmpl = ->
@@ -39,7 +39,7 @@ h_labelsPgTmpl = ->
       #{h_content {class: "pgContent"}}
         #{h_button "Add Label", "#labelPage", {id: 'addLabelButton', init_pg: 'label'} }
         #{h_ul {id: "labelList", "data-inset": 'true'} }
-        #{heditUL "editLabelList", "label", {"data-inset": true}}
+        #{heditUL "label", {id: "editLabelList", "data-inset": true}}
     """
 
 h_labelPgTmpl = ->
