@@ -1,6 +1,7 @@
-var DEFAULT_PG_THEME, DEFAULT_STYLE, EDITING_CLASS, NOT_EDITING_CLASS, classSel, genElems, idSel, img, refreshEditableListById, refreshListById, refreshTmpl, refreshTmplById, textInputPgTmpl, toggleEditControls;
+var DEFAULT_PG_THEME, DEFAULT_STYLE, EDITING_CLASS, NOT_EDITING_CLASS, classSel, genElems, img, refreshEditableListById, refreshListById, refreshTmpl, refreshTmplById, toggleEditControls;
 root.BACK_REL = "data-rel='back'";
 refreshTmplById = function(id, templateFn, data, options) {
+  log("refreshTmplById", idSel(id));
   return refreshTmpl("" + (idSel(id)), templateFn, data, options);
 };
 refreshTmpl = function(containers, templateFn, data, options) {
@@ -18,16 +19,6 @@ refreshListById = function(id, template, objs, options) {
 };
 NOT_EDITING_CLASS = "notEditing";
 EDITING_CLASS = "editing";
-idSel = function(id) {
-  if (!id || id.length < 1) {
-    log("idsel no id!!");
-  }
-  if (id[0] === "#") {
-    return id;
-  } else {
-    return "#" + id;
-  }
-};
 classSel = function(klass) {
   if (klass[0] === ".") {
     return klass;
@@ -77,12 +68,3 @@ img = function(file) {
   return "css/images/" + file;
 };
 /* App specific below */
-/*
-editUL = (id, type, options={}) ->
-  options["class"] = " #{options.class || ""} editList"
-  options.obj_type = type
-  ul id, null,  options
-*/
-textInputPgTmpl = function() {
-  return "<textarea id=\"tInput\" class=\"fullPage\" data-theme=\"d\" name=\"tInput\" placeholder=\"(Enter text)\" />";
-};

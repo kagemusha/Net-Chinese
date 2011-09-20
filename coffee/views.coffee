@@ -5,7 +5,7 @@ h_setsPgTmpl = ->
     #{h_page "setsPage", PG_DEFAULTS}
       #{h_pageHeader "Sets"}
       #{h_content {class: "pgContent"}}
-        #{h_ul "setList", { obj_type: 'card_set'} }
+        #{h_ul {id:"setList", obj_type: 'card_set'} }
     """
 
 
@@ -26,7 +26,7 @@ h_setPgTmpl = (set) ->
           %span#cardsShowingMsg
           %a#nextCards.cardList{href: "#", } &nbsp;Next
         %br
-        #{ h_ul "cardList", {obj_type: "card"} }
+        #{ h_ul {id: "cardList", obj_type: "card"} }
         #{ heditUL "editCardList", "card" }
     """
 
@@ -38,7 +38,7 @@ h_labelsPgTmpl = ->
         #{ editBtns EDIT_LABEL_BTN, "labelList" }
       #{h_content {class: "pgContent"}}
         #{h_button "Add Label", "#labelPage", {id: 'addLabelButton', init_pg: 'label'} }
-        #{h_ul "labelList", {"data-inset": 'true'} }
+        #{h_ul {id: "labelList", "data-inset": 'true'} }
         #{heditUL "editLabelList", "label", {"data-inset": true}}
     """
 
@@ -83,7 +83,7 @@ h_cardPgTmpl = ->
         #{h_input "hidden", "front"}
         #{h_input "hidden", "back"}
         %br
-        #{h_ul "cardSides", {"data-inset": true} }
+        #{h_ul {id: "cardSides", "data-inset": true} }
           %li #{h_link "enter front text (Chinese)", "#textInputPage", {id: 'frontTALink', init_pg: 'cardSide', saveCB: 'saveCardFront'} }
           %li #{h_link "enter back text (English)", "#textInputPage", {id: 'backTALink', init_pg: 'cardSide', saveCB: 'saveCardBack', side: 'back'} }
         %br
@@ -155,17 +155,18 @@ h_answerPgTmpl = ->
 
 h_labelGroup = (name, options, labels) ->
 
-h_textInputPgTmpl = (id, options={}) ->
-  options["data-theme"] = "d"
-  options["class"] = "#{options["class"] || ""} tInput"
-  _.extend options, {name: "tInput", placeholder: "Enter card text"}
-  log "tInputOpts", options
+h_textInputPgTmpl = (id, taOptions={}) ->
+  taOptions["data-theme"] = "d"
+  taOptions["class"] = "#{taOptions["class"] || ""} tInput"
+  _.extend taOptions, {name: "tInput", placeholder: "Enter card text"}
+  taOptions["id"] ?= id
+  log "tInputOpts", taOptions
   hamlHtml """
     #{h_page "textInputPage", PG_DEFAULTS}
       #{h_pageHeader "Card"}
         #{ h_backButton "Back","#cardPage", {id: SAVE_TEXT_LINK } }
       #{h_content {class: "pgContent"}}
-        #{ hTag "textarea", (id || "tInput"), options }
+        #{ hTag "textarea", null, taOptions }
   """
 
 setLiTmpl = (set) ->
@@ -250,7 +251,7 @@ h_setPgTmpl = (set) ->
           %span#cardsShowingMsg
           %a#nextCards.cardList{href: "#", } Next
         %br
-        #{ h_ul "cardList", {obj_type: 'card'} }
+        #{ h_ul {id: "cardList", obj_type: 'card'} }
         #{ heditUL "editCardList", "card" }
       """
   pageTmpl "setPage", header, content

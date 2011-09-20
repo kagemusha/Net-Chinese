@@ -1,11 +1,11 @@
 var DATA_ROLE, appendTmpl, delProp, div, hForm, h_backButton, h_button, h_checkbox, h_choice, h_choiceGroup, h_choices, h_content, h_controlgroup, h_fieldcontain, h_fieldset, h_input, h_label, h_link, h_makePage, h_navbar, h_page, h_pageFooter, h_pageHeader, h_radio, h_resetChoices, h_rightButton, h_saveButton, h_ul, heditUL, yesnoChoiceTmpl;
 DATA_ROLE = "data-role";
-h_ul = function(id, options) {
+h_ul = function(options) {
   if (options == null) {
     options = {};
   }
   options[DATA_ROLE] = "listview";
-  return hTag("ul", id, options);
+  return hTag("ul", null, options);
 };
 h_link = function(label, href, options, reverse) {
   if (label == null) {
@@ -93,24 +93,33 @@ h_label = function(text, forAttr, options) {
   options["for"] = forAttr;
   return hTag("label", null, options, text);
 };
-h_input = function(type, id, options) {
-  var idStr;
+h_input = function(type, name, options) {
+  var _ref;
   if (options == null) {
     options = {};
   }
-  if (!options["name"]) {
-    options["name"] = id;
-  }
-  idStr = id ? "#" + id : "";
   options["type"] = type;
-  return hTag("input", id, options);
+  options["name"] = name;
+    if ((_ref = options["id"]) != null) {
+    _ref;
+  } else {
+    options["id"] = name;
+  };
+  return hTag("input", null, options);
 };
-h_fieldcontain = function(id, options) {
+/*
+h_input = (type, id, options={}) ->
+  options["name"] = id if !options["name"]
+  idStr = if id then "##{id}" else ""
+  options["type"] = type
+  hTag "input", id, options
+*/
+h_fieldcontain = function(options) {
   if (options == null) {
     options = {};
   }
   options[DATA_ROLE] = "fieldcontain";
-  return "" + (hTag("div", id, options));
+  return "" + (hTag("div", null, options));
 };
 h_controlgroup = function(label, options) {
   if (options == null) {
@@ -156,7 +165,6 @@ h_resetChoices = function(isRadioBtns, fieldId, fieldName, choices, options) {
   }
   sel = "" + (idSel(fieldId)) + ".choices";
   $(sel).empty();
-  log("reset choicezz", sel, $(sel).length);
   return $(sel).append(h_choices(isRadioBtns, fieldName, choices, options));
 };
 h_choices = function(isRadioBtns, fieldName, choicesArray, options) {
@@ -169,7 +177,6 @@ h_choices = function(isRadioBtns, fieldName, choicesArray, options) {
     _results = [];
     for (_i = 0, _len = choicesArray.length; _i < _len; _i++) {
       choice = choicesArray[_i];
-      log("choice", choice);
       if (options) {
         _.extend(options, choice.options);
       }
@@ -184,7 +191,7 @@ h_choices = function(isRadioBtns, fieldName, choicesArray, options) {
   }
 };
 h_choice = function(isRadio, label, fieldName, id, val, options, checked, lbl_options, multiline) {
-  var haml, type, _ref, _ref2;
+  var haml, type, _ref;
   if (options == null) {
     options = {};
   }
@@ -197,21 +204,17 @@ h_choice = function(isRadio, label, fieldName, id, val, options, checked, lbl_op
   if (multiline == null) {
     multiline = true;
   }
+  options.id = id;
     if ((_ref = options.value) != null) {
     _ref;
   } else {
     options.value = val || id;
   };
-    if ((_ref2 = options.name) != null) {
-    _ref2;
-  } else {
-    options.name = fieldName;
-  };
   type = isRadio ? "radio" : "checkbox";
   if (checked) {
     options["checked"] = "checked";
   }
-  haml = "" + (h_input(type, id, options)) + "\n" + (h_label(label, id, lbl_options));
+  haml = "" + (h_input(type, fieldName, options)) + "\n" + (h_label(label, id, lbl_options));
   if (multiline) {
     return multilineHaml(haml);
   } else {

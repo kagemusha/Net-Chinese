@@ -458,11 +458,11 @@ deleteFromList = (link) ->
 
 
 validateLabel = (label) ->
-  if fieldBlank(label.name) then "No label name - nothing saved" else false
+  if fieldBlank(label.name) then "Not saved: no label name" else false
 
 validateCard = (card) ->
-  fieldBlank(card.front) or fieldNotBlank(card.back)
-  if fieldBlank(label.name) then "Card front and back both blank - nothing saved" else false
+  invalid = fieldBlank(card.front) and fieldBlank(card.back)
+  if invalid then "Not saved: must fill in either card front or back" else false
 
 updateLabelViews = (source, label) ->
   log "label updatING"

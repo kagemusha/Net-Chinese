@@ -2,9 +2,9 @@ DATA_ROLE = "data-role"
 
 
 
-h_ul = (id, options={}) ->
+h_ul = (options={}) ->
   options[DATA_ROLE] = "listview"
-  hTag "ul", id, options
+  hTag "ul", null, options
 
 h_link = (label="<blank>", href="#", options={}, reverse=false) ->
   options["href"] = href
@@ -35,17 +35,25 @@ h_label = (text, forAttr, options={}) ->
   hTag "label", null, options, text
 
 
+h_input = (type, name, options={}) ->
+  options["type"] = type
+  options["name"] = name
+  options["id"] ?= name
+  hTag "input", null, options
+
+###
 h_input = (type, id, options={}) ->
   options["name"] = id if !options["name"]
   idStr = if id then "##{id}" else ""
   options["type"] = type
   hTag "input", id, options
+###
 
 
-h_fieldcontain = (id, options={}) ->
+h_fieldcontain = (options={}) ->
   options[DATA_ROLE] = "fieldcontain"
   """
-  #{ hTag "div", id, options }
+  #{ hTag "div", null, options }
   """
 
 h_controlgroup = (label, options={}) ->
@@ -80,12 +88,12 @@ h_choiceGroup = (isRadio, label, fieldName, options, choices=[] )->
 h_resetChoices = (isRadioBtns, fieldId, fieldName, choices, options={}) ->
   sel = "#{idSel fieldId}.choices"
   $(sel).empty()
-  log "reset choicezz", sel, $(sel).length
+  #log "reset choicezz", sel, $(sel).length
   $( sel ).append h_choices(isRadioBtns, fieldName, choices, options)
 
 h_choices = (isRadioBtns, fieldName, choicesArray=[], options) ->
   btns = for choice in choicesArray
-    log "choice", choice
+    #log "choice", choice
     _.extend options, choice.options if options #choice options take precedence
     h_choice isRadioBtns, choice.label, fieldName, choice.id, choice.value, choice.options, choice.checked, choice.lbl_options, false
   if (btns and btns.length > 0) then hamlHtml(multilineHaml(btns.join "\n")) else ""
@@ -93,12 +101,12 @@ h_choices = (isRadioBtns, fieldName, choicesArray=[], options) ->
 h_choice = (isRadio, label, fieldName, id, val, options={}, checked=false, lbl_options={}, multiline=true) ->
   #lbl_options["data-theme"] = "d"
   #log "choizzopts", options, fieldName, val, id
+  options.id = id
   options.value ?= val || id
-  options.name ?= fieldName
   type = if isRadio then "radio" else "checkbox"
   options["checked"] = "checked" if checked
   haml = """
-  #{h_input type, id, options}
+  #{h_input type, fieldName, options}
   #{h_label(label, id, lbl_options)}
   """
   if multiline then multilineHaml(haml) else haml

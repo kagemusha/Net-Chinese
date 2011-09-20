@@ -527,15 +527,16 @@ deleteFromList = function(link) {
 };
 validateLabel = function(label) {
   if (fieldBlank(label.name)) {
-    return "No label name - nothing saved";
+    return "Not saved: no label name";
   } else {
     return false;
   }
 };
 validateCard = function(card) {
-  fieldBlank(card.front) || fieldNotBlank(card.back);
-  if (fieldBlank(label.name)) {
-    return "Card front and back both blank - nothing saved";
+  var invalid;
+  invalid = fieldBlank(card.front) && fieldBlank(card.back);
+  if (invalid) {
+    return "Not saved: must fill in either card front or back";
   } else {
     return false;
   }

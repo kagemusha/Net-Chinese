@@ -1,4 +1,4 @@
-var TABLES, VALIDATIONS, equalStr, fieldBlank, formDataFields, getObjFromForm, go, listviewRefresh, login, makePages, onPage, pageId, pageSel, pgTmplFn, populateForm, popupMsg, refreshChoice, refreshPage, removePopup, saveForm, selCount, setPageHeaderTitle, showHide, showMsgs, uncapitalize;
+var TABLES, VALIDATIONS, equalStr, fieldBlank, formDataFields, getObjFromForm, go, listviewRefresh, login, makePages, onPage, pageId, pageSel, pgTmplFn, populateForm, popupMsg, refreshChoice, removePopup, saveForm, selCount, setPageHeaderTitle, showHide, showMsgs, uncapitalize;
 TABLES = {};
 VALIDATIONS = {};
 makePages = function(pages) {
@@ -66,13 +66,6 @@ getObjFromForm = function(formId, fields) {
   }
   delete obj.submit;
   return obj;
-};
-refreshPage = function(page) {
-  try {
-    return $(idSel(page)).page('destroy').page();
-  } catch (e) {
-
-  }
 };
 uncapitalize = function(str) {
   if (!str || str.length < 1) {

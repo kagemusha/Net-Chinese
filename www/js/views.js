@@ -5,7 +5,8 @@ PG_DEFAULTS = {
 h_setsPgTmpl = function() {
   return hamlHtml("" + (h_page("setsPage", PG_DEFAULTS)) + "\n  " + (h_pageHeader("Sets")) + "\n  " + (h_content({
     "class": "pgContent"
-  })) + "\n    " + (h_ul("setList", {
+  })) + "\n    " + (h_ul({
+    id: "setList",
     obj_type: 'card_set'
   })));
 };
@@ -21,7 +22,8 @@ h_setPgTmpl = function(set) {
     init_pg: "labels"
   })) + "\n  " + (h_content({
     "class": "pgContent"
-  })) + "\n    #cardsShowing\n      %a#prevCards.cardList{href: \"#\", } Prev&nbsp;\n      %span#cardsShowingMsg\n      %a#nextCards.cardList{href: \"#\", } &nbsp;Next\n    %br\n    " + (h_ul("cardList", {
+  })) + "\n    #cardsShowing\n      %a#prevCards.cardList{href: \"#\", } Prev&nbsp;\n      %span#cardsShowingMsg\n      %a#nextCards.cardList{href: \"#\", } &nbsp;Next\n    %br\n    " + (h_ul({
+    id: "cardList",
     obj_type: "card"
   })) + "\n    " + (heditUL("editCardList", "card")));
 };
@@ -31,7 +33,8 @@ h_labelsPgTmpl = function() {
   })) + "\n    " + (h_button("Add Label", "#labelPage", {
     id: 'addLabelButton',
     init_pg: 'label'
-  })) + "\n    " + (h_ul("labelList", {
+  })) + "\n    " + (h_ul({
+    id: "labelList",
     "data-inset": 'true'
   })) + "\n    " + (heditUL("editLabelList", "label", {
     "data-inset": true
@@ -61,7 +64,8 @@ h_cardPgTmpl = function() {
     "class": "pgContent"
   })) + "\n    " + (hForm("cardForm", {
     obj_type: "card"
-  })) + "\n      " + (h_input("hidden", "card_set_id")) + "\n      " + (h_input("hidden", "id")) + "\n      " + (h_input("hidden", "front")) + "\n      " + (h_input("hidden", "back")) + "\n      %br\n      " + (h_ul("cardSides", {
+  })) + "\n      " + (h_input("hidden", "card_set_id")) + "\n      " + (h_input("hidden", "id")) + "\n      " + (h_input("hidden", "front")) + "\n      " + (h_input("hidden", "back")) + "\n      %br\n      " + (h_ul({
+    id: "cardSides",
     "data-inset": true
   })) + "\n        %li " + (h_link("enter front text (Chinese)", "#textInputPage", {
     id: 'frontTALink',
@@ -111,22 +115,28 @@ h_answerPgTmpl = function() {
   })) + "\n    #studyStats\n    #studyPanel\n      .cardPanel\n         #front.card_face\n           .textPanel\n              Please wait...");
 };
 h_labelGroup = function(name, options, labels) {};
-h_textInputPgTmpl = function(id, options) {
-  if (options == null) {
-    options = {};
+h_textInputPgTmpl = function(id, taOptions) {
+  var _ref;
+  if (taOptions == null) {
+    taOptions = {};
   }
-  options["data-theme"] = "d";
-  options["class"] = "" + (options["class"] || "") + " tInput";
-  _.extend(options, {
+  taOptions["data-theme"] = "d";
+  taOptions["class"] = "" + (taOptions["class"] || "") + " tInput";
+  _.extend(taOptions, {
     name: "tInput",
     placeholder: "Enter card text"
   });
-  log("tInputOpts", options);
+    if ((_ref = taOptions["id"]) != null) {
+    _ref;
+  } else {
+    taOptions["id"] = id;
+  };
+  log("tInputOpts", taOptions);
   return hamlHtml("" + (h_page("textInputPage", PG_DEFAULTS)) + "\n  " + (h_pageHeader("Card")) + "\n    " + (h_backButton("Back", "#cardPage", {
     id: SAVE_TEXT_LINK
   })) + "\n  " + (h_content({
     "class": "pgContent"
-  })) + "\n    " + (hTag("textarea", id || "tInput", options)));
+  })) + "\n    " + (hTag("textarea", null, taOptions)));
 };
 setLiTmpl = function(set) {
   return hamlHtml("%li.set " + (h_link(set.name, "#setPage", {
@@ -193,7 +203,7 @@ h_setPgTmpl = (set) ->
           %span#cardsShowingMsg
           %a#nextCards.cardList{href: "#", } Next
         %br
-        #{ h_ul "cardList", {obj_type: 'card'} }
+        #{ h_ul {id: "cardList", obj_type: 'card'} }
         #{ heditUL "editCardList", "card" }
       """
   pageTmpl "setPage", header, content

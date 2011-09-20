@@ -3,13 +3,15 @@ MULTI_END = "~endmulthaml"
 
 
 
-hId = (id) ->
-  return "" if (!id or id.length == 0)
-  if id[0] == "#" then id else "##{id}"
+#hId = (id) ->
+#  return "" if (!id or id.length == 0)
+#  if id[0] == "#" then id else "##{id}"
 
 
 hTag = (tag, id, options={}, content="") ->
-  "%#{tag}#{hId id}#{hamlOptionStr options} #{content}"
+  id = "" if (!id or id.length == 0)
+  id = ( if (id[0] == "#" or id.length==0) then id else "##{id}")
+  "%#{tag}#{id}#{hamlOptionStr options} #{content}"
 
 hamlHtml = (haml) ->
   hfunc = Haml spacedHaml(haml)

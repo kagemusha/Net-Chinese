@@ -56,11 +56,6 @@ getObjFromForm = (formId, fields) ->
   obj
 
 
-refreshPage = (page) ->
-  try
-    $(idSel page).page('destroy').page()
-  catch e
-
 uncapitalize = (str) ->
   return str if (!str or str.length < 1)
   "#{str[0].toLowerCase()}#{str.substr 1}"

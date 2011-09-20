@@ -1,16 +1,6 @@
-var MULTI_END, MULTI_START, hId, hTag, hamlHtml, hamlOptionStr, multilineHaml, spacedHaml;
+var MULTI_END, MULTI_START, hTag, hamlHtml, hamlOptionStr, multilineHaml, spacedHaml;
 MULTI_START = "~multhaml";
 MULTI_END = "~endmulthaml";
-hId = function(id) {
-  if (!id || id.length === 0) {
-    return "";
-  }
-  if (id[0] === "#") {
-    return id;
-  } else {
-    return "#" + id;
-  }
-};
 hTag = function(tag, id, options, content) {
   if (options == null) {
     options = {};
@@ -18,7 +8,11 @@ hTag = function(tag, id, options, content) {
   if (content == null) {
     content = "";
   }
-  return "%" + tag + (hId(id)) + (hamlOptionStr(options)) + " " + content;
+  if (!id || id.length === 0) {
+    id = "";
+  }
+  id = (id[0] === "#" || id.length === 0 ? id : "#" + id);
+  return "%" + tag + id + (hamlOptionStr(options)) + " " + content;
 };
 hamlHtml = function(haml) {
   var hfunc;

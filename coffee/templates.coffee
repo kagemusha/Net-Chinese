@@ -1,7 +1,8 @@
 root.BACK_REL = "data-rel='back'"
 
 refreshTmplById = (id, templateFn, data, options) ->
-    refreshTmpl "#{idSel id}", templateFn, data, options
+  log "refreshTmplById", idSel(id)
+  refreshTmpl "#{idSel id}", templateFn, data, options
 
 refreshTmpl = (containers, templateFn, data, options) ->
     templateFn = eval(templateFn) if typeof templateFn == 'string'
@@ -17,9 +18,6 @@ refreshListById = (id, template, objs, options) ->
 NOT_EDITING_CLASS = "notEditing"
 EDITING_CLASS = "editing"
 
-idSel = (id) ->
-  log "idsel no id!!" if !id or id.length < 1
-  if (id[0]=="#") then id else "##{id}"
 
 classSel = (klass) ->
   if (klass[0]==".") then klass else ".#{klass}"
@@ -55,17 +53,6 @@ img = (file) ->  "css/images/#{file}"
 ### App specific below ###
 
 
-###
-editUL = (id, type, options={}) ->
-  options["class"] = " #{options.class || ""} editList"
-  options.obj_type = type
-  ul id, null,  options
-###
-
-textInputPgTmpl = ->
-  """
-  <textarea id="tInput" class="fullPage" data-theme="d" name="tInput" placeholder="(Enter text)" />
-  """
 
 
 
