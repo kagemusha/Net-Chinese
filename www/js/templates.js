@@ -1,4 +1,4 @@
-var DEFAULT_PG_THEME, DEFAULT_STYLE, EDITING_CLASS, NOT_EDITING_CLASS, classSel, genElems, img, refreshEditableListById, refreshListById, refreshTmpl, refreshTmplById, toggleEditControls;
+var DEFAULT_PG_THEME, DEFAULT_STYLE, EDITING_CLASS, NOT_EDITING_CLASS, classSel, genElems, refreshEditableListById, refreshListById, refreshTmpl, refreshTmplById, toggleEditControls;
 root.BACK_REL = "data-rel='back'";
 refreshTmplById = function(id, templateFn, data, options) {
   log("refreshTmplById", idSel(id));
@@ -64,7 +64,3 @@ genElems = function(fn, data, options) {
 };
 DEFAULT_STYLE = "d";
 DEFAULT_PG_THEME = "e";
-img = function(file) {
-  return "css/images/" + file;
-};
-/* App specific below */

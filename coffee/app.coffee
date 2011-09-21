@@ -7,6 +7,7 @@ SET_ID_ATTR = "set_id"
 SET_TYPE_ATTR = "set_type"
 CLICK_EVENT = "tap"
 FILTER_CHG = "filChgx"
+SEL_TEST = [ ARCHIVED_RB_SEL, SET_FILTERS_SEL,TEXT_AREA_ELEM, CARD_LABEL_SEL]
 
 MSG_SEL = ".msg"
 $atEnd = false
@@ -83,6 +84,7 @@ $studyQueue = new StudyQueue
 
 initMobile = ->
   env()
+  selectorSearch()
   test()
   root.msgSel = ".msg"
   loadData()
@@ -262,7 +264,6 @@ modCardText = (obj) ->
 modSide = (side, text) ->
   elem = "##{side}TALink"
   if text
-    log "hastext"
     $(elem).text text.replace(/(<([^>]+)>)/ig,"")
     $(elem).removeClass "notext"
   else
@@ -278,8 +279,8 @@ initCardSidePage = (params) ->
   $("#{idSel SAVE_TEXT_LINK}").attr('callfn', 'saveCardTextField')
 
 saveCardTextField = ->
-  log "sctf", $saveAttr, $("#cardForm ##{$saveAttr}").length
-  newVal = $("#textInputPage #tInput").val()
+  newVal = $(TEXT_AREA_ELEM).val()
+  log "sctf-val", $saveAttr, $("#cardForm ##{$saveAttr}").length, newVal
   $currentCard[$saveAttr] = newVal
   $("#cardForm ##{$saveAttr}").val newVal
   modCardText $currentCard
@@ -503,8 +504,15 @@ update = (type, source, obj) ->
   for updater in $updaters[type]
     updater source, obj
 
+#test that all essential selectors present
+selectorSearch = ->
+  log "Test essential selectors present"
+  for sel in SEL_TEST
+    log sel, $(sel).length
+
 test = ->
   #multilineTest()
   log $.mobile
+  #log "bta", testBulkAdd(5)
 
 #517 lines on 9/16

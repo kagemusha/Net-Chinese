@@ -1,16 +1,16 @@
-var PG_DEFAULTS, cardBackTmpl, cardLiTmpl, delImg, editCardLiTmpl, editLabelLiTmpl, editSetLiTmpl, h_answerPgTmpl, h_cardPgTmpl, h_filterPgTmpl, h_labelGroup, h_labelPgTmpl, h_labelsPgTmpl, h_setPgTmpl, h_setsPgTmpl, h_studyPgTmpl, h_textInputPgTmpl, labelLiTmpl, setLiTmpl, studyStatsTmpl, triesTmpl;
+var PG_DEFAULTS, answerPgTmpl, cardBackTmpl, cardLiTmpl, cardPgTmpl, delImg, editCardLiTmpl, editLabelLiTmpl, editSetLiTmpl, filterPgTmpl, h_labelGroup, img, labelLiTmpl, labelPgTmpl, labelsPgTmpl, setLiTmpl, setPgTmpl, setsPgTmpl, studyPgTmpl, studyStatsTmpl, textInputPgTmpl, triesTmpl;
 PG_DEFAULTS = {
   "data-theme": "e"
 };
-h_setsPgTmpl = function() {
+setsPgTmpl = function() {
   return hamlHtml("" + (h_page("setsPage", PG_DEFAULTS)) + "\n  " + (h_pageHeader("Sets")) + "\n  " + (h_content({
     "class": "pgContent"
-  })) + "\n    " + (h_ul({
+  })) + "\n    " + (listview({
     id: "setList",
     obj_type: 'card_set'
   })));
 };
-h_setPgTmpl = function(set) {
+setPgTmpl = function(set) {
   return hamlHtml("" + (h_page("setPage", PG_DEFAULTS)) + "\n  " + (h_pageHeader("Set")) + "\n    " + (h_backButton("Sets", "#setsPage")) + "\n    " + (editBtns(EDIT_CARD_BTN, "cardList")) + "\n    " + (h_navbar()) + "\n      %ul\n        %li " + (h_link("Study!", "#studyPage", {
     id: 'studyButton',
     init_pg: 'study',
@@ -22,20 +22,20 @@ h_setPgTmpl = function(set) {
     init_pg: "labels"
   })) + "\n  " + (h_content({
     "class": "pgContent"
-  })) + "\n    #cardsShowing\n      %a#prevCards.cardList{href: \"#\", } Prev&nbsp;\n      %span#cardsShowingMsg\n      %a#nextCards.cardList{href: \"#\", } &nbsp;Next\n    %br\n    " + (h_ul({
+  })) + "\n    #cardsShowing\n      %a#prevCards.cardList{href: \"#\", } Prev&nbsp;\n      %span#cardsShowingMsg\n      %a#nextCards.cardList{href: \"#\", } &nbsp;Next\n    %br\n    " + (listview({
     id: "cardList",
     obj_type: "card"
   })) + "\n    " + (heditUL("card", {
     id: "editCardList"
   })));
 };
-h_labelsPgTmpl = function() {
+labelsPgTmpl = function() {
   return hamlHtml("" + (h_page("labelsPage", PG_DEFAULTS)) + "\n  " + (h_pageHeader("Labels")) + "\n    " + (h_backButton("Back", "#setPage")) + "\n    " + (editBtns(EDIT_LABEL_BTN, "labelList")) + "\n  " + (h_content({
     "class": "pgContent"
   })) + "\n    " + (h_button("Add Label", "#labelPage", {
     id: 'addLabelButton',
     init_pg: 'label'
-  })) + "\n    " + (h_ul({
+  })) + "\n    " + (listview({
     id: "labelList",
     "data-inset": 'true'
   })) + "\n    " + (heditUL("label", {
@@ -43,31 +43,33 @@ h_labelsPgTmpl = function() {
     "data-inset": true
   })));
 };
-h_labelPgTmpl = function() {
-  return hamlHtml("" + (h_page("labelPage", PG_DEFAULTS)) + "\n  " + (h_pageHeader("Label")) + "\n    " + (h_backButton("Cancel", "#labelsPage")) + "\n    " + (h_saveButton('labelForm', 'label', "#labelsPage")) + "\n  " + (h_content({
+labelPgTmpl = function() {
+  return hamlHtml("" + (h_page("labelPage", PG_DEFAULTS)) + "\n  " + (h_pageHeader("Label")) + "\n    " + (backButton("Cancel", "#labelsPage")) + "\n    " + (h_saveButton('labelForm', 'label', "#labelsPage")) + "\n  " + (h_content({
     "class": "pgContent"
-  })) + "\n    " + (hForm("labelForm", {
+  })) + "\n    " + (hForm({
+    id: "labelForm",
     obj_type: "label"
-  })) + "\n      %div{ data-role=\"fieldcontain\" }\n        " + (h_input("hidden", "card_set_id")) + "\n        " + (h_input("hidden", "id")) + "\n        " + (h_input("text", "name", {
+  })) + "\n      " + (fieldcontain()) + "\n        " + (input("hidden", "card_set_id")) + "\n        " + (input("hidden", "id")) + "\n        " + (input("text", "name", {
     placeholder: "Label Name"
   })) + "\n");
 };
-h_filterPgTmpl = function() {
+filterPgTmpl = function() {
   return hamlHtml("" + (h_page("filterPage", PG_DEFAULTS)) + "\n  " + (h_pageHeader("Filters")) + "\n    " + (h_backButton("Back", "#studyPage", {
     callfn: 'filterChg'
   })) + "\n  " + (h_content({
     "class": "pgContent"
-  })) + "\n    " + (yesnoChoiceTmpl("Show Back First", "backFirst")) + "\n    " + (yesnoChoiceTmpl("Show Archived", "filterArchived")) + "\n    " + (h_controlgroup("Labels", {
+  })) + "\n    " + (yesnoChoiceTmpl("Show Back First", "backFirst")) + "\n    " + (yesnoChoiceTmpl("Show Archived", "filterArchived")) + "\n    " + (controlgroup("Labels", {
     id: "filterLabels"
   })));
 };
-h_cardPgTmpl = function() {
+cardPgTmpl = function() {
   var pg;
   pg = "" + (h_page("cardPage", PG_DEFAULTS)) + "\n  " + (h_pageHeader("Card")) + "\n    " + (h_backButton("Cancel", "#setPage")) + "\n    " + (h_saveButton('cardForm', 'card', "#setPage")) + "\n  " + (h_content({
     "class": "pgContent"
-  })) + "\n    " + (hForm("cardForm", {
+  })) + "\n    " + (hForm({
+    id: "cardForm",
     obj_type: "card"
-  })) + "\n      " + (h_input("hidden", "card_set_id")) + "\n      " + (h_input("hidden", "id")) + "\n      " + (h_input("hidden", "front")) + "\n      " + (h_input("hidden", "back")) + "\n      %br\n      " + (h_ul({
+  })) + "\n      " + (h_input("hidden", "card_set_id")) + "\n      " + (h_input("hidden", "id")) + "\n      " + (h_input("hidden", "front")) + "\n      " + (h_input("hidden", "back")) + "\n      %br\n      " + (listview({
     id: "cardSides",
     "data-inset": true
   })) + "\n        %li " + (h_link("enter front text (Chinese)", "#textInputPage", {
@@ -79,7 +81,7 @@ h_cardPgTmpl = function() {
     init_pg: 'cardSide',
     saveCB: 'saveCardBack',
     side: 'back'
-  })) + "\n      %br\n      " + (yesnoChoiceTmpl("Archived", "archived", false)) + "\n      " + (h_controlgroup("Labels", {
+  })) + "\n      %br\n      " + (yesnoChoiceTmpl("Archived", "archived", false)) + "\n      " + (controlgroup("Labels", {
     id: "cardFormLabels",
     "data-theme": "d"
   }));
@@ -94,14 +96,14 @@ studyStatsTmpl = function(stats, full) {
 triesTmpl = function(stats) {
   return hamlHtml("Correct 1 try:\n%span.stat.label " + stats.tries[0] + "\n&nbsp;2:\n%span.stat.label " + stats.tries[1] + "\n&nbsp;more:\n%span.stat.label " + stats.tries[2]);
 };
-h_studyPgTmpl = function() {
+studyPgTmpl = function() {
   return hamlHtml("" + (h_page("studyPage", PG_DEFAULTS)) + "\n  " + (h_pageHeader("Study")) + "\n    " + (h_backButton("Cards", "#setPage")) + "\n    " + (h_rightButton("Filter", "#filterPage", {
     "data-transition": "pop"
   })) + "\n  " + (h_content({
     "class": "pgContent"
   })) + "\n    #studyStatsFront\n    #studyPanel\n      .cardPanel.front\n         #front.card_face\n           .textPanel\n              Please wait...");
 };
-h_answerPgTmpl = function() {
+answerPgTmpl = function() {
   return hamlHtml("" + (h_page("answerPage", PG_DEFAULTS)) + "\n  " + (h_pageHeader("Answer")) + "\n    " + (h_backButton("Cards", "#setPage")) + "\n    " + (h_rightButton("Restart", "#studyPage", {
     "data-transition": "pop",
     stRestart: 'true'
@@ -118,7 +120,7 @@ h_answerPgTmpl = function() {
   })) + "\n    #studyStats\n    #studyPanel\n      .cardPanel\n         #front.card_face\n           .textPanel\n              Please wait...");
 };
 h_labelGroup = function(name, options, labels) {};
-h_textInputPgTmpl = function(id, taOptions) {
+textInputPgTmpl = function(id, taOptions) {
   var _ref;
   if (taOptions == null) {
     taOptions = {};
@@ -139,7 +141,7 @@ h_textInputPgTmpl = function(id, taOptions) {
     id: SAVE_TEXT_LINK
   })) + "\n  " + (h_content({
     "class": "pgContent"
-  })) + "\n    " + (hTag("textarea", null, taOptions)));
+  })) + "\n    " + (haTag("textarea", taOptions)));
 };
 setLiTmpl = function(set) {
   return hamlHtml("%li.set " + (h_link(set.name, "#setPage", {
@@ -171,43 +173,12 @@ labelLiTmpl = function(label, icon) {
 editLabelLiTmpl = function(label) {
   return hamlHtml("%li{class: 'card', obj_id: '" + label.id + "'}\n  " + (delImg()) + "\n  " + label.name);
 };
-delImg = function() {
-  return "%img.del.del_icon.ui-li-icon{src: '" + (img('delete.png')) + "' }";
-};
 cardBackTmpl = function(back, front) {
   return "\n\n<div class='backText'>" + back + "</div>\n" + front + "\n\n";
 };
-/*
-cardBackTmpl = (back, front) ->
-  hamlHtml  """
-            %br
-            .backText
-              #{back}
-            #{front}
-            %br
-            %br
-            """
-*/
-/*
-h_setPgTmpl = (set) ->
-  lButton = backButton("Sets", "#setsPage")
-  rButton = editBtns(EDIT_CARD_BTN, "cardList")
-  navbar = hamlHtml """
-    %ul
-      %li #{h_link "Study!", "#studyPage", {id: 'studyButton', init_pg: 'study', class: 'study'} }
-      %li #{h_link "Add Card","#cardPage", {init_pg: "card", obj_type: CARD_TYPE} }
-      %li #{h_link "Labels","#labelsPage", {init_pg: "labels"}  }
-  """
-  header = headerTmpl("Set", lButton, rButton, navbar)
-  content = hamlHtml  """
-      #{h_content {class: "pgContent"}}
-        #cardsShowing
-          %a#prevCards.cardList{href: "#", } Prev
-          %span#cardsShowingMsg
-          %a#nextCards.cardList{href: "#", } Next
-        %br
-        #{ h_ul {id: "cardList", obj_type: 'card'} }
-        #{ heditUL "editCardList", "card" }
-      """
-  pageTmpl "setPage", header, content
-*/
+delImg = function() {
+  return "%img.del.del_icon.ui-li-icon{src: '" + (img('delete.png')) + "' }";
+};
+img = function(file) {
+  return "css/images/" + file;
+};

@@ -1,4 +1,4 @@
-var TABLES, VALIDATIONS, equalStr, fieldBlank, formDataFields, getObjFromForm, go, listviewRefresh, login, makePages, onPage, pageId, pageSel, pgTmplFn, populateForm, popupMsg, refreshChoice, removePopup, saveForm, selCount, setPageHeaderTitle, showHide, showMsgs, uncapitalize;
+var TABLES, VALIDATIONS, equalStr, fieldBlank, formDataFields, getObjFromForm, go, listviewRefresh, login, makePage, makePages, onPage, pageId, pageSel, pgTmplFn, populateForm, popupMsg, refreshChoice, removePopup, saveForm, selCount, setPageHeaderTitle, showHide, showMsgs, uncapitalize;
 TABLES = {};
 VALIDATIONS = {};
 makePages = function(pages) {
@@ -6,9 +6,14 @@ makePages = function(pages) {
   _results = [];
   for (_i = 0, _len = pages.length; _i < _len; _i++) {
     page = pages[_i];
-    _results.push(h_makePage(page));
+    _results.push(makePage(page));
   }
   return _results;
+};
+makePage = function(id) {
+  var tmpl;
+  tmpl = "" + id + "PgTmpl";
+  return appendTmpl("body", tmpl);
 };
 fieldBlank = function(val) {
   return !val || val.length === 0;

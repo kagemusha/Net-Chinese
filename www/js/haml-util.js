@@ -1,26 +1,23 @@
-var MULTI_END, MULTI_START, hTag, hamlHtml, hamlOptionStr, multilineHaml, spacedHaml;
-MULTI_START = "~multhaml";
-MULTI_END = "~endmulthaml";
-hTag = function(tag, id, options, content) {
+var MULTI_END, MULTI_START, correctIndents, haTag, hamlHtml, hamlOptionStr, multilineHaml;
+hamlHtml = function(haml) {
+  return Haml(correctIndents(haml))();
+};
+haTag = function(tag, options, content) {
   if (options == null) {
     options = {};
   }
   if (content == null) {
     content = "";
   }
-  if (!id || id.length === 0) {
-    id = "";
-  }
-  id = (id[0] === "#" || id.length === 0 ? id : "#" + id);
-  return "%" + tag + id + (hamlOptionStr(options)) + " " + content;
+  return "%" + tag + (hamlOptionStr(options)) + " " + content;
 };
-hamlHtml = function(haml) {
-  var hfunc;
-  hfunc = Haml(spacedHaml(haml));
-  return hfunc();
+MULTI_START = "~multhaml";
+MULTI_END = "~endmulthaml";
+multilineHaml = function(haml) {
+  return "" + MULTI_START + "\n" + haml + "\n" + MULTI_END;
 };
-spacedHaml = function(haml) {
-  var line, lines, multiSpaces, sp, spaced, spaces, spacingArray, _i, _len;
+correctIndents = function(haml) {
+  var line, lines, multiSpaces, spaced, spaces, spacingArray, _i, _len;
   lines = haml.split("\n");
   spacingArray = new Array();
   spaced = new Array();
@@ -37,8 +34,7 @@ spacedHaml = function(haml) {
       spaced.push(line);
     }
   }
-  sp = spaced.join("\n");
-  return sp;
+  return spaced.join("\n");
 };
 hamlOptionStr = function(options, brackets) {
   var key, opts, val;
@@ -65,7 +61,4 @@ hamlOptionStr = function(options, brackets) {
   } else {
     return opts.join(", ");
   }
-};
-multilineHaml = function(haml) {
-  return "" + MULTI_START + "\n" + haml + "\n" + MULTI_END;
 };

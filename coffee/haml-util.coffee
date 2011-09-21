@@ -1,24 +1,27 @@
+
+hamlHtml = (haml) ->
+  Haml(correctIndents(haml))()
+
+#convenience method which generates haml
+#e.g. haTag("a", {href: "#editPage", class: "notEditing"}, "Edit")
+# => %a{href: "#editPage", class: "notEditing"} Edit
+haTag = (tag, options={}, content="") ->
+  "%#{tag}#{hamlOptionStr options} #{content}"
+
+
 MULTI_START = "~multhaml"
 MULTI_END = "~endmulthaml"
 
+#needed for functions which return multiple lines of Haml
+#e.g.
+multilineHaml = (haml) ->
+  """
+  #{MULTI_START}
+  #{haml}
+  #{MULTI_END}
+  """
 
-
-#hId = (id) ->
-#  return "" if (!id or id.length == 0)
-#  if id[0] == "#" then id else "##{id}"
-
-
-hTag = (tag, id, options={}, content="") ->
-  id = "" if (!id or id.length == 0)
-  id = ( if (id[0] == "#" or id.length==0) then id else "##{id}")
-  "%#{tag}#{id}#{hamlOptionStr options} #{content}"
-
-hamlHtml = (haml) ->
-  hfunc = Haml spacedHaml(haml)
-  #hfunc = Haml(haml)
-  hfunc()
-
-spacedHaml = (haml) ->
+correctIndents = (haml) ->
   lines = haml.split("\n")
   spacingArray = new Array()
   spaced = new Array()
@@ -26,18 +29,17 @@ spacedHaml = (haml) ->
   for line in lines
     multiSpaces = line.search(MULTI_START)
     if multiSpaces > -1
-      #log "start multi", multiSpaces
       spacingArray.push line.substring(0, multiSpaces)
     else if line.search(MULTI_END) > -1
       spacingArray.pop()
-      #log "end multi", spacingArray.join("").length
     else
       spaces =  spacingArray.join("")
       line = "#{spaces}#{line}"
       spaced.push line
-  sp = spaced.join("\n")
-  sp
+  spaced.join("\n")
 
+#takes javascript obj andgenerats option string
+# properly formatted for haml.js
 hamlOptionStr = (options, brackets=true) ->
   return "" if !options
   return options if typeof(options)=='string'
@@ -45,9 +47,3 @@ hamlOptionStr = (options, brackets=true) ->
       "#{key}: '#{val}'"
   if brackets then "{ #{opts.join ", "} }" else opts.join(", ")
 
-multilineHaml = (haml) ->
-  """
-  #{MULTI_START}
-  #{haml}
-  #{MULTI_END}
-  """

@@ -1,16 +1,15 @@
 DATA_ROLE = "data-role"
 
 
-
-h_ul = (options={}) ->
+listview = (options={}) ->
   options[DATA_ROLE] = "listview"
-  hTag "ul", null, options
+  haTag "ul", options
 
 h_link = (label="<blank>", href="#", options={}, reverse=false) ->
   options["href"] = href
   if reverse
     if (!href or href="#") then options["data-direction"]='reverse' else options["data-rel"]='back'
-  hTag "a", null, options, label
+  haTag "a", options, label
 
 h_button = (label, href="#", options={}, reverse=false) ->
   options[DATA_ROLE] = 'button'
@@ -32,31 +31,23 @@ h_backButton = (label="Back", href="#", options={}) ->
 
 h_label = (text, forAttr, options={}) ->
   options["for"] = forAttr
-  hTag "label", null, options, text
+  haTag "label", options, text
 
 
 h_input = (type, name, options={}) ->
   options["type"] = type
   options["name"] = name
   options["id"] ?= name
-  hTag "input", null, options
-
-###
-h_input = (type, id, options={}) ->
-  options["name"] = id if !options["name"]
-  idStr = if id then "##{id}" else ""
-  options["type"] = type
-  hTag "input", id, options
-###
+  haTag "input", options
 
 
-h_fieldcontain = (options={}) ->
+fieldcontain = (options={}) ->
   options[DATA_ROLE] = "fieldcontain"
   """
-  #{ hTag "div", null, options }
+  #{ haTag "div", options }
   """
 
-h_controlgroup = (label, options={}) ->
+controlgroup = (label, options={}) ->
   options[DATA_ROLE] = 'controlgroup'
   h_fieldset label, options
 
@@ -65,7 +56,7 @@ h_fieldset = (label, options={}) ->
   #log "fieldset", id
   choiceDiv = if id then "#{idSel id}.choices" else "" #needed for dynamic choice groups
   multilineHaml """
-  #{ hTag "fieldset", null, options }
+  #{ haTag "fieldset", options }
     %legend #{label}
     #{choiceDiv}
   """
@@ -73,7 +64,7 @@ h_fieldset = (label, options={}) ->
 yesnoChoiceTmpl = (label, fieldName, yesChecked=false, cgOptions={}) ->
   _.extend cgOptions, {"data-type": "horizontal", id: "#{fieldName}Choice"}
   haml = """
-  #{h_controlgroup label, cgOptions}
+  #{controlgroup label, cgOptions}
       #{ h_radio "Yes", fieldName, "yes", "true", {}, yesChecked }
       #{ h_radio "No", fieldName, "no", "false", {}, !yesChecked }
   """
@@ -81,7 +72,7 @@ yesnoChoiceTmpl = (label, fieldName, yesChecked=false, cgOptions={}) ->
 
 h_choiceGroup = (isRadio, label, fieldName, options, choices=[] )->
   multilineHaml """
-  #{h_controlgroup label, options}
+  #{controlgroup label, options}
     #{h_choices isRadio, fieldName, choices}
   """
 
@@ -136,14 +127,15 @@ h_choice = (isRadio, label, fieldName, id, val, options={}, checked=false, lbl_o
 h_radio = (label, name, id, val, options, checked, lblOptions) -> h_choice true, label, name, id, val, options, checked, lblOptions
 h_checkbox = (label, name, id, val, options, checked, lblOptions) -> h_choice false, label, name, id, val, options, checked, lblOptions
 
-hForm = (id, options={}) ->
-  options["accept-charset"] = options["accept-charset"] || "UTF-8"
-  hTag "form", id, options
+hForm = (options={}) ->
+  options["accept-charset"] ?= "UTF-8"
+  haTag "form", options
 
 
 h_page = (id, options={}) ->
   options[DATA_ROLE] = "page"
-  div options, id
+  options["id"] = id
+  div options
 
 #position can be "inline", "fixed", or "fullscreen"
 h_pageHeader = (title="", position="fixed", options={}) ->
@@ -154,8 +146,8 @@ h_pageHeader = (title="", position="fixed", options={}) ->
       %h1 #{title}
   """
 
-div = ( options={}, id, content) ->
-  hTag "div", id, options, content
+div = ( options={}, content) ->
+  haTag "div", options, content
 
 h_pageFooter = (fixed=true, options={}) ->
   options[DATA_ROLE] = "footer"
@@ -169,21 +161,10 @@ h_content = (options={}) ->
   options[DATA_ROLE] = "content"
   div options
 
-h_makePage = (id) ->
-  #elems = genElems(templateFn, data, options)
-  tmpl = "h_#{id}PgTmpl"
-  appendTmpl "body", tmpl
-
 appendTmpl = (containers, templateFn, data, options) ->
   templateFn = eval(templateFn) if typeof templateFn == 'string'
   elems = genElems(templateFn, data, options)
   $(containers).append elems
-
-heditUL = (type, options={}) ->
-  options["class"] = " #{options.class || ""} editList"
-  options.obj_type = type
-  h_ul options
-
 
 
 delProp = (obj, prop) ->

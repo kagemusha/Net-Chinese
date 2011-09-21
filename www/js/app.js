@@ -1,4 +1,4 @@
-var $atEnd, $currentCard, $currentSet, $editing, $saveAttr, $showFromCard, $showedStudyTip, $studyInit, $studyQueue, $updaters, ARCHIVED_RB_SEL, CARDS_PER_PAGE, CARD_LABEL_SEL, CARD_TYPE, CLICK_EVENT, DATA_REL_DATE_KEY, EDIT_CARD_BTN, EDIT_LABEL_BTN, EDIT_SET_BTN, FILTER_CHG, LABEL_TYPE, MSG_SEL, OBJ_ID_ATTR, OBJ_TYPE_ATTR, PAGES, SAVE_TEXT_LINK, SET_FILTERS_SEL, SET_ID_ATTR, SET_TYPE, SET_TYPE_ATTR, Set, TEXT_AREA_ELEM, addUpdater, cardCountMsg, deleteFromList, deleteObj, filterChg, getObj, initCallbacks, initCardPage, initCardSidePage, initLabelPage, initLabelsPage, initMobile, initPages, initSetPage, initStudyPage, initStudyingCBs, initUpdaters, labelChoices, loadData, modCardText, modSide, nextCards, populateData, prevCards, refreshCardList, remakeFilterPages, resetDeleteItem, resetEditing, saveCard, saveCardTextField, setupForm, showDelButton, switchFilter, switchSet, test, toggleEditSet, update, updateCardViews, updateDelLink, updateLabelSelector, updateLabelViews, validateCard, validateLabel, validationsInit;
+var $atEnd, $currentCard, $currentSet, $editing, $saveAttr, $showFromCard, $showedStudyTip, $studyInit, $studyQueue, $updaters, ARCHIVED_RB_SEL, CARDS_PER_PAGE, CARD_LABEL_SEL, CARD_TYPE, CLICK_EVENT, DATA_REL_DATE_KEY, EDIT_CARD_BTN, EDIT_LABEL_BTN, EDIT_SET_BTN, FILTER_CHG, LABEL_TYPE, MSG_SEL, OBJ_ID_ATTR, OBJ_TYPE_ATTR, PAGES, SAVE_TEXT_LINK, SEL_TEST, SET_FILTERS_SEL, SET_ID_ATTR, SET_TYPE, SET_TYPE_ATTR, Set, TEXT_AREA_ELEM, addUpdater, cardCountMsg, deleteFromList, deleteObj, filterChg, getObj, initCallbacks, initCardPage, initCardSidePage, initLabelPage, initLabelsPage, initMobile, initPages, initSetPage, initStudyPage, initStudyingCBs, initUpdaters, labelChoices, loadData, modCardText, modSide, nextCards, populateData, prevCards, refreshCardList, remakeFilterPages, resetDeleteItem, resetEditing, saveCard, saveCardTextField, selectorSearch, setupForm, showDelButton, switchFilter, switchSet, test, toggleEditSet, update, updateCardViews, updateDelLink, updateLabelSelector, updateLabelViews, validateCard, validateLabel, validationsInit;
 SET_TYPE = "card_set";
 CARD_TYPE = 'card';
 LABEL_TYPE = 'label';
@@ -8,6 +8,7 @@ SET_ID_ATTR = "set_id";
 SET_TYPE_ATTR = "set_type";
 CLICK_EVENT = "tap";
 FILTER_CHG = "filChgx";
+SEL_TEST = [ARCHIVED_RB_SEL, SET_FILTERS_SEL, TEXT_AREA_ELEM, CARD_LABEL_SEL];
 MSG_SEL = ".msg";
 $atEnd = false;
 ARCHIVED_RB_SEL = "#archivedRB input";
@@ -104,6 +105,7 @@ $studyQueue = new StudyQueue({
 initMobile = function() {
   var filt;
   env();
+  selectorSearch();
   test();
   root.msgSel = ".msg";
   loadData();
@@ -294,7 +296,6 @@ modSide = function(side, text) {
   var elem;
   elem = "#" + side + "TALink";
   if (text) {
-    log("hastext");
     $(elem).text(text.replace(/(<([^>]+)>)/ig, ""));
     return $(elem).removeClass("notext");
   } else {
@@ -312,8 +313,8 @@ initCardSidePage = function(params) {
 };
 saveCardTextField = function() {
   var newVal;
-  log("sctf", $saveAttr, $("#cardForm #" + $saveAttr).length);
-  newVal = $("#textInputPage #tInput").val();
+  newVal = $(TEXT_AREA_ELEM).val();
+  log("sctf-val", $saveAttr, $("#cardForm #" + $saveAttr).length, newVal);
   $currentCard[$saveAttr] = newVal;
   $("#cardForm #" + $saveAttr).val(newVal);
   return modCardText($currentCard);
@@ -590,6 +591,16 @@ update = function(type, source, obj) {
   for (_i = 0, _len = _ref.length; _i < _len; _i++) {
     updater = _ref[_i];
     _results.push(updater(source, obj));
+  }
+  return _results;
+};
+selectorSearch = function() {
+  var sel, _i, _len, _results;
+  log("Test essential selectors present");
+  _results = [];
+  for (_i = 0, _len = SEL_TEST.length; _i < _len; _i++) {
+    sel = SEL_TEST[_i];
+    _results.push(log(sel, $(sel).length));
   }
   return _results;
 };

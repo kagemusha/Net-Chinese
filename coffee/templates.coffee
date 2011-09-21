@@ -48,11 +48,3 @@ DEFAULT_PG_THEME = "e"
 
 
 
-img = (file) ->  "css/images/#{file}"
-
-### App specific below ###
-
-
-
-
-

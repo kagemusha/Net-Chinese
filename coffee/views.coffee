@@ -1,15 +1,15 @@
 PG_DEFAULTS = {"data-theme": "e"}
 
-h_setsPgTmpl = ->
+setsPgTmpl = ->
   hamlHtml  """
     #{h_page "setsPage", PG_DEFAULTS}
       #{h_pageHeader "Sets"}
       #{h_content {class: "pgContent"}}
-        #{h_ul {id:"setList", obj_type: 'card_set'} }
+        #{listview {id:"setList", obj_type: 'card_set'} }
     """
 
 
-h_setPgTmpl = (set) ->
+setPgTmpl = (set) ->
   hamlHtml  """
     #{h_page "setPage", PG_DEFAULTS}
       #{h_pageHeader "Set"}
@@ -26,11 +26,11 @@ h_setPgTmpl = (set) ->
           %span#cardsShowingMsg
           %a#nextCards.cardList{href: "#", } &nbsp;Next
         %br
-        #{ h_ul {id: "cardList", obj_type: "card"} }
+        #{ listview {id: "cardList", obj_type: "card"} }
         #{ heditUL "card", id: "editCardList" }
     """
 
-h_labelsPgTmpl = ->
+labelsPgTmpl = ->
   hamlHtml """
     #{h_page "labelsPage", PG_DEFAULTS}
       #{h_pageHeader "Labels"}
@@ -38,26 +38,26 @@ h_labelsPgTmpl = ->
         #{ editBtns EDIT_LABEL_BTN, "labelList" }
       #{h_content {class: "pgContent"}}
         #{h_button "Add Label", "#labelPage", {id: 'addLabelButton', init_pg: 'label'} }
-        #{h_ul {id: "labelList", "data-inset": 'true'} }
+        #{listview {id: "labelList", "data-inset": 'true'} }
         #{heditUL "label", {id: "editLabelList", "data-inset": true}}
     """
 
-h_labelPgTmpl = ->
+labelPgTmpl = ->
   hamlHtml    """
     #{h_page "labelPage", PG_DEFAULTS}
       #{h_pageHeader "Label"}
-        #{ h_backButton "Cancel", "#labelsPage" }
+        #{ backButton "Cancel", "#labelsPage" }
         #{ h_saveButton 'labelForm', 'label', "#labelsPage" }
       #{h_content {class: "pgContent"}}
-        #{ hForm "labelForm", {obj_type: "label"} }
-          %div{ data-role="fieldcontain" }
-            #{h_input "hidden", "card_set_id"}
-            #{h_input "hidden", "id"}
-            #{h_input "text", "name", {placeholder: "Label Name"} }
+        #{ hForm {id: "labelForm", obj_type: "label"} }
+          #{ fieldcontain() }
+            #{input "hidden", "card_set_id"}
+            #{input "hidden", "id"}
+            #{input "text", "name", {placeholder: "Label Name"} }
 
     """
 
-h_filterPgTmpl = ->
+filterPgTmpl = ->
   hamlHtml """
     #{h_page "filterPage", PG_DEFAULTS}
       #{h_pageHeader "Filters"}
@@ -65,36 +65,29 @@ h_filterPgTmpl = ->
       #{h_content {class: "pgContent"}}
         #{yesnoChoiceTmpl "Show Back First", "backFirst" }
         #{yesnoChoiceTmpl "Show Archived", "filterArchived"}
-        #{h_controlgroup "Labels",{id: "filterLabels"} }
+        #{controlgroup "Labels",{id: "filterLabels"} }
     """
 
-h_cardPgTmpl = ->
-  #do we need fieldcontains() on form fields?
-  #h_choice isRadio, choice.label, fieldName, choice.id, choice.options, choice.checked
+cardPgTmpl = ->
   pg = """
   #{h_page "cardPage", PG_DEFAULTS}
     #{h_pageHeader "Card"}
       #{ h_backButton "Cancel","#setPage" }
       #{ h_saveButton( 'cardForm', 'card', "#setPage") }
     #{h_content {class: "pgContent"}}
-      #{hForm "cardForm", {obj_type: "card"} }
+      #{hForm {id: "cardForm", obj_type: "card"} }
         #{h_input "hidden", "card_set_id"}
         #{h_input "hidden", "id"}
         #{h_input "hidden", "front"}
         #{h_input "hidden", "back"}
         %br
-        #{h_ul {id: "cardSides", "data-inset": true} }
+        #{listview {id: "cardSides", "data-inset": true} }
           %li #{h_link "enter front text (Chinese)", "#textInputPage", {id: 'frontTALink', init_pg: 'cardSide', saveCB: 'saveCardFront'} }
           %li #{h_link "enter back text (English)", "#textInputPage", {id: 'backTALink', init_pg: 'cardSide', saveCB: 'saveCardBack', side: 'back'} }
         %br
         #{yesnoChoiceTmpl "Archived", "archived" , false}
-        #{h_controlgroup "Labels",{id: "cardFormLabels", "data-theme": "d"} }
+        #{controlgroup "Labels",{id: "cardFormLabels", "data-theme": "d"} }
   """
-  #{h_choiceGroup false, "Labels", "labels", choices }
-  #log "haml cardForm"
-  #log pg
-  #log "html cardForm"
-  #log hamlHtml(pg)
   hamlHtml pg
 
 studyStatsTmpl = (stats, full=true) ->
@@ -117,8 +110,7 @@ triesTmpl = (stats) ->
     %span.stat.label #{stats.tries[2]}
   """
 
-#  study: {head: { leftBtns: , rightBtns: link("Filter", pageSel("filter"), {"data-transition": "pop"}) }},
-h_studyPgTmpl = ->
+studyPgTmpl = ->
   hamlHtml """
     #{h_page "studyPage", PG_DEFAULTS}
       #{h_pageHeader "Study"}
@@ -134,7 +126,7 @@ h_studyPgTmpl = ->
   """
 
 
-h_answerPgTmpl = ->
+answerPgTmpl = ->
   hamlHtml """
     #{h_page "answerPage", PG_DEFAULTS}
       #{h_pageHeader "Answer"}
@@ -155,7 +147,7 @@ h_answerPgTmpl = ->
 
 h_labelGroup = (name, options, labels) ->
 
-h_textInputPgTmpl = (id, taOptions={}) ->
+textInputPgTmpl = (id, taOptions={}) ->
   taOptions["data-theme"] = "d"
   taOptions["class"] = "#{taOptions["class"] || ""} tInput"
   _.extend taOptions, {name: "tInput", placeholder: "Enter card text"}
@@ -166,7 +158,7 @@ h_textInputPgTmpl = (id, taOptions={}) ->
       #{h_pageHeader "Card"}
         #{ h_backButton "Back","#cardPage", {id: SAVE_TEXT_LINK } }
       #{h_content {class: "pgContent"}}
-        #{ hTag "textarea", null, taOptions }
+        #{ haTag "textarea", taOptions }
   """
 
 setLiTmpl = (set) ->
@@ -213,7 +205,6 @@ editLabelLiTmpl = (label) ->
       #{label.name}
   """
 
-delImg = ->  "%img.del.del_icon.ui-li-icon{src: '#{img 'delete.png'}' }"
 
 cardBackTmpl = (back, front) ->
   """
@@ -221,40 +212,7 @@ cardBackTmpl = (back, front) ->
   <div class='backText'>#{back}</div>
   #{front}\n\n
   """
-###
-cardBackTmpl = (back, front) ->
-  hamlHtml  """
-            %br
-            .backText
-              #{back}
-            #{front}
-            %br
-            %br
-            """
-###
-
-###
-h_setPgTmpl = (set) ->
-  lButton = backButton("Sets", "#setsPage")
-  rButton = editBtns(EDIT_CARD_BTN, "cardList")
-  navbar = hamlHtml """
-    %ul
-      %li #{h_link "Study!", "#studyPage", {id: 'studyButton', init_pg: 'study', class: 'study'} }
-      %li #{h_link "Add Card","#cardPage", {init_pg: "card", obj_type: CARD_TYPE} }
-      %li #{h_link "Labels","#labelsPage", {init_pg: "labels"}  }
-  """
-  header = headerTmpl("Set", lButton, rButton, navbar)
-  content = hamlHtml  """
-      #{h_content {class: "pgContent"}}
-        #cardsShowing
-          %a#prevCards.cardList{href: "#", } Prev
-          %span#cardsShowingMsg
-          %a#nextCards.cardList{href: "#", } Next
-        %br
-        #{ h_ul {id: "cardList", obj_type: 'card'} }
-        #{ heditUL "editCardList", "card" }
-      """
-  pageTmpl "setPage", header, content
-###
 
 
+delImg = ->  "%img.del.del_icon.ui-li-icon{src: '#{img 'delete.png'}' }"
+img = (file) ->  "css/images/#{file}"

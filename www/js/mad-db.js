@@ -1,7 +1,16 @@
-var Table, toStr;
+var Table, testBulkAdd, toStr;
 var __slice = Array.prototype.slice;
 Table = (function() {
-  Table.prototype.lastSeed = "" + ((new Date()).getTime());
+  Table.idSeed = function() {
+    return "" + ((new Date()).getTime());
+  };
+  Table.idString = function(seed, count) {
+    if (count == null) {
+      count = "";
+    }
+    return "" + seed + count;
+  };
+  Table.prototype.lastSeed = Table.idSeed();
   Table.prototype.count = 0;
   Table.prototype.recs = new Array();
   Table.prototype.updateViews = function() {
@@ -60,22 +69,24 @@ Table = (function() {
     return rec;
   };
   Table.prototype.bulkAdd = function(addRecs, empty) {
-    var count, idSeed, rec, _i, _len;
+    var count, rec, seed, _i, _len;
     if (empty == null) {
       empty = false;
     }
     if (empty) {
       this.recs = new Array;
     }
-    idSeed = (new Date()).getTime();
+    seed = Table.idSeed();
     count = 0;
     for (_i = 0, _len = addRecs.length; _i < _len; _i++) {
       rec = addRecs[_i];
+      count++;
       if (!rec.id) {
-        rec.id = "" + idSeed + (count++);
+        rec.id = Table.idString(seed, count);
       }
       this.add(rec, false);
     }
+    this.lastSeed = seed;
     return this.saveTable();
   };
   Table.prototype.replace = function(rec, save, originalPos) {
@@ -160,13 +171,15 @@ Table = (function() {
     return "_mm_tbl_" + this.name;
   };
   Table.prototype.generateId = function() {
-    var id;
-    id = "" + ((new Date()).getTime());
-    if (id === this.lastSeed) {
-      id = "" + id + (this.count++);
+    var id, newSeed;
+    newSeed = Table.idSeed();
+    if (newSeed = this.lastSeed) {
+      this.count++;
+      id = Table.idString(newSeed, this.count);
     } else {
-      this.lastSeed = id;
+      this.lastSeed = newSeed;
       this.count = 0;
+      id = this.Table.dString(newSeed);
     }
     return id;
   };
@@ -174,4 +187,27 @@ Table = (function() {
 })();
 toStr = function(val) {
   return "" + val;
+};
+testBulkAdd = function(count) {
+  var obj, objs, table, _i, _len, _results;
+  if (count == null) {
+    count = 5;
+  }
+  table = new Table("mad");
+  log("tableId", Table.idString(5, 6));
+  objs = [
+    {
+      name: "o1"
+    }, {
+      name: "o2"
+    }
+  ];
+  table.bulkAdd(objs);
+  objs = table.all();
+  _results = [];
+  for (_i = 0, _len = objs.length; _i < _len; _i++) {
+    obj = objs[_i];
+    _results.push(log("batest obj", obj));
+  }
+  return _results;
 };

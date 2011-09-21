@@ -1,11 +1,11 @@
-var DATA_ROLE, appendTmpl, delProp, div, hForm, h_backButton, h_button, h_checkbox, h_choice, h_choiceGroup, h_choices, h_content, h_controlgroup, h_fieldcontain, h_fieldset, h_input, h_label, h_link, h_makePage, h_navbar, h_page, h_pageFooter, h_pageHeader, h_radio, h_resetChoices, h_rightButton, h_saveButton, h_ul, heditUL, yesnoChoiceTmpl;
+var DATA_ROLE, appendTmpl, controlgroup, delProp, div, fieldcontain, hForm, h_backButton, h_button, h_checkbox, h_choice, h_choiceGroup, h_choices, h_content, h_fieldset, h_input, h_label, h_link, h_navbar, h_page, h_pageFooter, h_pageHeader, h_radio, h_resetChoices, h_rightButton, h_saveButton, listview, yesnoChoiceTmpl;
 DATA_ROLE = "data-role";
-h_ul = function(options) {
+listview = function(options) {
   if (options == null) {
     options = {};
   }
   options[DATA_ROLE] = "listview";
-  return hTag("ul", null, options);
+  return haTag("ul", options);
 };
 h_link = function(label, href, options, reverse) {
   if (label == null) {
@@ -28,7 +28,7 @@ h_link = function(label, href, options, reverse) {
       options["data-rel"] = 'back';
     }
   }
-  return hTag("a", null, options, label);
+  return haTag("a", options, label);
 };
 h_button = function(label, href, options, reverse) {
   if (href == null) {
@@ -91,7 +91,7 @@ h_label = function(text, forAttr, options) {
     options = {};
   }
   options["for"] = forAttr;
-  return hTag("label", null, options, text);
+  return haTag("label", options, text);
 };
 h_input = function(type, name, options) {
   var _ref;
@@ -105,23 +105,16 @@ h_input = function(type, name, options) {
   } else {
     options["id"] = name;
   };
-  return hTag("input", null, options);
+  return haTag("input", options);
 };
-/*
-h_input = (type, id, options={}) ->
-  options["name"] = id if !options["name"]
-  idStr = if id then "##{id}" else ""
-  options["type"] = type
-  hTag "input", id, options
-*/
-h_fieldcontain = function(options) {
+fieldcontain = function(options) {
   if (options == null) {
     options = {};
   }
   options[DATA_ROLE] = "fieldcontain";
-  return "" + (hTag("div", null, options));
+  return "" + (haTag("div", options));
 };
-h_controlgroup = function(label, options) {
+controlgroup = function(label, options) {
   if (options == null) {
     options = {};
   }
@@ -135,7 +128,7 @@ h_fieldset = function(label, options) {
   }
   id = delProp(options, "id");
   choiceDiv = id ? "" + (idSel(id)) + ".choices" : "";
-  return multilineHaml("" + (hTag("fieldset", null, options)) + "\n  %legend " + label + "\n  " + choiceDiv);
+  return multilineHaml("" + (haTag("fieldset", options)) + "\n  %legend " + label + "\n  " + choiceDiv);
 };
 yesnoChoiceTmpl = function(label, fieldName, yesChecked, cgOptions) {
   var haml;
@@ -149,14 +142,14 @@ yesnoChoiceTmpl = function(label, fieldName, yesChecked, cgOptions) {
     "data-type": "horizontal",
     id: "" + fieldName + "Choice"
   });
-  haml = "" + (h_controlgroup(label, cgOptions)) + "\n    " + (h_radio("Yes", fieldName, "yes", "true", {}, yesChecked)) + "\n    " + (h_radio("No", fieldName, "no", "false", {}, !yesChecked));
+  haml = "" + (controlgroup(label, cgOptions)) + "\n    " + (h_radio("Yes", fieldName, "yes", "true", {}, yesChecked)) + "\n    " + (h_radio("No", fieldName, "no", "false", {}, !yesChecked));
   return multilineHaml(haml);
 };
 h_choiceGroup = function(isRadio, label, fieldName, options, choices) {
   if (choices == null) {
     choices = [];
   }
-  return multilineHaml("" + (h_controlgroup(label, options)) + "\n  " + (h_choices(isRadio, fieldName, choices)));
+  return multilineHaml("" + (controlgroup(label, options)) + "\n  " + (h_choices(isRadio, fieldName, choices)));
 };
 h_resetChoices = function(isRadioBtns, fieldId, fieldName, choices, options) {
   var sel;
@@ -227,19 +220,25 @@ h_radio = function(label, name, id, val, options, checked, lblOptions) {
 h_checkbox = function(label, name, id, val, options, checked, lblOptions) {
   return h_choice(false, label, name, id, val, options, checked, lblOptions);
 };
-hForm = function(id, options) {
+hForm = function(options) {
+  var _ref;
   if (options == null) {
     options = {};
   }
-  options["accept-charset"] = options["accept-charset"] || "UTF-8";
-  return hTag("form", id, options);
+    if ((_ref = options["accept-charset"]) != null) {
+    _ref;
+  } else {
+    options["accept-charset"] = "UTF-8";
+  };
+  return haTag("form", options);
 };
 h_page = function(id, options) {
   if (options == null) {
     options = {};
   }
   options[DATA_ROLE] = "page";
-  return div(options, id);
+  options["id"] = id;
+  return div(options);
 };
 h_pageHeader = function(title, position, options) {
   if (title == null) {
@@ -255,11 +254,11 @@ h_pageHeader = function(title, position, options) {
   options["data-position"] = position;
   return "" + (div(options)) + "\n    %h1 " + title;
 };
-div = function(options, id, content) {
+div = function(options, content) {
   if (options == null) {
     options = {};
   }
-  return hTag("div", id, options, content);
+  return haTag("div", options, content);
 };
 h_pageFooter = function(fixed, options) {
   if (fixed == null) {
@@ -285,11 +284,6 @@ h_content = function(options) {
   options[DATA_ROLE] = "content";
   return div(options);
 };
-h_makePage = function(id) {
-  var tmpl;
-  tmpl = "h_" + id + "PgTmpl";
-  return appendTmpl("body", tmpl);
-};
 appendTmpl = function(containers, templateFn, data, options) {
   var elems;
   if (typeof templateFn === 'string') {
@@ -297,14 +291,6 @@ appendTmpl = function(containers, templateFn, data, options) {
   }
   elems = genElems(templateFn, data, options);
   return $(containers).append(elems);
-};
-heditUL = function(type, options) {
-  if (options == null) {
-    options = {};
-  }
-  options["class"] = " " + (options["class"] || "") + " editList";
-  options.obj_type = type;
-  return h_ul(options);
 };
 delProp = function(obj, prop) {
   var objProp;

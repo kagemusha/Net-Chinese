@@ -3,12 +3,17 @@ VALIDATIONS = {}
 
 makePages = (pages) ->
   for page in pages
-    h_makePage page
+    makePage page
   #appendTmpl "body", "h2_setPgTmpl"
   #log "########### Set Page HTML #########"
   #log h_setPgTmpl()
   #log "\n########### Set Page HAML #########"
   #log h2_setPgTmpl()
+
+makePage = (id) ->
+  #elems = genElems(templateFn, data, options)
+  tmpl = "#{id}PgTmpl"
+  appendTmpl "body", tmpl
 
 
 

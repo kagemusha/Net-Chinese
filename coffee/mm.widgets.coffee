@@ -28,5 +28,10 @@ editBtns = (editBtnId, objList) ->
     rightButton("Edit", "#", {id: editBtnId, callfn: 'toggleEditSet', objList: objList, class: "notEditing"} )
   ].join(" ")
 
+heditUL = (type, options={}) ->
+  options["class"] = " #{options.class || ""} editList"
+  options.obj_type = type
+  listview options
+
 
 
