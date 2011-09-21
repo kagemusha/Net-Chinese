@@ -18,6 +18,16 @@
     opacity: 0.80;
 }
 
+.tInput {
+    min-height: 300px;
+    min-width: 200px;
+    /*height: 300px;
+    width: 200px;*/
+}
+#frontTALink.notext, #backTALink.notext{
+    color: lightgray;
+}
+
 /*set page*/
 li.card .front{
     color: red
@@ -109,7 +119,7 @@ li.card.archived .overlay {
   display: table-cell;
   vertical-align: middle;
   text-align: center;
-  text-shadow: 2px 2px 2px #bbbbbb;
+  /*text-shadow: 2px 2px 2px #bbbbbb;*/
 }
 .backText{
   color: red;

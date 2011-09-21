@@ -7,22 +7,23 @@ SET_ID_ATTR = "set_id"
 SET_TYPE_ATTR = "set_type"
 CLICK_EVENT = "tap"
 FILTER_CHG = "filChgx"
+SEL_TEST = [ ARCHIVED_RB_SEL, SET_FILTERS_SEL,TEXT_AREA_ELEM, CARD_LABEL_SEL]
 
 MSG_SEL = ".msg"
 $atEnd = false
 ARCHIVED_RB_SEL = "#archivedRB input"
-SET_FILTERS_SEL = "#filterCheckboxes input"
+SET_FILTERS_SEL = "#filterLabels input"
 CARDS_PER_PAGE = 25
 $showFromCard = 0
 $studyInit = true
 $showedStudyTip = false
 $currentSet = null
 $currentCard = null
+$updaters = new Array()
 
 TEXT_AREA_ELEM = "#textInputPage textArea"
 SAVE_TEXT_LINK = "saveTextField"
 $saveAttr = null
-
 
 EDIT_SET_BTN = "editSetBtn"
 EDIT_CARD_BTN = "editCardBtn"
@@ -31,77 +32,6 @@ EDIT_LABEL_BTN = "editLabelBtn"
 class Set
   labels: null
   cards: null
-
-$studyLink = link("Study!", "#studyPage", "id='studyButton' init_pg='study' class='study'")
-
-dualId = (id, addedPrefix) ->
-  #log "dualId", id
-  preLen =  addedPrefix.length
-  if id[0..preLen-1] == addedPrefix
-    "#{uncapitalize(id[preLen])}#{id.substr(preLen+1)}"
-  else
-    "#{addedPrefix}#{capitalize id}"
-
-
-editBtns = (editBtnId, objList) ->
-  dualBtnId = dualId editBtnId, "done"
-  olStr = "objList='#{objList}'"
-  [
-    rightBtn("Done", "#", "id='#{dualBtnId}' callfn='toggleEditSet' #{olStr}", "editing"),
-    rightBtn("Edit", "#", "id='#{editBtnId}' callfn='toggleEditSet' #{olStr}", "notEditing")
-  ].join(" ")
-
-SET_HEADER_BUTTONS=[ $studyLink,
-                      link("Add Card","#cardPage", "init_pg=card obj_type=card"),
-                      link("Labels","#labelsPage","init_pg=labels ")]
-                    
-###
-STUDY_HEADER_BUTTONS=[link("Correct","#study","class result "),
-                      link("Wrong", "#study", "class result")]
-###
-EDIT_BTNS = [
-  rightBtn("Edit", "#", "id='editSetButton' callfn='toggleEditSet' objList='setList'", NOT_EDITING_CLASS),
-  rightBtn("Done", "#", "id='doneEditSetButton' callfn='toggleEditSet' objList='setList'", EDITING_CLASS)
-]
-
-PAGES = {
-  sets:
-    head:
-      title: "Sets",
-      #rightBtns: editBtns("editSetBtn", "setList")
-  set:
-    head:
-      title: "Set",
-      leftBtns: backButton("Sets", "#setsPage"),
-      rightBtns: editBtns(EDIT_CARD_BTN, "cardList"),
-      buttons: SET_HEADER_BUTTONS,
-    #footer: footerTmpl {ui_bar: true, fixed: true, navBar: true}, $studyLink
-  card:
-    head:
-      title: "Card",
-      leftBtns: backButton("Cancel", "#setPage"),
-      rightBtns: saveButton( 'cardForm', 'card', "#setPage"),
-  labels:
-    head:
-      title: "Labels",
-      leftBtns: backButton("Back", "#setPage"),
-      rightBtns: editBtns("editLabelBtn", "labelList"),
-      #buttons: SET_HEADER_BUTTONS,
-  label:
-    head:
-      title: "Label",
-      leftBtns: backButton("Cancel", "#labelsPage"),
-      rightBtns: saveButton( 'labelForm', 'label', "#labelsPage"),
-      #rightBtns: link("Delete", "#", "obj_type='label' class='delete' #{root.BACK_REL}") }},
-  study: {head: { leftBtns: backButton("Cards","#setPage"), rightBtns: link("Filter", pageSel("filter"), "data-transition=pop") }},
-  answer: {head: { leftBtns: backButton("Cards","#setPage"), rightBtns: link("Restart", pageSel("study"), "data-transition=pop stRestart=true") }},
-  filter: {head: { title: "Filter", leftBtns: backButton("Back","#studyPage", "callfn=filterChg") } },
-  textInput:
-    head:
-      title: "Card",
-      leftBtns: backButton("Back","#cardPage", " id='#{SAVE_TEXT_LINK}' "),
-}
-
 
 ### studymanager conversion related ###
 CARD_LABEL_SEL = '#cardPanel #labels input:checkbox'
@@ -112,13 +42,8 @@ $studyQueue = new StudyQueue
   #beforeShowCard: (card) -> onShowStudyCard(card)  ,
   getCards: -> $currentSet.cards ,
   hideBack: (cb) ->
-    #$.mobile.changePage(pageSel("answer"), { transition: "flip"}) if !$studyInit
-    #$("#studyButtons, .cardPanel.front, #studyPanel .back" ).fadeOut 200, ->
-    #  $(".cardPanel.front .card_face").css( height: '100%')
   showFront: ->
-    #log "SHOW FRONT"
     $.mobile.changePage(pageSel("study"), { transition: "pop"})  if !$studyInit
-    #$studyQueue.showCard()
   showCardFields: (card) ->
     front = if @backFirst then card.back else card.front
     back = if @backFirst then card.front else card.back
@@ -159,6 +84,8 @@ $studyQueue = new StudyQueue
 
 initMobile = ->
   env()
+  selectorSearch()
+  test()
   root.msgSel = ".msg"
   loadData()
   showMsgs()
@@ -167,6 +94,9 @@ initMobile = ->
   loginFormInit()
   initCallbacks()
   initStudyingCBs()
+  initUpdaters()
+  filt = "#filterPage #backFirstChoice input"
+  log filt, $(filt).length
 
 DATA_REL_DATE_KEY = "dat_rel_dat"
 
@@ -176,35 +106,33 @@ loadData = ->
     populateData CARD_SET_DATA
     cache DATA_REL_DATE_KEY, DATA_REL_DATE
 
+PAGES = [ "sets", "set","labels", "label", "filter",
+          "study", "answer", "card", "textInput"]
 initPages = ->
   TABLES[SET_TYPE] = Table.get(SET_TYPE)
   hasData = TABLES[SET_TYPE].recs? and TABLES[SET_TYPE].recs.length > 0
-  firstPage =  "sets"
-  makePages firstPage, PAGES
-  refreshTmpl "#{pageSel('answer') } #headNav", answerPgHeadTmpl
+  makePages PAGES
+  #refreshTmpl "#{pageSel('answer') } #headNav", answerPgHeadTmpl
   $("#{ idSel(dualId EDIT_SET_BTN, "done" ) }").hide()
   $("#{ idSel(dualId EDIT_CARD_BTN, "done" )}").hide()
   $("#{ idSel(dualId EDIT_LABEL_BTN, "done" )}").hide()
   if hasData
     TABLES[CARD_TYPE] = Table.get(CARD_TYPE)
     TABLES[LABEL_TYPE] = Table.get(LABEL_TYPE)
-    setViewUpdaters()
+    #setViewUpdaters()
     refreshListById "setList", setLiTmpl, TABLES[SET_TYPE].all()
 
-
-  $("#backFirstOption").append yesnoChoiceTmpl("backFirstRB", "Show Back First", "backFirst", false)
+  #supplanted by haml - get rid of soon
+  #$("#backFirstOption").append hamlHtml yesnoChoiceTmpl("backFirstRB", "Show Back First", "backFirst", false)
   #addArchivedLabels "#cardArchiveLabels", "Archive"
-  addArchivedLabels "#archivedFilter", "Show Archived"
-  $("tInput").css "height: 300px"
-  $("tInput").css "width: 200px"
-  log "noted", classSel(NOT_EDITING_CLASS)
+  #addArchivedLabels "#archivedFilter", "Show Archived"
+  #$(".tInput").css "height: 300px"
+  #$(".tInput").css "width: 200px"
   $("#{classSel EDITING_CLASS}").hide()
 
-
 validationsInit = ->
-  VALIDATIONS[LABEL_TYPE] = valLabel
-  VALIDATIONS[CARD_TYPE] =  valCard
-
+  VALIDATIONS[LABEL_TYPE] = validateLabel
+  VALIDATIONS[CARD_TYPE] =  validateCard
 
 initCallbacks = ->
   $("*[data-role='page']").live 'pageshow',(event, ui) ->
@@ -216,7 +144,7 @@ initCallbacks = ->
 
   $('#studyPage').live 'pageshow',(event, ui) ->
     if !$showedStudyTip
-      popupMsg "Touch card to see answer"
+      popupMsg "Touch card to see answer", 1200
       $showedStudyTip = true
     filterChg()
     refreshTmplById "studyStatsFront", studyStatsTmpl, $studyQueue, false
@@ -239,11 +167,9 @@ initCallbacks = ->
     fn = $(this).attr("callfn")
     callFn fn, this if (fn and fn.length > 0)
 
-  $('a[stRestart]').live CLICK_EVENT, ->
-    $studyQueue.restart()
+  $('a[stRestart]').live CLICK_EVENT, ->  $studyQueue.restart()
 
-  $('a.result').live CLICK_EVENT, ->
-    $($studyQueue.cardFrontSel).html("")
+  $('a.result').live CLICK_EVENT, ->    $($studyQueue.cardFrontSel).html("")
 
   $('a[saveform]').live CLICK_EVENT, ->
     log "saveform!!"
@@ -255,29 +181,29 @@ initCallbacks = ->
     deleteObj type, $(this).attr("obj_id")
     popupMsg("Deleted #{type}")
 
-  $('.aDeleteBtn').live CLICK_EVENT, ->
-    deleteFromList this
+  $('.aDeleteBtn').live CLICK_EVENT, ->  deleteFromList this
 
   $(".overlay").live CLICK_EVENT, ->
     log "tapped overlay"
     $(this).parent().find("a").trigger CLICK_EVENT
-
-  $("#{pageSel 'filter' } #{ARCHIVED_RB_SEL}").live "change", (event, ui) ->
-    log "arch filter"
-    $studyQueue.showArchived = ($(this).attr("value") == "true")
-    setFlag FILTER_CHG
 
   $("#{pageSel 'filter' } #{SET_FILTERS_SEL}").live "change", ->
     log "filter chg"
     setFlag FILTER_CHG
     switchFilter(SET_FILTERS_SEL)
 
-  $("#{pageSel 'filter' } #backFirstOption input").live "change", (event, ui) ->
+  $("#filterPage #filterArchivedChoice input").live "change", (event, ui) ->
+    showArchived = $(this).attr("value") == "true"
+    log "show arch", showArchived
+    $studyQueue.showArchived = showArchived
+    setFlag FILTER_CHG
+
+  $("#filterPage #backFirstChoice input").live "change", (event, ui) ->
     backFirst = ($(this).attr("value") == "true")
+    log "back first", backFirst
     $studyQueue.backFirst = backFirst
 
-  $('.del_icon').live CLICK_EVENT, ->
-    rotateDelImg this
+  $('.del_icon').live CLICK_EVENT, ->    showDelButton this
 
 deleteObj = (type, id) ->
   table = TABLES[type]
@@ -289,7 +215,6 @@ switchFilter = (checkboxElems) ->
   $(checkboxElems).each ->
     labelId = $(this).attr("value")
     checked = $(this).attr("checked")
-    #log("labelcboxchecked", labelId, checked)
     filters.push(labelId) if checked
 
   $studyQueue.filters = filters
@@ -299,7 +224,7 @@ switchFilter = (checkboxElems) ->
 
 initSetPage = (params) ->
   setId = params["obj_id"]
-  switchSet(setId)
+  switchSet setId
 
 switchSet = (setId) ->
   log "switch set", setId
@@ -308,28 +233,43 @@ switchSet = (setId) ->
     $currentSet = TABLES[SET_TYPE].findById(setId)
     #log "switch set, id, card#, label#", $currentSet.id, $currentSet.cards.length, $currentSet.labels.length
     refreshCardList()
-    updateLabelView()
+    updateLabelViews()
+    #updateLabelView()
+
+    #labelSpecs = labelsChoices($currentSet.labels)
+    #h_resetChoices false, "cardFormLabels", "labels" , labelSpecs
     $studyQueue.clearFilters()
-    #switchFilter(SET_FILTERS_SEL)
-    #remakeFilterPages()
+    switchFilter(SET_FILTERS_SEL)
+    remakeFilterPages()
 
 remakeFilterPages = ->
   log "remake"
-  makePage "card", PAGES.card
-  refreshLabels "#cardLabels", "Labels"
+  #makePage "card", PAGES.card
+  #refreshLabels "#cardLabels", "Labels"
 
 initCardPage = (params) ->
   cardId = params.obj_id
   log "initCardPage id", cardId
   $currentCard = if cardId then getObj(CARD_TYPE, cardId) else $currentCard = {card_set_id: $currentSet.id}
-  $currentCard.archived = false if !$currentCard.archived
+  $currentCard.archived = false if !$currentCard.archived #in case null
   log "initCardPage", $currentCard
-  refreshLabels "#cardLabels", "Labels"   #try to reformat; not working yet
+  #refreshLabels "#cardLabels", "Labels"   #try to reformat; not working yet
   setupForm "#cardForm", $currentCard, modCardText
 
+
 modCardText = (obj) ->
-  $("#frontTALink").text( if obj.front then obj.front.replace(/(<([^>]+)>)/ig,"") else "Front (Chinese)")
-  $("#backTALink").text( if obj.back then obj.back.replace(/(<([^>]+)>)/ig,"") else "Back (English)")
+  modSide("front", obj.front)
+  modSide("back", obj.back)
+
+modSide = (side, text) ->
+  elem = "##{side}TALink"
+  if text
+    $(elem).text text.replace(/(<([^>]+)>)/ig,"")
+    $(elem).removeClass "notext"
+  else
+    $(elem).text "Enter #{side} side text (#{if side=="front" then "Chinese" else "English"})"
+    $(elem).addClass "notext"
+
 
 initCardSidePage = (params) ->
   source = $(params.source)
@@ -339,8 +279,8 @@ initCardSidePage = (params) ->
   $("#{idSel SAVE_TEXT_LINK}").attr('callfn', 'saveCardTextField')
 
 saveCardTextField = ->
-  log "sctf", $saveAttr, $("#cardForm ##{$saveAttr}").length
-  newVal = $("#textInputPage #tInput").val()
+  newVal = $(TEXT_AREA_ELEM).val()
+  log "sctf-val", $saveAttr, $("#cardForm ##{$saveAttr}").length, newVal
   $currentCard[$saveAttr] = newVal
   $("#cardForm ##{$saveAttr}").val newVal
   modCardText $currentCard
@@ -373,13 +313,6 @@ filterChg = ->
   $studyQueue.restart() if filterChanged
 
 
-updateLabelView = ->
-  #log "updating label view"
-  $currentSet.labels = TABLES[LABEL_TYPE].findAll "card_set_id", $currentSet.id
-  refreshEditableListById "labelList", labelLiTmpl, editLabelLiTmpl, $currentSet.labels
-  #refreshListById "labelList", labelLiTmpl, $currentSet.labels
-  refreshLabels "#filtersForm", "Filters"
-
 updateLabelSelector = (container, archived, filters)->
   arcvContainer = "#{container} #{ARCHIVED_RB_SEL}"
   log "archsel", $("#{arcvContainer}#yes").length, archived
@@ -396,7 +329,6 @@ updateLabelSelector = (container, archived, filters)->
 updateDelLink = (container, objId) ->
   delLink = $("#{container} a.delete")
   if objId then delLink.attr("obj_id", objId).show() else delLink.hide()
-
 
 
 getObj = (type, id) ->
@@ -427,15 +359,7 @@ refreshCardList= (getCards=true)->
     popupMsg("No cards in this set")
     $("#studyButton").hide()
   else
-    updateCardView()
-
-
-updateCardView = ->
-  displayCards = $currentSet.cards.slice $showFromCard, $showFromCard+CARDS_PER_PAGE
-  log "set id", $currentSet.id, "cardlen: ", $currentSet.cards.length
-  cardCountMsg()
-  refreshEditableListById "cardList", cardLiTmpl, editCardLiTmpl, displayCards
-  $("#cardList").show() if !$editing
+    updateCardViews()
 
 
 cardCountMsg = ->
@@ -451,27 +375,10 @@ cardCountMsg = ->
   $("#cardsShowingMsg").html msg
 
 
-addArchivedLabels = (container, archiveLbl) ->
-  $(container).empty()
-  $(container).append yesnoChoiceTmpl("archivedRB", archiveLbl, "archived")
+labelChoices = (labels) ->
+  for label in labels
+    {id: "lbl#{label.id}", value: label.id, label: label.name, "data-theme": "a"}
 
-
-refreshLabels = (container, lblsLbl)->
-  $(container).empty()
-  options = {id: "filterCheckboxes", label: lblsLbl}
-  filterBtnSet = choiceGroup false, "labels", options, $currentSet.labels
-  $(container).append filterBtnSet
-
-
-refreshCheckboxes = (sel) ->
-  try
-    #log "choice counts(rd, cb)", $("input[type='radio']").length, ("input[type='checkbox']").length
-    $("input[type='radio']").checkboxradio "init"
-    $("input[type='checkbox']").checkboxradio "init"
-    $("input[type='radio']").checkboxradio "refresh"
-    $("input[type='checkbox']").checkboxradio "refresh"
-  catch e
-    log("cbr error", e)
 
 
 initStudyingCBs = ->
@@ -504,12 +411,6 @@ populateData=(cardSets) ->
     TABLES[CARD_TYPE].bulkAdd cards
     TABLES[LABEL_TYPE].bulkAdd labels
 
-  setViewUpdaters()
-
-setViewUpdaters = ->
-  TABLES[CARD_TYPE].updateViews = -> refreshCardList()
-  TABLES[LABEL_TYPE].updateViews = -> updateLabelView()
-
 
 $editing = false
 
@@ -532,24 +433,19 @@ resetEditing = ->
   showHide classSel(NOT_EDITING_CLASS), classSel(EDITING_CLASS)
   $editing = false
 
-toggleEditControls = (pageId="") ->
-  $("#{idSel pageId} .#{EDITING_CLASS}, #{idSel pageId} .#{NOT_EDITING_CLASS}").toggle()
-
 
 resetDeleteItem = ->
   $('.aDeleteBtn').closest("li").find("img").rotate(0)
   $('.aDeleteBtn').remove()
 
-rotateDelImg = (img)->
-  #log "rotated class", (if $rotated then $rotated else "null")
-  #$(img).append link("Delete", "#", "class='aDeleteBtn ui-btn-up-r'")
+showDelButton = (img)->
   rotated = ( $(img).closest("li").attr("obj_id") == $('.aDeleteBtn').closest("li").attr("obj_id") )
   log "rotated", rotated, $(img).closest("li").length, $('.aDeleteBtn').closest("li").length
   log "rotated", rotated, $(img).closest("li").attr("obj_id"), $('.aDeleteBtn').closest("li").attr("obj_id")
   resetDeleteItem()
   if !rotated #unrotate
     $(img).rotate(90)
-    $(img).closest("li").append link("Delete", "#", "class='aDeleteBtn ui-btn-up-r'")
+    $(img).closest("li").append link("Delete", "#", {class: 'aDeleteBtn ui-btn-up-r'})
 
 
 deleteFromList = (link) ->
@@ -559,10 +455,64 @@ deleteFromList = (link) ->
   liTmpl = list.attr("liTmpl")
   deleteObj type, obj_id
   $('.aDeleteBtn').closest("li").remove()
+  update type, link, obj_id
+
+
+validateLabel = (label) ->
+  if fieldBlank(label.name) then "Not saved: no label name" else false
+
+validateCard = (card) ->
+  invalid = fieldBlank(card.front) and fieldBlank(card.back)
+  if invalid then "Not saved: must fill in either card front or back" else false
+
+updateLabelViews = (source, label) ->
+  log "label updatING"
+  $currentSet.labels = TABLES[LABEL_TYPE].findAll "card_set_id", $currentSet.id
+  labelSpecs = labelChoices($currentSet.labels)
+  h_resetChoices false, "cardFormLabels", "labels" , labelSpecs, {"data-theme": "d"}
+  h_resetChoices false, "filterLabels", "labels" , labelSpecs, {"data-theme": "d"}
+  refreshEditableListById "labelList", labelLiTmpl, editLabelLiTmpl, $currentSet.labels
+  #refreshListById "labelList", labelLiTmpl, $currentSet.labels
+  #refreshLabels "#filtersForm", "Filters"
+  refreshPage "#cardPage"
+  refreshPage "#filterPage"
+
+
+updateCardViews = (type, updater) ->
+  $currentSet.cards = TABLES[CARD_TYPE].findAll("card_set_id", $currentSet.id)
+  displayCards = $currentSet.cards.slice $showFromCard, $showFromCard+CARDS_PER_PAGE
+  log "set id", $currentSet.id, "cardlen: ", $currentSet.cards.length
+  cardCountMsg()
+  refreshEditableListById "cardList", cardLiTmpl, editCardLiTmpl, displayCards
+  #fix should be editable
+  #refreshListById "cardList", cardLiTmpl, displayCards
+  $("#cardList").show() if !$editing
 
 
 
-valLabel = (label) -> fieldNotBlank(label.name)
-valCard = (card) -> fieldNotBlank(card.front) or fieldNotBlank(card.back)
+initUpdaters = ->
+  addUpdater "label", updateLabelViews
+  addUpdater "card", updateCardViews
+
+addUpdater = (type, updater) ->
+  $updaters[type] ?= new Array()
+  $updaters[type].push updater
 
 
+update = (type, source, obj) ->
+  return if !$updaters[type]
+  for updater in $updaters[type]
+    updater source, obj
+
+#test that all essential selectors present
+selectorSearch = ->
+  log "Test essential selectors present"
+  for sel in SEL_TEST
+    log sel, $(sel).length
+
+test = ->
+  #multilineTest()
+  log $.mobile
+  #log "bta", testBulkAdd(5)
+
+#517 lines on 9/16
