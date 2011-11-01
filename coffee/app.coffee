@@ -7,12 +7,18 @@ SET_ID_ATTR = "set_id"
 SET_TYPE_ATTR = "set_type"
 CLICK_EVENT = "tap"
 FILTER_CHG = "filChgx"
-SEL_TEST = [ ARCHIVED_RB_SEL, SET_FILTERS_SEL,TEXT_AREA_ELEM, CARD_LABEL_SEL]
 
 MSG_SEL = ".msg"
 $atEnd = false
+
 ARCHIVED_RB_SEL = "#archivedRB input"
 SET_FILTERS_SEL = "#filterLabels input"
+TEXT_AREA_ELEM = "#textInputPage textArea"
+CARD_LABEL_SEL = '#cardPanel #labels input:checkbox'
+SAVE_TEXT_LINK = "saveTextField"
+
+SEL_TEST = [ ARCHIVED_RB_SEL, SET_FILTERS_SEL,TEXT_AREA_ELEM, CARD_LABEL_SEL, SAVE_TEXT_LINK]
+
 CARDS_PER_PAGE = 25
 $showFromCard = 0
 $studyInit = true
@@ -21,8 +27,6 @@ $currentSet = null
 $currentCard = null
 $updaters = new Array()
 
-TEXT_AREA_ELEM = "#textInputPage textArea"
-SAVE_TEXT_LINK = "saveTextField"
 $saveAttr = null
 
 EDIT_SET_BTN = "editSetBtn"
@@ -34,7 +38,6 @@ class Set
   cards: null
 
 ### studymanager conversion related ###
-CARD_LABEL_SEL = '#cardPanel #labels input:checkbox'
 $studyQueue = new StudyQueue
   cardFrontSel: "#studyPage .cardPanel .textPanel",
   cardBackSel: "#answerPage .cardPanel .textPanel",
@@ -82,14 +85,16 @@ $studyQueue = new StudyQueue
     $("#studyButtons").hide()
     $atEnd = true
 
+
+
 initMobile = ->
   env()
-  selectorSearch()
   test()
   root.msgSel = ".msg"
   loadData()
   showMsgs()
   initPages()
+  selectorSearch()
   validationsInit()
   loginFormInit()
   initCallbacks()
@@ -166,6 +171,8 @@ initCallbacks = ->
   $('a[callfn]').live CLICK_EVENT, ->
     fn = $(this).attr("callfn")
     callFn fn, this if (fn and fn.length > 0)
+    #fn(this) if (fn and fn.length > 0)
+    #execFn fn, null, this if (fn and fn.length > 0)
 
   $('a[stRestart]').live CLICK_EVENT, ->  $studyQueue.restart()
 
@@ -445,7 +452,7 @@ showDelButton = (img)->
   resetDeleteItem()
   if !rotated #unrotate
     $(img).rotate(90)
-    $(img).closest("li").append link("Delete", "#", {class: 'aDeleteBtn ui-btn-up-r'})
+    $(img).closest("li").append delBtnLink()
 
 
 deleteFromList = (link) ->
@@ -469,8 +476,8 @@ updateLabelViews = (source, label) ->
   log "label updatING"
   $currentSet.labels = TABLES[LABEL_TYPE].findAll "card_set_id", $currentSet.id
   labelSpecs = labelChoices($currentSet.labels)
-  h_resetChoices false, "cardFormLabels", "labels" , labelSpecs, {"data-theme": "d"}
-  h_resetChoices false, "filterLabels", "labels" , labelSpecs, {"data-theme": "d"}
+  resetChoices false, "cardFormLabels", "labels" , labelSpecs, {"data-theme": "d"}
+  resetChoices false, "filterLabels", "labels" , labelSpecs, {"data-theme": "d"}
   refreshEditableListById "labelList", labelLiTmpl, editLabelLiTmpl, $currentSet.labels
   #refreshListById "labelList", labelLiTmpl, $currentSet.labels
   #refreshLabels "#filtersForm", "Filters"
@@ -506,13 +513,21 @@ update = (type, source, obj) ->
 
 #test that all essential selectors present
 selectorSearch = ->
-  log "Test essential selectors present"
+  log "Test essential selectors present:"
   for sel in SEL_TEST
-    log sel, $(sel).length
+    log " -- #{sel}", $(sel).length
+
+INIT_KEY = "~xxInit" #make this something weird so no overwrite problems
+
+initialized = ->
+	#localStorage is obj built into html5 supported by all major browsers
+	#objs in local storage persistent across sessions
+	if localStorage[INIT_KEY]
+		return true
+	else
+		localStorage[INIT_KEY] = true
+		return false
 
 test = ->
-  #multilineTest()
-  log $.mobile
-  #log "bta", testBulkAdd(5)
-
+  console.log "initialized? #{initialized()}"
 #517 lines on 9/16

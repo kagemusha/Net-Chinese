@@ -3,12 +3,8 @@ VALIDATIONS = {}
 
 makePages = (pages) ->
   for page in pages
+    log "making #{page}"
     makePage page
-  #appendTmpl "body", "h2_setPgTmpl"
-  #log "########### Set Page HTML #########"
-  #log h_setPgTmpl()
-  #log "\n########### Set Page HAML #########"
-  #log h2_setPgTmpl()
 
 makePage = (id) ->
   #elems = genElems(templateFn, data, options)
@@ -65,11 +61,6 @@ uncapitalize = (str) ->
   return str if (!str or str.length < 1)
   "#{str[0].toLowerCase()}#{str.substr 1}"
 
-#PG_TMPL_SEL = "PgTmpl"
-#PG_HEAD_SEL = ".pgHead"
-#PG_HEAD_TMPL_SEL = "PgHeadTmpl"
-#PG_FOOT_SEL = ".pgFoot"
-#PAGE_FOOT_TMPL_SEL = "PgFootTmpl"
 
 pageId = (id) -> "#{id}Page"
 pageSel = (id) -> "##{pageId(id)}"
@@ -106,6 +97,7 @@ showHide = (showSel, hideSel, condition=true) ->
   $(showSel).show()
   $(hideSel).hide()
 
+###
 listviewRefresh = (list) ->
   listSel = "##{list}"
   try
@@ -114,6 +106,7 @@ listviewRefresh = (list) ->
   try
     $(listSel).listview("refresh")
   catch e
+###
 
 go = (pg) ->
   $.mobile.changePage(pg)
@@ -137,23 +130,10 @@ popupMsg = (msg, delay) ->
   if delay != 0
     msgDiv.delay(wait).fadeOut 400, -> $(this).remove()
 
-removePopup = ->    $(".popup").remove();
+removePopup = ->    $(".popup").remove()
 
 LIST_ITEM_CLASS = "licrv"
 
-### 9/15
-populateList = (list, objects, strategy) ->
-  rmClass = $(list).attr("id")+LIST_ITEM_CLASS
-  $("." + rmClass).remove()
-  childCount = $(list).children().length-1
-  #log("list obj.len", objects.length)
-  for obj in objects
-    item = strategy(obj)
-    $(item).attr("id",LIST_ITEM_CLASS)
-    $(list).append(item)
-  $(list).children(":gt("+childCount+")").addClass(rmClass)
-  $(list).listview("refresh")
-###
 
 formDataFields = (formId) ->
   $("#{formId} *:input:not(:button,:reset,:submit,:image)")

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4CD41FCC142F70E1002108EB /* 57x57_icon3.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CD41FCB142F70E0002108EB /* 57x57_icon3.png */; };
+		4CD5E6091453107B007A9935 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CD5E6081453107B007A9935 /* Default@2x.png */; };
 		4CE41B6C13FCD8A80002AF9C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B6B13FCD8A80002AF9C /* Foundation.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		4CE41B6E13FCD8A80002AF9C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B6D13FCD8A80002AF9C /* UIKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		4CE41B7013FCD8A80002AF9C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B6F13FCD8A80002AF9C /* CoreGraphics.framework */; settings = {ATTRIBUTES = (Required, ); }; };
@@ -34,9 +36,15 @@
 		4CE41BA813FCD8AA0002AF9C /* PhoneGap.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4CE41BA713FCD8AA0002AF9C /* PhoneGap.plist */; };
 		4CE41BAC13FCD8AA0002AF9C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE41BAB13FCD8AA0002AF9C /* AppDelegate.m */; };
 		4CE41BB513FCDBB00002AF9C /* www in Resources */ = {isa = PBXBuildFile; fileRef = 4CE41BB413FCDBB00002AF9C /* www */; };
+		4CF0A2C214449A78001633C1 /* netch57.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CF0A2C114449A78001633C1 /* netch57.png */; };
+		4CF0A2C414449A88001633C1 /* netch114.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CF0A2C314449A88001633C1 /* netch114.png */; };
+		4CF0A2C614449A98001633C1 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CF0A2C514449A98001633C1 /* Default.png */; };
+		4CF0A2C814449E36001633C1 /* netc114.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CF0A2C714449E36001633C1 /* netc114.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4CD41FCB142F70E0002108EB /* 57x57_icon3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 57x57_icon3.png; sourceTree = "<group>"; };
+		4CD5E6081453107B007A9935 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		4CE41B6713FCD8A80002AF9C /* netchinese.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = netchinese.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CE41B6B13FCD8A80002AF9C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		4CE41B6D13FCD8A80002AF9C /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -69,6 +77,10 @@
 		4CE41BAB13FCD8AA0002AF9C /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = Classes/AppDelegate.m; sourceTree = "<group>"; };
 		4CE41BAE13FCD8AA0002AF9C /* README */ = {isa = PBXFileReference; lastKnownFileType = text; name = README; path = Plugins/README; sourceTree = "<group>"; };
 		4CE41BB413FCDBB00002AF9C /* www */ = {isa = PBXFileReference; lastKnownFileType = folder; path = www; sourceTree = "<group>"; };
+		4CF0A2C114449A78001633C1 /* netch57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = netch57.png; sourceTree = "<group>"; };
+		4CF0A2C314449A88001633C1 /* netch114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = netch114.png; sourceTree = "<group>"; };
+		4CF0A2C514449A98001633C1 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
+		4CF0A2C714449E36001633C1 /* netc114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = netc114.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,6 +118,12 @@
 		4CE41B5913FCD8A70002AF9C = {
 			isa = PBXGroup;
 			children = (
+				4CD5E6081453107B007A9935 /* Default@2x.png */,
+				4CF0A2C714449E36001633C1 /* netc114.png */,
+				4CF0A2C514449A98001633C1 /* Default.png */,
+				4CF0A2C314449A88001633C1 /* netch114.png */,
+				4CF0A2C114449A78001633C1 /* netch57.png */,
+				4CD41FCB142F70E0002108EB /* 57x57_icon3.png */,
 				4CE41BB413FCDBB00002AF9C /* www */,
 				4CE41B8513FCD8A80002AF9C /* netchinese */,
 				4CE41B6A13FCD8A80002AF9C /* Frameworks */,
@@ -291,6 +309,12 @@
 				4CE41BA613FCD8AA0002AF9C /* Capture.bundle in Resources */,
 				4CE41BA813FCD8AA0002AF9C /* PhoneGap.plist in Resources */,
 				4CE41BB513FCDBB00002AF9C /* www in Resources */,
+				4CD41FCC142F70E1002108EB /* 57x57_icon3.png in Resources */,
+				4CF0A2C214449A78001633C1 /* netch57.png in Resources */,
+				4CF0A2C414449A88001633C1 /* netch114.png in Resources */,
+				4CF0A2C614449A98001633C1 /* Default.png in Resources */,
+				4CF0A2C814449E36001633C1 /* netc114.png in Resources */,
+				4CD5E6091453107B007A9935 /* Default@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

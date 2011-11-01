@@ -1,7 +1,3 @@
-###
-saveButton = (form, objType, page="#", reverse=true, label="Save") ->
-  link(label, page, "obj_type='#{objType}' saveform='#{form}' #{linkReverseAttr page}" )
-###
 
 dualId = (id, addedPrefix) ->
   #log "dualId", id
@@ -14,24 +10,49 @@ dualId = (id, addedPrefix) ->
 EDIT_CARD_BTN = "editCardBtn"
 EDIT_LABEL_BTN = "editLabelBtn"
 
-h_editBtns = (editBtnId, objList) ->
-  dualBtnId = dualId editBtnId, "done"
-  """
-    #{ h_rightButton "Done", "#", {id: dualBtnId, callfn: 'toggleEditSet', objList: objList, class: "editing"}  }
-    #{ h_rightButton "Edit", "#", {id: editBtnId, callfn: 'toggleEditSet', objList: objList, class: "notEditing"}  }
-  """
-
 editBtns = (editBtnId, objList) ->
   dualBtnId = dualId editBtnId, "done"
-  [
-    rightButton("Done", "#", {id: dualBtnId, callfn: 'toggleEditSet', objList: objList, class: "editing"} ),
-    rightButton("Edit", "#", {id: editBtnId, callfn: 'toggleEditSet', objList: objList, class: "notEditing"} )
-  ].join(" ")
+  multilineHaml """
+    #{ rightButton "Done", "#", {id: dualBtnId, callfn: 'toggleEditSet', objList: objList, class: "editing"}  }
+    #{ rightButton "Edit", "#", {id: editBtnId, callfn: 'toggleEditSet', objList: objList, class: "notEditing"}  }
+  """
 
-heditUL = (type, options={}) ->
+
+editUL = (type, options={}) ->
   options["class"] = " #{options.class || ""} editList"
   options.obj_type = type
   listview options
 
+
+saveButton = (form, objType, page="#", reverse=true, label="Save") ->
+  link label, page, {obj_type: objType, saveform: form}, true
+
+
+refreshListById = (id, template, objs, options) ->
+  refreshTmplById id, template, objs, options
+  listviewRefresh id
+
+NOT_EDITING_CLASS = "notEditing"
+EDITING_CLASS = "editing"
+
+
+classSel = (klass) ->
+  if (klass[0]==".") then klass else ".#{klass}"
+
+toggleEditControls = (pageId="") ->
+  $("#{idSel pageId} .#{EDITING_CLASS}, #{idSel pageId} .#{NOT_EDITING_CLASS}").toggle()
+
+
+refreshEditableListById = (baseListId, template, editTemplate, objs) ->
+  editListId = "edit#{capitalize baseListId}"
+  log "refreshEditList", baseListId, editListId, template, editTemplate
+  $("#{idSel baseListId}").addClass NOT_EDITING_CLASS
+  $("#{idSel editListId}").addClass EDITING_CLASS
+  refreshListById baseListId, template, objs
+  refreshListById editListId, editTemplate, objs
+
+
+DEFAULT_STYLE="d"
+DEFAULT_PG_THEME = "e"
 
 

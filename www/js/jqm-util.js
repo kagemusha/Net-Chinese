@@ -1,7 +1,21 @@
-var idSel, refreshPage;
+var idSel, listviewRefresh, refreshPage;
 refreshPage = function(page) {
   try {
     return $(idSel(page)).page('destroy').page();
+  } catch (e) {
+
+  }
+};
+listviewRefresh = function(list) {
+  var listSel;
+  listSel = idSel(list);
+  try {
+    $(listSel).listview("init");
+  } catch (e) {
+
+  }
+  try {
+    return $(listSel).listview("refresh");
   } catch (e) {
 
   }

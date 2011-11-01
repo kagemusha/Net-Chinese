@@ -1,4 +1,4 @@
-var $atEnd, $currentCard, $currentSet, $editing, $saveAttr, $showFromCard, $showedStudyTip, $studyInit, $studyQueue, $updaters, ARCHIVED_RB_SEL, CARDS_PER_PAGE, CARD_LABEL_SEL, CARD_TYPE, CLICK_EVENT, DATA_REL_DATE_KEY, EDIT_CARD_BTN, EDIT_LABEL_BTN, EDIT_SET_BTN, FILTER_CHG, LABEL_TYPE, MSG_SEL, OBJ_ID_ATTR, OBJ_TYPE_ATTR, PAGES, SAVE_TEXT_LINK, SEL_TEST, SET_FILTERS_SEL, SET_ID_ATTR, SET_TYPE, SET_TYPE_ATTR, Set, TEXT_AREA_ELEM, addUpdater, cardCountMsg, deleteFromList, deleteObj, filterChg, getObj, initCallbacks, initCardPage, initCardSidePage, initLabelPage, initLabelsPage, initMobile, initPages, initSetPage, initStudyPage, initStudyingCBs, initUpdaters, labelChoices, loadData, modCardText, modSide, nextCards, populateData, prevCards, refreshCardList, remakeFilterPages, resetDeleteItem, resetEditing, saveCard, saveCardTextField, selectorSearch, setupForm, showDelButton, switchFilter, switchSet, test, toggleEditSet, update, updateCardViews, updateDelLink, updateLabelSelector, updateLabelViews, validateCard, validateLabel, validationsInit;
+var $atEnd, $currentCard, $currentSet, $editing, $saveAttr, $showFromCard, $showedStudyTip, $studyInit, $studyQueue, $updaters, ARCHIVED_RB_SEL, CARDS_PER_PAGE, CARD_LABEL_SEL, CARD_TYPE, CLICK_EVENT, DATA_REL_DATE_KEY, EDIT_CARD_BTN, EDIT_LABEL_BTN, EDIT_SET_BTN, FILTER_CHG, INIT_KEY, LABEL_TYPE, MSG_SEL, OBJ_ID_ATTR, OBJ_TYPE_ATTR, PAGES, SAVE_TEXT_LINK, SEL_TEST, SET_FILTERS_SEL, SET_ID_ATTR, SET_TYPE, SET_TYPE_ATTR, Set, TEXT_AREA_ELEM, addUpdater, cardCountMsg, deleteFromList, deleteObj, filterChg, getObj, initCallbacks, initCardPage, initCardSidePage, initLabelPage, initLabelsPage, initMobile, initPages, initSetPage, initStudyPage, initStudyingCBs, initUpdaters, initialized, labelChoices, loadData, modCardText, modSide, nextCards, populateData, prevCards, refreshCardList, remakeFilterPages, resetDeleteItem, resetEditing, saveCard, saveCardTextField, selectorSearch, setupForm, showDelButton, switchFilter, switchSet, test, toggleEditSet, update, updateCardViews, updateDelLink, updateLabelSelector, updateLabelViews, validateCard, validateLabel, validationsInit;
 SET_TYPE = "card_set";
 CARD_TYPE = 'card';
 LABEL_TYPE = 'label';
@@ -8,11 +8,14 @@ SET_ID_ATTR = "set_id";
 SET_TYPE_ATTR = "set_type";
 CLICK_EVENT = "tap";
 FILTER_CHG = "filChgx";
-SEL_TEST = [ARCHIVED_RB_SEL, SET_FILTERS_SEL, TEXT_AREA_ELEM, CARD_LABEL_SEL];
 MSG_SEL = ".msg";
 $atEnd = false;
 ARCHIVED_RB_SEL = "#archivedRB input";
 SET_FILTERS_SEL = "#filterLabels input";
+TEXT_AREA_ELEM = "#textInputPage textArea";
+CARD_LABEL_SEL = '#cardPanel #labels input:checkbox';
+SAVE_TEXT_LINK = "saveTextField";
+SEL_TEST = [ARCHIVED_RB_SEL, SET_FILTERS_SEL, TEXT_AREA_ELEM, CARD_LABEL_SEL, SAVE_TEXT_LINK];
 CARDS_PER_PAGE = 25;
 $showFromCard = 0;
 $studyInit = true;
@@ -20,8 +23,6 @@ $showedStudyTip = false;
 $currentSet = null;
 $currentCard = null;
 $updaters = new Array();
-TEXT_AREA_ELEM = "#textInputPage textArea";
-SAVE_TEXT_LINK = "saveTextField";
 $saveAttr = null;
 EDIT_SET_BTN = "editSetBtn";
 EDIT_CARD_BTN = "editCardBtn";
@@ -33,7 +34,6 @@ Set = (function() {
   return Set;
 })();
 /* studymanager conversion related */
-CARD_LABEL_SEL = '#cardPanel #labels input:checkbox';
 $studyQueue = new StudyQueue({
   cardFrontSel: "#studyPage .cardPanel .textPanel",
   cardBackSel: "#answerPage .cardPanel .textPanel",
@@ -105,12 +105,12 @@ $studyQueue = new StudyQueue({
 initMobile = function() {
   var filt;
   env();
-  selectorSearch();
   test();
   root.msgSel = ".msg";
   loadData();
   showMsgs();
   initPages();
+  selectorSearch();
   validationsInit();
   loginFormInit();
   initCallbacks();
@@ -511,9 +511,7 @@ showDelButton = function(img) {
   resetDeleteItem();
   if (!rotated) {
     $(img).rotate(90);
-    return $(img).closest("li").append(link("Delete", "#", {
-      "class": 'aDeleteBtn ui-btn-up-r'
-    }));
+    return $(img).closest("li").append(delBtnLink());
   }
 };
 deleteFromList = function(link) {
@@ -547,10 +545,10 @@ updateLabelViews = function(source, label) {
   log("label updatING");
   $currentSet.labels = TABLES[LABEL_TYPE].findAll("card_set_id", $currentSet.id);
   labelSpecs = labelChoices($currentSet.labels);
-  h_resetChoices(false, "cardFormLabels", "labels", labelSpecs, {
+  resetChoices(false, "cardFormLabels", "labels", labelSpecs, {
     "data-theme": "d"
   });
-  h_resetChoices(false, "filterLabels", "labels", labelSpecs, {
+  resetChoices(false, "filterLabels", "labels", labelSpecs, {
     "data-theme": "d"
   });
   refreshEditableListById("labelList", labelLiTmpl, editLabelLiTmpl, $currentSet.labels);
@@ -596,14 +594,23 @@ update = function(type, source, obj) {
 };
 selectorSearch = function() {
   var sel, _i, _len, _results;
-  log("Test essential selectors present");
+  log("Test essential selectors present:");
   _results = [];
   for (_i = 0, _len = SEL_TEST.length; _i < _len; _i++) {
     sel = SEL_TEST[_i];
-    _results.push(log(sel, $(sel).length));
+    _results.push(log(" -- " + sel, $(sel).length));
   }
   return _results;
 };
+INIT_KEY = "~xxInit";
+initialized = function() {
+  if (localStorage[INIT_KEY]) {
+    return true;
+  } else {
+    localStorage[INIT_KEY] = true;
+    return false;
+  }
+};
 test = function() {
-  return log($.mobile);
+  return console.log("initialized? " + (initialized()));
 };

@@ -1,4 +1,4 @@
-var TABLES, VALIDATIONS, equalStr, fieldBlank, formDataFields, getObjFromForm, go, listviewRefresh, login, makePage, makePages, onPage, pageId, pageSel, pgTmplFn, populateForm, popupMsg, refreshChoice, removePopup, saveForm, selCount, setPageHeaderTitle, showHide, showMsgs, uncapitalize;
+var LIST_ITEM_CLASS, TABLES, VALIDATIONS, equalStr, fieldBlank, formDataFields, getObjFromForm, go, login, makePage, makePages, onPage, pageId, pageSel, pgTmplFn, populateForm, popupMsg, refreshChoice, removePopup, saveForm, selCount, setPageHeaderTitle, showHide, showMsgs, uncapitalize;
 TABLES = {};
 VALIDATIONS = {};
 makePages = function(pages) {
@@ -6,6 +6,7 @@ makePages = function(pages) {
   _results = [];
   for (_i = 0, _len = pages.length; _i < _len; _i++) {
     page = pages[_i];
+    log("making " + page);
     _results.push(makePage(page));
   }
   return _results;
@@ -121,20 +122,16 @@ showHide = function(showSel, hideSel, condition) {
   $(showSel).show();
   return $(hideSel).hide();
 };
-listviewRefresh = function(list) {
-  var listSel;
-  listSel = "#" + list;
-  try {
-    $(listSel).listview("init");
-  } catch (e) {
-
-  }
-  try {
-    return $(listSel).listview("refresh");
-  } catch (e) {
-
-  }
-};
+/*
+listviewRefresh = (list) ->
+  listSel = "##{list}"
+  try
+    $(listSel).listview("init")
+  catch e
+  try
+    $(listSel).listview("refresh")
+  catch e
+*/
 go = function(pg) {
   $.mobile.changePage(pg);
   return pg;
@@ -162,23 +159,9 @@ popupMsg = function(msg, delay) {
   }
 };
 removePopup = function() {
-  var LIST_ITEM_CLASS;
-  $(".popup").remove();
-  return LIST_ITEM_CLASS = "licrv";
+  return $(".popup").remove();
 };
-/* 9/15
-populateList = (list, objects, strategy) ->
-  rmClass = $(list).attr("id")+LIST_ITEM_CLASS
-  $("." + rmClass).remove()
-  childCount = $(list).children().length-1
-  #log("list obj.len", objects.length)
-  for obj in objects
-    item = strategy(obj)
-    $(item).attr("id",LIST_ITEM_CLASS)
-    $(list).append(item)
-  $(list).children(":gt("+childCount+")").addClass(rmClass)
-  $(list).listview("refresh")
-*/
+LIST_ITEM_CLASS = "licrv";
 formDataFields = function(formId) {
   return $("" + formId + " *:input:not(:button,:reset,:submit,:image)");
 };

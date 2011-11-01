@@ -1,7 +1,4 @@
-/*
-saveButton = (form, objType, page="#", reverse=true, label="Save") ->
-  link(label, page, "obj_type='#{objType}' saveform='#{form}' #{linkReverseAttr page}" )
-*/var EDIT_CARD_BTN, EDIT_LABEL_BTN, dualId, editBtns, h_editBtns, heditUL;
+var DEFAULT_PG_THEME, DEFAULT_STYLE, EDITING_CLASS, EDIT_CARD_BTN, EDIT_LABEL_BTN, NOT_EDITING_CLASS, classSel, dualId, editBtns, editUL, refreshEditableListById, refreshListById, saveButton, toggleEditControls;
 dualId = function(id, addedPrefix) {
   var preLen;
   preLen = addedPrefix.length;
@@ -13,39 +10,22 @@ dualId = function(id, addedPrefix) {
 };
 EDIT_CARD_BTN = "editCardBtn";
 EDIT_LABEL_BTN = "editLabelBtn";
-h_editBtns = function(editBtnId, objList) {
+editBtns = function(editBtnId, objList) {
   var dualBtnId;
   dualBtnId = dualId(editBtnId, "done");
-  return "" + (h_rightButton("Done", "#", {
+  return multilineHaml("" + (rightButton("Done", "#", {
     id: dualBtnId,
     callfn: 'toggleEditSet',
     objList: objList,
     "class": "editing"
-  })) + "\n" + (h_rightButton("Edit", "#", {
+  })) + "\n" + (rightButton("Edit", "#", {
     id: editBtnId,
     callfn: 'toggleEditSet',
     objList: objList,
     "class": "notEditing"
-  }));
+  })));
 };
-editBtns = function(editBtnId, objList) {
-  var dualBtnId;
-  dualBtnId = dualId(editBtnId, "done");
-  return [
-    rightButton("Done", "#", {
-      id: dualBtnId,
-      callfn: 'toggleEditSet',
-      objList: objList,
-      "class": "editing"
-    }), rightButton("Edit", "#", {
-      id: editBtnId,
-      callfn: 'toggleEditSet',
-      objList: objList,
-      "class": "notEditing"
-    })
-  ].join(" ");
-};
-heditUL = function(type, options) {
+editUL = function(type, options) {
   if (options == null) {
     options = {};
   }
@@ -53,3 +33,48 @@ heditUL = function(type, options) {
   options.obj_type = type;
   return listview(options);
 };
+saveButton = function(form, objType, page, reverse, label) {
+  if (page == null) {
+    page = "#";
+  }
+  if (reverse == null) {
+    reverse = true;
+  }
+  if (label == null) {
+    label = "Save";
+  }
+  return link(label, page, {
+    obj_type: objType,
+    saveform: form
+  }, true);
+};
+refreshListById = function(id, template, objs, options) {
+  refreshTmplById(id, template, objs, options);
+  return listviewRefresh(id);
+};
+NOT_EDITING_CLASS = "notEditing";
+EDITING_CLASS = "editing";
+classSel = function(klass) {
+  if (klass[0] === ".") {
+    return klass;
+  } else {
+    return "." + klass;
+  }
+};
+toggleEditControls = function(pageId) {
+  if (pageId == null) {
+    pageId = "";
+  }
+  return $("" + (idSel(pageId)) + " ." + EDITING_CLASS + ", " + (idSel(pageId)) + " ." + NOT_EDITING_CLASS).toggle();
+};
+refreshEditableListById = function(baseListId, template, editTemplate, objs) {
+  var editListId;
+  editListId = "edit" + (capitalize(baseListId));
+  log("refreshEditList", baseListId, editListId, template, editTemplate);
+  $("" + (idSel(baseListId))).addClass(NOT_EDITING_CLASS);
+  $("" + (idSel(editListId))).addClass(EDITING_CLASS);
+  refreshListById(baseListId, template, objs);
+  return refreshListById(editListId, editTemplate, objs);
+};
+DEFAULT_STYLE = "d";
+DEFAULT_PG_THEME = "e";

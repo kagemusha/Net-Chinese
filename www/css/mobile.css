@@ -5,9 +5,15 @@
     -webkit-box-orient: vertical;
 	-webkit-box-align:stretch;*/
 }
+
+#setPage .pgContent{
+    background: #f5f5f5;
+}
+
 .pgContent{
     height: 100%;
     min-height: 600px;
+    background:  #f0e68c;
 /*	display: -webkit-box;
     -webkit-box-orient: vertical;
 	-webkit-box-align:stretch;
@@ -225,7 +231,7 @@ li.set {
 }
 
 .editing {
-    display: none
+    display: none;
 }
 
 .aDeleteBtn {
