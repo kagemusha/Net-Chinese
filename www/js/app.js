@@ -1,4 +1,4 @@
-var $atEnd, $currentCard, $currentSet, $editing, $saveAttr, $showFromCard, $showedStudyTip, $studyInit, $studyQueue, $updaters, ARCHIVED_RB_SEL, CARDS_PER_PAGE, CARD_LABEL_SEL, CARD_TYPE, CLICK_EVENT, DATA_REL_DATE_KEY, EDIT_CARD_BTN, EDIT_LABEL_BTN, EDIT_SET_BTN, FILTER_CHG, INIT_KEY, LABEL_TYPE, MSG_SEL, OBJ_ID_ATTR, OBJ_TYPE_ATTR, PAGES, SAVE_TEXT_LINK, SEL_TEST, SET_FILTERS_SEL, SET_ID_ATTR, SET_TYPE, SET_TYPE_ATTR, Set, TEXT_AREA_ELEM, addUpdater, cardCountMsg, deleteFromList, deleteObj, filterChg, getObj, initCallbacks, initCardPage, initCardSidePage, initLabelPage, initLabelsPage, initMobile, initPages, initSetPage, initStudyPage, initStudyingCBs, initUpdaters, initialized, labelChoices, loadData, modCardText, modSide, nextCards, populateData, prevCards, refreshCardList, remakeFilterPages, resetDeleteItem, resetEditing, saveCard, saveCardTextField, selectorSearch, setupForm, showDelButton, switchFilter, switchSet, test, toggleEditSet, update, updateCardViews, updateDelLink, updateLabelSelector, updateLabelViews, validateCard, validateLabel, validationsInit;
+var $atEnd, $currentCard, $currentSet, $editing, $saveAttr, $showFromCard, $showedStudyTip, $studyInit, $studyQueue, $updaters, ARCHIVED_RB_SEL, CARDS_PER_PAGE, CARD_LABEL_SEL, CARD_TYPE, CLICK_EVENT, DATA_REL_DATE_KEY, EDIT_CARD_BTN, EDIT_LABEL_BTN, EDIT_SET_BTN, FILTER_CHG, INIT_KEY, LABEL_TYPE, MSG_SEL, OBJ_ID_ATTR, OBJ_TYPE_ATTR, SAVE_TEXT_LINK, SEL_TEST, SET_FILTERS_SEL, SET_ID_ATTR, SET_TYPE, SET_TYPE_ATTR, Set, TEXT_AREA_ELEM, addUpdater, cardCountMsg, cardLabelStr, deleteFromList, deleteObj, filterChg, getObj, initCallbacks, initCardPage, initEditCardPage, initLabelPage, initLabelsPage, initMobile, initPages, initSetPage, initStudyPage, initStudyingCBs, initUpdaters, initialized, labelChoices, loadData, makePage, makePages, modSide, nextCards, pgTmpl, populateData, prevCards, refreshCardList, resetDeleteItem, resetEditing, selectorSearch, setupForm, showCard, showDelButton, switchFilter, switchSet, test, toggleEditSet, update, updateCardViews, updateDelLink, updateLabelSelector, updateLabelViews, validateCard, validateLabel, validationsInit;
 SET_TYPE = "card_set";
 CARD_TYPE = 'card';
 LABEL_TYPE = 'label';
@@ -12,7 +12,7 @@ MSG_SEL = ".msg";
 $atEnd = false;
 ARCHIVED_RB_SEL = "#archivedRB input";
 SET_FILTERS_SEL = "#filterLabels input";
-TEXT_AREA_ELEM = "#textInputPage textArea";
+TEXT_AREA_ELEM = "" + TEXT_INPUT_PG_SEL + " textArea";
 CARD_LABEL_SEL = '#cardPanel #labels input:checkbox';
 SAVE_TEXT_LINK = "saveTextField";
 SEL_TEST = [ARCHIVED_RB_SEL, SET_FILTERS_SEL, TEXT_AREA_ELEM, CARD_LABEL_SEL, SAVE_TEXT_LINK];
@@ -128,12 +128,11 @@ loadData = function() {
     return cache(DATA_REL_DATE_KEY, DATA_REL_DATE);
   }
 };
-PAGES = ["sets", "set", "labels", "label", "filter", "study", "answer", "card", "textInput"];
 initPages = function() {
   var hasData;
   TABLES[SET_TYPE] = Table.get(SET_TYPE);
   hasData = (TABLES[SET_TYPE].recs != null) && TABLES[SET_TYPE].recs.length > 0;
-  makePages(PAGES);
+  makePages();
   $("" + (idSel(dualId(EDIT_SET_BTN, "done")))).hide();
   $("" + (idSel(dualId(EDIT_CARD_BTN, "done")))).hide();
   $("" + (idSel(dualId(EDIT_LABEL_BTN, "done")))).hide();
@@ -268,12 +267,8 @@ switchSet = function(setId) {
     refreshCardList();
     updateLabelViews();
     $studyQueue.clearFilters();
-    switchFilter(SET_FILTERS_SEL);
-    return remakeFilterPages();
+    return switchFilter(SET_FILTERS_SEL);
   }
-};
-remakeFilterPages = function() {
-  return log("remake");
 };
 initCardPage = function(params) {
   var cardId;
@@ -285,12 +280,46 @@ initCardPage = function(params) {
   if (!$currentCard.archived) {
     $currentCard.archived = false;
   }
-  log("initCardPage", $currentCard);
-  return setupForm("#cardForm", $currentCard, modCardText);
+  showCard($currentCard);
+  return setupForm("#cardForm", $currentCard);
 };
-modCardText = function(obj) {
-  modSide("front", obj.front);
-  return modSide("back", obj.back);
+showCard = function(card) {
+  if (card == null) {
+    card = {};
+  }
+  log("modCT", card);
+  $(".textPanel#showCard #frontText").html(card.front);
+  $(".textPanel#showCard #backText").html(card.back);
+  $("#showCardArchived").html(card.archived === "true" ? "yes" : "no");
+  return $("#showCardLabels").html(cardLabelStr(card));
+};
+cardLabelStr = function(card) {
+  var id, lbls, sLbl;
+  if (!card.labels) {
+    return "(none)";
+  }
+  lbls = (function() {
+    var _i, _len, _ref, _results;
+    _ref = card.labels;
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      id = _ref[_i];
+      _results.push((function() {
+        var _j, _len2, _ref2, _results2;
+        _ref2 = $currentSet.labels;
+        _results2 = [];
+        for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+          sLbl = _ref2[_j];
+          if (sLbl.id === id) {
+            _results2.push(sLbl.name);
+          }
+        }
+        return _results2;
+      })());
+    }
+    return _results;
+  })();
+  return lbls.join(", ");
 };
 modSide = function(side, text) {
   var elem;
@@ -303,27 +332,25 @@ modSide = function(side, text) {
     return $(elem).addClass("notext");
   }
 };
-initCardSidePage = function(params) {
-  var side, source;
-  source = $(params.source);
-  side = source.attr("side") || "front";
-  $saveAttr = side;
-  $(TEXT_AREA_ELEM).val($currentCard[side] || "");
-  return $("" + (idSel(SAVE_TEXT_LINK))).attr('callfn', 'saveCardTextField');
-};
-saveCardTextField = function() {
-  var newVal;
-  newVal = $(TEXT_AREA_ELEM).val();
-  log("sctf-val", $saveAttr, $("#cardForm #" + $saveAttr).length, newVal);
-  $currentCard[$saveAttr] = newVal;
-  $("#cardForm #" + $saveAttr).val(newVal);
-  return modCardText($currentCard);
-};
-saveCard = function() {
-  return log("save card!");
+initEditCardPage = function(params) {
+  var backPg;
+  if (params.id) {
+    backPg = "#cardPage";
+  } else {
+    backPg = "#setPage";
+    setupForm("cardForm", {
+      card_set_id: $currentSet.id,
+      id: null,
+      front: "",
+      back: "",
+      archived: false,
+      labels: null
+    });
+  }
+  return $(idSel(CARD_PAGE_BACK_BUTTON)).attr("href", backPg);
 };
 setupForm = function(form, obj, postSetup) {
-  log("obj to form", obj);
+  log("setupForm obj", obj);
   populateForm(form, obj);
   if (postSetup) {
     return postSetup(obj);
@@ -339,6 +366,14 @@ initLabelPage = function(params) {
   return updateDelLink(pageSel("label"), id);
 };
 initLabelsPage = function(params) {};
+/*
+initCardSidePage = (params) ->
+  source = $(params.source)
+  side = source.attr("side") || "front"
+  $saveAttr = side
+  $(TEXT_AREA_ELEM).val $currentCard[side] || ""
+  $("#{idSel SAVE_TEXT_LINK}").attr('callfn', 'saveCardTextField')
+*/
 initStudyPage = function(params) {
   updateLabelSelector("#filterPage", $studyQueue.showArchived, $studyQueue.filters);
   $studyInit = true;
@@ -380,9 +415,7 @@ getObj = function(type, id) {
   if (!id) {
     return null;
   }
-  log("getObj t id", type, id);
   obj = TABLES[type].findById(id);
-  log("getObj", obj, type, id);
   return obj || {};
 };
 prevCards = function() {
@@ -506,13 +539,29 @@ resetDeleteItem = function() {
 showDelButton = function(img) {
   var rotated;
   rotated = $(img).closest("li").attr("obj_id") === $('.aDeleteBtn').closest("li").attr("obj_id");
-  log("rotated", rotated, $(img).closest("li").length, $('.aDeleteBtn').closest("li").length);
-  log("rotated", rotated, $(img).closest("li").attr("obj_id"), $('.aDeleteBtn').closest("li").attr("obj_id"));
   resetDeleteItem();
   if (!rotated) {
     $(img).rotate(90);
     return $(img).closest("li").append(delBtnLink());
   }
+};
+makePages = function() {
+  var page, pages, _i, _len, _results;
+  log("makepages");
+  pages = ["sets", "set", "labels", "label", "filter", "study", "answer", "card", "editCard"];
+  _results = [];
+  for (_i = 0, _len = pages.length; _i < _len; _i++) {
+    page = pages[_i];
+    log("making " + page);
+    _results.push(makePage(page));
+  }
+  return _results;
+};
+makePage = function(id, data, options) {
+  return appendTmpl("body", pgTmpl(id), data, options);
+};
+pgTmpl = function(id) {
+  return "" + id + "PgTmpl";
 };
 deleteFromList = function(link) {
   var liTmpl, list, obj_id, type;
@@ -555,16 +604,20 @@ updateLabelViews = function(source, label) {
   refreshPage("#cardPage");
   return refreshPage("#filterPage");
 };
-updateCardViews = function(type, updater) {
+updateCardViews = function(source, card) {
   var displayCards;
   $currentSet.cards = TABLES[CARD_TYPE].findAll("card_set_id", $currentSet.id);
   displayCards = $currentSet.cards.slice($showFromCard, $showFromCard + CARDS_PER_PAGE);
   log("set id", $currentSet.id, "cardlen: ", $currentSet.cards.length);
+  if (card && card.id) {
+    $(idSel(CARD_PAGE_BACK_BUTTON)).attr("href", "#cardPage");
+  }
   cardCountMsg();
   refreshEditableListById("cardList", cardLiTmpl, editCardLiTmpl, displayCards);
   if (!$editing) {
-    return $("#cardList").show();
+    $("#cardList").show();
   }
+  return showCard(card);
 };
 initUpdaters = function() {
   addUpdater("label", updateLabelViews);

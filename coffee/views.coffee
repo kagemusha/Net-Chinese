@@ -1,5 +1,5 @@
 PG_DEFAULTS = {"data-theme": "e"}
-
+TEXT_INPUT_PG_SEL = "#editCardPage"
 setsPgTmpl = ->
   hamlHtml  """
     #{page "setsPage", PG_DEFAULTS}
@@ -17,7 +17,7 @@ setPgTmpl = (set) ->
         #{navbar() }
           %ul
             %li #{link "Study!", "#studyPage", {id: 'studyButton', init_pg: 'study', class: 'study'} }
-            %li #{link "Add Card","#cardPage", {init_pg: "card", obj_type: CARD_TYPE} }
+            %li #{link "Add Card","#editCardPage", {init_pg: "editCard", obj_type: CARD_TYPE} }
             %li #{link "Labels","#labelsPage", {init_pg: "labels"}  }
       #{content {class: "pgContent"}}
         #cardsShowing
@@ -67,50 +67,57 @@ filterPgTmpl = ->
         #{controlgroup "Labels",{id: "filterLabels"} }
     """
 
-viewCardPgTmpl = ->
-  pg = """
-  #{page "viewCardPage", PG_DEFAULTS}
-    #{pageHeader "Card"}
-      #{ backButton "Back","#setPage" }
-      #{ rightButton( 'cardForm', 'card', "#setPage") }
-    #{content {class: "pgContent"}}
-      #{form {id: "cardForm", obj_type: "card"} }
-        #{input "hidden", "card_set_id"}
-        #{input "hidden", "id"}
-        #{input "hidden", "front"}
-        #{input "hidden", "back"}
-        %br
-        #{listview {id: "cardSides", "data-inset": true} }
-          %li #{link "enter front text (Chinese)", "#textInputPage", {id: 'frontTALink', init_pg: 'cardSide', saveCB: 'saveCardFront'} }
-          %li #{link "enter back text (English)", "#textInputPage", {id: 'backTALink', init_pg: 'cardSide', saveCB: 'saveCardBack', side: 'back'} }
-        %br
-        #{yesnoChoiceTmpl "Archived", "archived" , false}
-        #{controlgroup "Labels",{id: "cardFormLabels", "data-theme": "d"} }
-  """
-  hamlHtml pg
-
-
+CARD_PAGE_BACK_BUTTON = "cardPgBackBtn"
 cardPgTmpl = ->
   pg = """
   #{page "cardPage", PG_DEFAULTS}
     #{pageHeader "Card"}
-      #{ backButton "Cancel","#setPage" }
-      #{ saveButton( 'cardForm', 'card', "#setPage") }
+      #{ backButton "Set","#setPage" }
+      #{ rightButton "Edit", 'editCardPage'}
     #{content {class: "pgContent"}}
-      #{form {id: "cardForm", obj_type: "card"} }
-        #{input "hidden", "card_set_id"}
-        #{input "hidden", "id"}
-        #{input "hidden", "front"}
-        #{input "hidden", "back"}
+      .cardPanel
+        .card_face
+          .textPanel#showCard
+            %span#frontText
+            %br
+            %span#backText
+      %br
+      .labelsPanel
+        %span.label Archived:&nbsp;
+        %span#showCardArchived
         %br
-        #{listview {id: "cardSides", "data-inset": true} }
-          %li #{link "enter front text (Chinese)", "#textInputPage", {id: 'frontTALink', init_pg: 'cardSide', saveCB: 'saveCardFront'} }
-          %li #{link "enter back text (English)", "#textInputPage", {id: 'backTALink', init_pg: 'cardSide', saveCB: 'saveCardBack', side: 'back'} }
         %br
-        #{yesnoChoiceTmpl "Archived", "archived" , false}
-        #{controlgroup "Labels",{id: "cardFormLabels", "data-theme": "d"} }
+        %span.label Labels:&nbsp;
+        %span#showCardLabels (none)
   """
   hamlHtml pg
+
+
+editCardPgTmpl = (id, taOptions={}) ->
+  taOptions["data-theme"] = "d"
+  taOptions["class"] = "#{taOptions["class"] || ""} tInput"
+  _.extend taOptions, {name: "tInput", placeholder: "Enter card text"}
+  taOptions2 = _.clone taOptions
+  taOptions["name"] = taOptions["id"] = "front"
+  taOptions2["name"] = taOptions2["id"] = "back"
+  log "tInputOpts", taOptions
+  hamlHtml """
+    #{page "editCardPage", PG_DEFAULTS}
+      #{pageHeader "Card"}
+        #{ backButton "Back","#cardPage", {id: CARD_PAGE_BACK_BUTTON} }
+        #{ saveButton 'cardForm', 'card', "#cardPage" }
+      #{content {class: "pgContent"}}
+        #{form {id: "cardForm", obj_type: "card"} }
+          #{input "hidden", "card_set_id"}
+          #{input "hidden", "id"}
+          %br
+          #{ haTag "textarea", taOptions }
+          %br
+          #{ haTag "textarea", taOptions2 }
+          #{yesnoChoiceTmpl "Archived", "archived" , false}
+          #{controlgroup "Labels",{id: "cardFormLabels", "data-theme": "d"} }
+  """
+
 
 studyStatsTmpl = (stats, full=true) ->
   hamlHtml """

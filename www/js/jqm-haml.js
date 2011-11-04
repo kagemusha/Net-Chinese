@@ -20,7 +20,7 @@ link = function(label, href, options, reverse) {
   if (reverse == null) {
     reverse = false;
   }
-  options["href"] = href;
+  options["href"] = idSel(href);
   if (reverse) {
     if (!href || (href = "#")) {
       options["data-direction"] = 'reverse';
@@ -207,7 +207,7 @@ page = function(id, options) {
     options = {};
   }
   options[DATA_ROLE] = "page";
-  options["id"] = id;
+  options["id"] = idUnsel(id);
   return div(options);
 };
 pageHeader = function(title, position, options) {

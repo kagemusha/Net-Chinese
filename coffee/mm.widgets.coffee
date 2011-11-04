@@ -24,8 +24,9 @@ editUL = (type, options={}) ->
   listview options
 
 
-saveButton = (form, objType, page="#", reverse=true, label="Save") ->
-  link label, page, {obj_type: objType, saveform: form}, true
+saveButton = (form, objType, page="#", options={}, reverse=true, label="Save") ->
+  _.extend options, {obj_type: objType, saveform: form}
+  link label, page, options, true
 
 
 refreshListById = (id, template, objs, options) ->

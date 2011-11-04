@@ -1,4 +1,4 @@
-var idSel, listviewRefresh, refreshPage;
+var idSel, idUnsel, listviewRefresh, refreshPage, verifySel;
 refreshPage = function(page) {
   try {
     return $(idSel(page)).page('destroy').page();
@@ -29,4 +29,17 @@ idSel = function(id) {
   } else {
     return "#" + id;
   }
+};
+idUnsel = function(id) {
+  if (!id || id.length === 0) {
+    return "";
+  }
+  if (id[0] !== "#") {
+    return id;
+  } else {
+    return id.substr(1);
+  }
+};
+verifySel = function(sel) {
+  return console.log("len " + sel + ": " + ($(sel).length));
 };

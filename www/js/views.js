@@ -1,7 +1,8 @@
-var PG_DEFAULTS, answerPgTmpl, cardBackTmpl, cardLiTmpl, cardPgTmpl, delBtnLink, delImg, editCardLiTmpl, editLabelLiTmpl, editSetLiTmpl, filterPgTmpl, img, labelGroup, labelLiTmpl, labelPgTmpl, labelsPgTmpl, setLiTmpl, setPgTmpl, setsPgTmpl, studyPgTmpl, studyStatsTmpl, textInputPgTmpl, triesTmpl;
+var CARD_PAGE_BACK_BUTTON, PG_DEFAULTS, TEXT_INPUT_PG_SEL, answerPgTmpl, cardBackTmpl, cardLiTmpl, cardPgTmpl, delBtnLink, delImg, editCardLiTmpl, editCardPgTmpl, editLabelLiTmpl, editSetLiTmpl, filterPgTmpl, img, labelGroup, labelLiTmpl, labelPgTmpl, labelsPgTmpl, setLiTmpl, setPgTmpl, setsPgTmpl, studyPgTmpl, studyStatsTmpl, textInputPgTmpl, triesTmpl;
 PG_DEFAULTS = {
   "data-theme": "e"
 };
+TEXT_INPUT_PG_SEL = "#editCardPage";
 setsPgTmpl = function() {
   return hamlHtml("" + (page("setsPage", PG_DEFAULTS)) + "\n  " + (pageHeader("Sets")) + "\n  " + (content({
     "class": "pgContent"
@@ -15,8 +16,8 @@ setPgTmpl = function(set) {
     id: 'studyButton',
     init_pg: 'study',
     "class": 'study'
-  })) + "\n        %li " + (link("Add Card", "#cardPage", {
-    init_pg: "card",
+  })) + "\n        %li " + (link("Add Card", "#editCardPage", {
+    init_pg: "editCard",
     obj_type: CARD_TYPE
   })) + "\n        %li " + (link("Labels", "#labelsPage", {
     init_pg: "labels"
@@ -64,30 +65,40 @@ filterPgTmpl = function() {
     id: "filterLabels"
   })));
 };
+CARD_PAGE_BACK_BUTTON = "cardPgBackBtn";
 cardPgTmpl = function() {
   var pg;
-  pg = "" + (page("cardPage", PG_DEFAULTS)) + "\n  " + (pageHeader("Card")) + "\n    " + (backButton("Cancel", "#setPage")) + "\n    " + (saveButton('cardForm', 'card', "#setPage")) + "\n  " + (content({
+  pg = "" + (page("cardPage", PG_DEFAULTS)) + "\n  " + (pageHeader("Card")) + "\n    " + (backButton("Set", "#setPage")) + "\n    " + (rightButton("Edit", 'editCardPage')) + "\n  " + (content({
+    "class": "pgContent"
+  })) + "\n    .cardPanel\n      .card_face\n        .textPanel#showCard\n          %span#frontText\n          %br\n          %span#backText\n    %br\n    .labelsPanel\n      %span.label Archived:&nbsp;\n      %span#showCardArchived\n      %br\n      %br\n      %span.label Labels:&nbsp;\n      %span#showCardLabels (none)";
+  return hamlHtml(pg);
+};
+editCardPgTmpl = function(id, taOptions) {
+  var taOptions2;
+  if (taOptions == null) {
+    taOptions = {};
+  }
+  taOptions["data-theme"] = "d";
+  taOptions["class"] = "" + (taOptions["class"] || "") + " tInput";
+  _.extend(taOptions, {
+    name: "tInput",
+    placeholder: "Enter card text"
+  });
+  taOptions2 = _.clone(taOptions);
+  taOptions["name"] = taOptions["id"] = "front";
+  taOptions2["name"] = taOptions2["id"] = "back";
+  log("tInputOpts", taOptions);
+  return hamlHtml("" + (page("editCardPage", PG_DEFAULTS)) + "\n  " + (pageHeader("Card")) + "\n    " + (backButton("Back", "#cardPage", {
+    id: CARD_PAGE_BACK_BUTTON
+  })) + "\n    " + (saveButton('cardForm', 'card', "#cardPage")) + "\n  " + (content({
     "class": "pgContent"
   })) + "\n    " + (form({
     id: "cardForm",
     obj_type: "card"
-  })) + "\n      " + (input("hidden", "card_set_id")) + "\n      " + (input("hidden", "id")) + "\n      " + (input("hidden", "front")) + "\n      " + (input("hidden", "back")) + "\n      %br\n      " + (listview({
-    id: "cardSides",
-    "data-inset": true
-  })) + "\n        %li " + (link("enter front text (Chinese)", "#textInputPage", {
-    id: 'frontTALink',
-    init_pg: 'cardSide',
-    saveCB: 'saveCardFront'
-  })) + "\n        %li " + (link("enter back text (English)", "#textInputPage", {
-    id: 'backTALink',
-    init_pg: 'cardSide',
-    saveCB: 'saveCardBack',
-    side: 'back'
-  })) + "\n      %br\n      " + (yesnoChoiceTmpl("Archived", "archived", false)) + "\n      " + (controlgroup("Labels", {
+  })) + "\n      " + (input("hidden", "card_set_id")) + "\n      " + (input("hidden", "id")) + "\n      %br\n      " + (haTag("textarea", taOptions)) + "\n      %br\n      " + (haTag("textarea", taOptions2)) + "\n      " + (yesnoChoiceTmpl("Archived", "archived", false)) + "\n      " + (controlgroup("Labels", {
     id: "cardFormLabels",
     "data-theme": "d"
-  }));
-  return hamlHtml(pg);
+  })));
 };
 studyStatsTmpl = function(stats, full) {
   if (full == null) {

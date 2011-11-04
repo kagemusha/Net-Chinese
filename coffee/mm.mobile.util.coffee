@@ -1,16 +1,6 @@
 TABLES = {}
 VALIDATIONS = {}
 
-makePages = (pages) ->
-  for page in pages
-    log "making #{page}"
-    makePage page
-
-makePage = (id) ->
-  #elems = genElems(templateFn, data, options)
-  tmpl = "#{id}PgTmpl"
-  appendTmpl "body", tmpl
-
 
 
 fieldBlank = (val) ->  !val or val.length == 0
@@ -41,21 +31,25 @@ getObjFromForm = (formId, fields) ->
   for input in inputs
     prop = $(input).attr "name"
     val = $(input).attr "value"
+    log "objFromForm", formId, prop, val
     try
       if $(input).is(':radio')
-          obj[prop] = val if $(input).attr("checked")
+          obj[prop] = val if $(input).is(':checked')
       else if $(input).is(':checkbox')
-        if $(input).attr("checked")
+        if $(input).is(':checked')
           if obj[prop]? then obj[prop].push(val) else obj[prop] = [val]
       else if $(input).is(':submit')
         log "no submit!!"
       else
         obj[prop] = val
+      log "obj[prop]", prop, obj[prop]
     catch e
       log e
   delete obj.submit
   obj
 
+checkboxChecked = (input) ->
+  $(input).attr("checked")
 
 uncapitalize = (str) ->
   return str if (!str or str.length < 1)
@@ -145,20 +139,22 @@ refreshChoice = (sel, type="refresh") ->
     log "refreshChoice", e
 
 populateForm = (formId, obj) ->
+  formId = idSel formId
   $("#{formId} :input:not(:button,:reset,:submit,:image,:checkbox,:radio)").attr("value", "")
   checkCBs $("#{formId} :checkbox"), false
   checkCBs $("#{formId} :radio"), false
-  log "hidden submits", $("#{formId} :input:hidden:submit").length
+  #log "hidden submits", $("#{formId} :input:hidden:submit").length
   $("#{formId} :input:hidden:submit").remove()
 
   for prop, val of obj
     inputFields = $("#{formId} :input[name='#{prop}']:not(:button,:reset,:submit,:image)")
     for input in inputFields
       if $(input).is(':radio')
-        log $(input).attr("name"), toStr(val), $(input).attr("value")
-        checkCBs input, equalStr( $(input).attr("value"), val )
+        check = equalStr( $(input).attr("value"), val )
+        #log $(input).attr("name"), check
+        checkCBs(input, true) if check
       else if $(input).is(':checkbox')
-        log $(input).attr("name"), val, $(input).attr("value"), valInArray( $(input).attr("value"), val )
+        #log $(input).attr("name"), val, $(input).attr("value"), valInArray( $(input).attr("value"), val )
         checkCBs input, valInArray( $(input).attr("value"), val )
       else
         $(input).attr "value", val

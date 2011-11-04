@@ -25,7 +25,7 @@
 }
 
 .tInput {
-    min-height: 300px;
+    min-height: 200px;
     min-width: 200px;
     /*height: 300px;
     width: 200px;*/
@@ -84,6 +84,17 @@ li.card.archived .overlay {
     -webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 1);*/
 }
+/*
+.panelMsg {
+    postion: absolute;
+    font-size:  14px;
+    color: red;
+    font-weight: bold;
+    top: 5px;
+} */
+span#frontText{
+    color: red;
+}
 
 .back {
     display: none
@@ -96,7 +107,7 @@ li.card.archived .overlay {
     /*height: 52%;*/
     background: #fff9d7;
 }
-.cardPanel .card_face {
+.card_face {
     background: white;
     height: 220px;
     border: 1px black solid;
@@ -230,6 +241,9 @@ li.set {
 /*    display: none*/
 }
 
+span.label {
+    font-weight: bold
+}
 .editing {
     display: none;
 }

@@ -33,9 +33,12 @@ editUL = function(type, options) {
   options.obj_type = type;
   return listview(options);
 };
-saveButton = function(form, objType, page, reverse, label) {
+saveButton = function(form, objType, page, options, reverse, label) {
   if (page == null) {
     page = "#";
+  }
+  if (options == null) {
+    options = {};
   }
   if (reverse == null) {
     reverse = true;
@@ -43,10 +46,11 @@ saveButton = function(form, objType, page, reverse, label) {
   if (label == null) {
     label = "Save";
   }
-  return link(label, page, {
+  _.extend(options, {
     obj_type: objType,
     saveform: form
-  }, true);
+  });
+  return link(label, page, options, true);
 };
 refreshListById = function(id, template, objs, options) {
   refreshTmplById(id, template, objs, options);

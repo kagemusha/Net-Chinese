@@ -1,21 +1,6 @@
-var LIST_ITEM_CLASS, TABLES, VALIDATIONS, equalStr, fieldBlank, formDataFields, getObjFromForm, go, login, makePage, makePages, onPage, pageId, pageSel, pgTmplFn, populateForm, popupMsg, refreshChoice, removePopup, saveForm, selCount, setPageHeaderTitle, showHide, showMsgs, uncapitalize;
+var LIST_ITEM_CLASS, TABLES, VALIDATIONS, checkboxChecked, equalStr, fieldBlank, formDataFields, getObjFromForm, go, login, onPage, pageId, pageSel, pgTmplFn, populateForm, popupMsg, refreshChoice, removePopup, saveForm, selCount, setPageHeaderTitle, showHide, showMsgs, uncapitalize;
 TABLES = {};
 VALIDATIONS = {};
-makePages = function(pages) {
-  var page, _i, _len, _results;
-  _results = [];
-  for (_i = 0, _len = pages.length; _i < _len; _i++) {
-    page = pages[_i];
-    log("making " + page);
-    _results.push(makePage(page));
-  }
-  return _results;
-};
-makePage = function(id) {
-  var tmpl;
-  tmpl = "" + id + "PgTmpl";
-  return appendTmpl("body", tmpl);
-};
 fieldBlank = function(val) {
   return !val || val.length === 0;
 };
@@ -48,13 +33,14 @@ getObjFromForm = function(formId, fields) {
     input = inputs[_i];
     prop = $(input).attr("name");
     val = $(input).attr("value");
+    log("objFromForm", formId, prop, val);
     try {
       if ($(input).is(':radio')) {
-        if ($(input).attr("checked")) {
+        if ($(input).is(':checked')) {
           obj[prop] = val;
         }
       } else if ($(input).is(':checkbox')) {
-        if ($(input).attr("checked")) {
+        if ($(input).is(':checked')) {
           if (obj[prop] != null) {
             obj[prop].push(val);
           } else {
@@ -66,12 +52,16 @@ getObjFromForm = function(formId, fields) {
       } else {
         obj[prop] = val;
       }
+      log("obj[prop]", prop, obj[prop]);
     } catch (e) {
       log(e);
     }
   }
   delete obj.submit;
   return obj;
+};
+checkboxChecked = function(input) {
+  return $(input).attr("checked");
 };
 uncapitalize = function(str) {
   if (!str || str.length < 1) {
@@ -176,11 +166,11 @@ refreshChoice = function(sel, type) {
   }
 };
 populateForm = function(formId, obj) {
-  var input, inputFields, prop, val, _results;
+  var check, input, inputFields, prop, val, _results;
+  formId = idSel(formId);
   $("" + formId + " :input:not(:button,:reset,:submit,:image,:checkbox,:radio)").attr("value", "");
   checkCBs($("" + formId + " :checkbox"), false);
   checkCBs($("" + formId + " :radio"), false);
-  log("hidden submits", $("" + formId + " :input:hidden:submit").length);
   $("" + formId + " :input:hidden:submit").remove();
   _results = [];
   for (prop in obj) {
@@ -191,7 +181,7 @@ populateForm = function(formId, obj) {
       _results2 = [];
       for (_i = 0, _len = inputFields.length; _i < _len; _i++) {
         input = inputFields[_i];
-        _results2.push($(input).is(':radio') ? (log($(input).attr("name"), toStr(val), $(input).attr("value")), checkCBs(input, equalStr($(input).attr("value"), val))) : $(input).is(':checkbox') ? (log($(input).attr("name"), val, $(input).attr("value"), valInArray($(input).attr("value"), val)), checkCBs(input, valInArray($(input).attr("value"), val))) : $(input).attr("value", val));
+        _results2.push($(input).is(':radio') ? (check = equalStr($(input).attr("value"), val), check ? checkCBs(input, true) : void 0) : $(input).is(':checkbox') ? checkCBs(input, valInArray($(input).attr("value"), val)) : $(input).attr("value", val));
       }
       return _results2;
     })());
