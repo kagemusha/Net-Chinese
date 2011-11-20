@@ -288,8 +288,8 @@ showCard = function(card) {
     card = {};
   }
   log("modCT", card);
-  $(".textPanel#showCard #frontText").html(card.front);
-  $(".textPanel#showCard #backText").html(card.back);
+  $(".textPanel#showCard #frontText").html(multiline(card.front));
+  $(".textPanel#showCard #backText").html(multiline(card.back));
   $("#showCardArchived").html(card.archived === "true" ? "yes" : "no");
   return $("#showCardLabels").html(cardLabelStr(card));
 };

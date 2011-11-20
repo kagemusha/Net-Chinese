@@ -14,7 +14,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "4CE41B6613FCD8A80002AF9C"
-               BuildableName = "netchinese.app"
+               BuildableName = "Net Chinese.app"
                BlueprintName = "netchinese"
                ReferencedContainer = "container:netchinese.xcodeproj">
             </BuildableReference>
@@ -36,12 +36,12 @@
       displayScale = "1.00"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
-      buildConfiguration = "Debug">
+      buildConfiguration = "Distribution">
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "4CE41B6613FCD8A80002AF9C"
-            BuildableName = "netchinese.app"
+            BuildableName = "Net Chinese.app"
             BlueprintName = "netchinese"
             ReferencedContainer = "container:netchinese.xcodeproj">
          </BuildableReference>
@@ -60,7 +60,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "4CE41B6613FCD8A80002AF9C"
-            BuildableName = "netchinese.app"
+            BuildableName = "Net Chinese.app"
             BlueprintName = "netchinese"
             ReferencedContainer = "container:netchinese.xcodeproj">
          </BuildableReference>
@@ -70,7 +70,7 @@
       buildConfiguration = "Debug">
    </AnalyzeAction>
    <ArchiveAction
-      buildConfiguration = "Release"
+      buildConfiguration = "Distribution"
       revealArchiveInOrganizer = "YES">
    </ArchiveAction>
 </Scheme>

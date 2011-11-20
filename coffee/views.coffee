@@ -3,7 +3,7 @@ TEXT_INPUT_PG_SEL = "#editCardPage"
 setsPgTmpl = ->
   hamlHtml  """
     #{page "setsPage", PG_DEFAULTS}
-      #{pageHeader "Sets"}
+      #{pageHeader "中 Net Chinese 网"}
       #{content {class: "pgContent"}}
         #{listview {id:"setList", obj_type: 'card_set'} }
     """
@@ -75,20 +75,19 @@ cardPgTmpl = ->
       #{ backButton "Set","#setPage" }
       #{ rightButton "Edit", 'editCardPage'}
     #{content {class: "pgContent"}}
+      .labelsPanel
+        %span.label Archived:&nbsp;
+        %span#showCardArchived
+        %br
+        %span.label Labels:&nbsp;
+        %span#showCardLabels (none)
+      %br
       .cardPanel
         .card_face
           .textPanel#showCard
             %span#frontText
             %br
             %span#backText
-      %br
-      .labelsPanel
-        %span.label Archived:&nbsp;
-        %span#showCardArchived
-        %br
-        %br
-        %span.label Labels:&nbsp;
-        %span#showCardLabels (none)
   """
   hamlHtml pg
 

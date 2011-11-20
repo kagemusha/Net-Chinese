@@ -70,7 +70,7 @@ cardPgTmpl = function() {
   var pg;
   pg = "" + (page("cardPage", PG_DEFAULTS)) + "\n  " + (pageHeader("Card")) + "\n    " + (backButton("Set", "#setPage")) + "\n    " + (rightButton("Edit", 'editCardPage')) + "\n  " + (content({
     "class": "pgContent"
-  })) + "\n    .cardPanel\n      .card_face\n        .textPanel#showCard\n          %span#frontText\n          %br\n          %span#backText\n    %br\n    .labelsPanel\n      %span.label Archived:&nbsp;\n      %span#showCardArchived\n      %br\n      %br\n      %span.label Labels:&nbsp;\n      %span#showCardLabels (none)";
+  })) + "\n    .labelsPanel\n      %span.label Archived:&nbsp;\n      %span#showCardArchived\n      %br\n      %span.label Labels:&nbsp;\n      %span#showCardLabels (none)\n    %br\n    .cardPanel\n      .card_face\n        .textPanel#showCard\n          %span#frontText\n          %br\n          %span#backText";
   return hamlHtml(pg);
 };
 editCardPgTmpl = function(id, taOptions) {

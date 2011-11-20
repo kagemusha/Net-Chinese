@@ -244,8 +244,8 @@ initCardPage = (params) ->
 
 showCard = (card={}) ->
   log "modCT", card
-  $(".textPanel#showCard #frontText").html card.front
-  $(".textPanel#showCard #backText").html card.back
+  $(".textPanel#showCard #frontText").html multiline(card.front)
+  $(".textPanel#showCard #backText").html multiline(card.back)
   $("#showCardArchived").html if (card.archived=="true") then "yes" else "no"
   $("#showCardLabels").html cardLabelStr(card)
 

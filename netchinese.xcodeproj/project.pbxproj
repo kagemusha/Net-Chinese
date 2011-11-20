@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4C1A0A60146C892000F3C145 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CF0A2C514449A98001633C1 /* Default.png */; };
+		4C1A0A61146C8C8A00F3C145 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CE41BA313FCD8A90002AF9C /* Default@2x.png */; };
 		4CD41FCC142F70E1002108EB /* 57x57_icon3.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CD41FCB142F70E0002108EB /* 57x57_icon3.png */; };
 		4CD5E6091453107B007A9935 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CD5E6081453107B007A9935 /* Default@2x.png */; };
 		4CE41B6C13FCD8A80002AF9C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B6B13FCD8A80002AF9C /* Foundation.framework */; settings = {ATTRIBUTES = (Required, ); }; };
@@ -31,21 +33,19 @@
 		4CE41B9D13FCD8A90002AF9C /* icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CE41B9C13FCD8A90002AF9C /* icon@2x.png */; };
 		4CE41B9F13FCD8A90002AF9C /* icon-72.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CE41B9E13FCD8A90002AF9C /* icon-72.png */; };
 		4CE41BA213FCD8A90002AF9C /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CE41BA113FCD8A90002AF9C /* Default.png */; };
-		4CE41BA413FCD8A90002AF9C /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CE41BA313FCD8A90002AF9C /* Default@2x.png */; };
 		4CE41BA613FCD8AA0002AF9C /* Capture.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4CE41BA513FCD8AA0002AF9C /* Capture.bundle */; };
 		4CE41BA813FCD8AA0002AF9C /* PhoneGap.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4CE41BA713FCD8AA0002AF9C /* PhoneGap.plist */; };
 		4CE41BAC13FCD8AA0002AF9C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE41BAB13FCD8AA0002AF9C /* AppDelegate.m */; };
 		4CE41BB513FCDBB00002AF9C /* www in Resources */ = {isa = PBXBuildFile; fileRef = 4CE41BB413FCDBB00002AF9C /* www */; };
 		4CF0A2C214449A78001633C1 /* netch57.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CF0A2C114449A78001633C1 /* netch57.png */; };
 		4CF0A2C414449A88001633C1 /* netch114.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CF0A2C314449A88001633C1 /* netch114.png */; };
-		4CF0A2C614449A98001633C1 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CF0A2C514449A98001633C1 /* Default.png */; };
 		4CF0A2C814449E36001633C1 /* netc114.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CF0A2C714449E36001633C1 /* netc114.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		4CD41FCB142F70E0002108EB /* 57x57_icon3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 57x57_icon3.png; sourceTree = "<group>"; };
 		4CD5E6081453107B007A9935 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
-		4CE41B6713FCD8A80002AF9C /* netchinese.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = netchinese.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4CE41B6713FCD8A80002AF9C /* Net Chinese.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Net Chinese.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CE41B6B13FCD8A80002AF9C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		4CE41B6D13FCD8A80002AF9C /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		4CE41B6F13FCD8A80002AF9C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -134,7 +134,7 @@
 		4CE41B6813FCD8A80002AF9C /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				4CE41B6713FCD8A80002AF9C /* netchinese.app */,
+				4CE41B6713FCD8A80002AF9C /* Net Chinese.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -267,7 +267,7 @@
 			);
 			name = netchinese;
 			productName = netchinese;
-			productReference = 4CE41B6713FCD8A80002AF9C /* netchinese.app */;
+			productReference = 4CE41B6713FCD8A80002AF9C /* Net Chinese.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -305,16 +305,16 @@
 				4CE41B9D13FCD8A90002AF9C /* icon@2x.png in Resources */,
 				4CE41B9F13FCD8A90002AF9C /* icon-72.png in Resources */,
 				4CE41BA213FCD8A90002AF9C /* Default.png in Resources */,
-				4CE41BA413FCD8A90002AF9C /* Default@2x.png in Resources */,
 				4CE41BA613FCD8AA0002AF9C /* Capture.bundle in Resources */,
 				4CE41BA813FCD8AA0002AF9C /* PhoneGap.plist in Resources */,
 				4CE41BB513FCDBB00002AF9C /* www in Resources */,
 				4CD41FCC142F70E1002108EB /* 57x57_icon3.png in Resources */,
 				4CF0A2C214449A78001633C1 /* netch57.png in Resources */,
 				4CF0A2C414449A88001633C1 /* netch114.png in Resources */,
-				4CF0A2C614449A98001633C1 /* Default.png in Resources */,
 				4CF0A2C814449E36001633C1 /* netc114.png in Resources */,
 				4CD5E6091453107B007A9935 /* Default@2x.png in Resources */,
+				4C1A0A60146C892000F3C145 /* Default.png in Resources */,
+				4C1A0A61146C8C8A00F3C145 /* Default@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -404,12 +404,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Michael Madrid";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Michael Madrid";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
+				PROVISIONING_PROFILE = "F3391480-DE50-4203-B0DA-A6ABF02FF0CE";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "F3391480-DE50-4203-B0DA-A6ABF02FF0CE";
 				SDKROOT = iphoneos;
 			};
 			name = Release;
@@ -425,8 +428,9 @@
 				GCC_PREFIX_HEADER = "netchinese/netchinese-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = "PHONEGAP_FRAMEWORK=YES";
 				INFOPLIST_FILE = "netchinese/netchinese-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				PRODUCT_NAME = "Net Chinese";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -435,6 +439,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Michael Madrid (KX7SD2R3GX)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Michael Madrid (KX7SD2R3GX)";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = /Users/Shared/PhoneGap/Frameworks;
@@ -442,12 +448,57 @@
 				GCC_PREFIX_HEADER = "netchinese/netchinese-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = "PHONEGAP_FRAMEWORK=YES";
 				INFOPLIST_FILE = "netchinese/netchinese-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				PRODUCT_NAME = "Net Chinese";
+				PROVISIONING_PROFILE = "5BA69C06-2547-4F71-8F20-240303FFF2C9";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "BFA9D3A6-72AF-451D-9E3C-F8C8C4624308";
+				SKIP_INSTALL = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
+		};
+		4CE9AC37146D667B00D75679 /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				SDKROOT = iphoneos;
+			};
+			name = Distribution;
+		};
+		4CE9AC38146D667B00D75679 /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Michael Madrid";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Michael Madrid";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = /Users/Shared/PhoneGap/Frameworks;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "netchinese/netchinese-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = "PHONEGAP_FRAMEWORK=YES";
+				INFOPLIST_FILE = "netchinese/netchinese-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				PRODUCT_NAME = "Net Chinese";
+				PROVISIONING_PROFILE = "F3391480-DE50-4203-B0DA-A6ABF02FF0CE";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "F3391480-DE50-4203-B0DA-A6ABF02FF0CE";
+				SKIP_INSTALL = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Distribution;
 		};
 /* End XCBuildConfiguration section */
 
@@ -457,6 +508,7 @@
 			buildConfigurations = (
 				4CE41BAF13FCD8AA0002AF9C /* Debug */,
 				4CE41BB013FCD8AA0002AF9C /* Release */,
+				4CE9AC37146D667B00D75679 /* Distribution */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -466,6 +518,7 @@
 			buildConfigurations = (
 				4CE41BB213FCD8AA0002AF9C /* Debug */,
 				4CE41BB313FCD8AA0002AF9C /* Release */,
+				4CE9AC38146D667B00D75679 /* Distribution */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
