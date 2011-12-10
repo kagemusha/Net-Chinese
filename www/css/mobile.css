@@ -133,10 +133,19 @@ span#frontText{
     border-radius: 7px;*/
 }
 .textPanel{
+  position: relative;
   display: table-cell;
   vertical-align: middle;
   text-align: center;
   /*text-shadow: 2px 2px 2px #bbbbbb;*/
+}
+#tapMsg {
+    font-size: 14px;
+    font-weight: bold;
+    color: red;
+    position: absolute;
+    top: 100px;
+    right: 60px;
 }
 .backText{
   color: red;

@@ -7,10 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4C1A0A60146C892000F3C145 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CF0A2C514449A98001633C1 /* Default.png */; };
-		4C1A0A61146C8C8A00F3C145 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CE41BA313FCD8A90002AF9C /* Default@2x.png */; };
+		4C112E5F147D7FCD00029199 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CD5E6081453107B007A9935 /* Default@2x.png */; };
+		4C112E60147D7FD700029199 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CF0A2C514449A98001633C1 /* Default.png */; };
+		4C112E62147D7FFA00029199 /* Default-Landscape~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C112E61147D7FFA00029199 /* Default-Landscape~ipad.png */; };
+		4C8DB630147D7B8000F504E6 /* 72x72.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C8DB62F147D7B8000F504E6 /* 72x72.png */; };
 		4CD41FCC142F70E1002108EB /* 57x57_icon3.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CD41FCB142F70E0002108EB /* 57x57_icon3.png */; };
-		4CD5E6091453107B007A9935 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CD5E6081453107B007A9935 /* Default@2x.png */; };
 		4CE41B6C13FCD8A80002AF9C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B6B13FCD8A80002AF9C /* Foundation.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		4CE41B6E13FCD8A80002AF9C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B6D13FCD8A80002AF9C /* UIKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		4CE41B7013FCD8A80002AF9C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B6F13FCD8A80002AF9C /* CoreGraphics.framework */; settings = {ATTRIBUTES = (Required, ); }; };
@@ -28,11 +29,9 @@
 		4CE41B8D13FCD8A90002AF9C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE41B8C13FCD8A90002AF9C /* main.m */; };
 		4CE41B8F13FCD8A90002AF9C /* PhoneGap.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE41B8E13FCD8A90002AF9C /* PhoneGap.framework */; };
 		4CE41B9413FCD8A90002AF9C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4CE41B9213FCD8A90002AF9C /* Localizable.strings */; };
-		4CE41B9813FCD8A90002AF9C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4CE41B9613FCD8A90002AF9C /* Localizable.strings */; };
 		4CE41B9B13FCD8A90002AF9C /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CE41B9A13FCD8A90002AF9C /* icon.png */; };
 		4CE41B9D13FCD8A90002AF9C /* icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CE41B9C13FCD8A90002AF9C /* icon@2x.png */; };
 		4CE41B9F13FCD8A90002AF9C /* icon-72.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CE41B9E13FCD8A90002AF9C /* icon-72.png */; };
-		4CE41BA213FCD8A90002AF9C /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CE41BA113FCD8A90002AF9C /* Default.png */; };
 		4CE41BA613FCD8AA0002AF9C /* Capture.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4CE41BA513FCD8AA0002AF9C /* Capture.bundle */; };
 		4CE41BA813FCD8AA0002AF9C /* PhoneGap.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4CE41BA713FCD8AA0002AF9C /* PhoneGap.plist */; };
 		4CE41BAC13FCD8AA0002AF9C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE41BAB13FCD8AA0002AF9C /* AppDelegate.m */; };
@@ -43,6 +42,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4C112E61147D7FFA00029199 /* Default-Landscape~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Landscape~ipad.png"; sourceTree = "<group>"; };
+		4C8DB62F147D7B8000F504E6 /* 72x72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 72x72.png; sourceTree = "<group>"; };
 		4CD41FCB142F70E0002108EB /* 57x57_icon3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 57x57_icon3.png; sourceTree = "<group>"; };
 		4CD5E6081453107B007A9935 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		4CE41B6713FCD8A80002AF9C /* Net Chinese.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Net Chinese.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -118,6 +119,8 @@
 		4CE41B5913FCD8A70002AF9C = {
 			isa = PBXGroup;
 			children = (
+				4C112E61147D7FFA00029199 /* Default-Landscape~ipad.png */,
+				4C8DB62F147D7B8000F504E6 /* 72x72.png */,
 				4CD5E6081453107B007A9935 /* Default@2x.png */,
 				4CF0A2C714449E36001633C1 /* netc114.png */,
 				4CF0A2C514449A98001633C1 /* Default.png */,
@@ -275,6 +278,9 @@
 /* Begin PBXProject section */
 		4CE41B5B13FCD8A70002AF9C /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+			};
 			buildConfigurationList = 4CE41B5E13FCD8A70002AF9C /* Build configuration list for PBXProject "netchinese" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
@@ -300,11 +306,9 @@
 			files = (
 				4CE41B8A13FCD8A90002AF9C /* InfoPlist.strings in Resources */,
 				4CE41B9413FCD8A90002AF9C /* Localizable.strings in Resources */,
-				4CE41B9813FCD8A90002AF9C /* Localizable.strings in Resources */,
 				4CE41B9B13FCD8A90002AF9C /* icon.png in Resources */,
 				4CE41B9D13FCD8A90002AF9C /* icon@2x.png in Resources */,
 				4CE41B9F13FCD8A90002AF9C /* icon-72.png in Resources */,
-				4CE41BA213FCD8A90002AF9C /* Default.png in Resources */,
 				4CE41BA613FCD8AA0002AF9C /* Capture.bundle in Resources */,
 				4CE41BA813FCD8AA0002AF9C /* PhoneGap.plist in Resources */,
 				4CE41BB513FCDBB00002AF9C /* www in Resources */,
@@ -312,9 +316,10 @@
 				4CF0A2C214449A78001633C1 /* netch57.png in Resources */,
 				4CF0A2C414449A88001633C1 /* netch114.png in Resources */,
 				4CF0A2C814449E36001633C1 /* netc114.png in Resources */,
-				4CD5E6091453107B007A9935 /* Default@2x.png in Resources */,
-				4C1A0A60146C892000F3C145 /* Default.png in Resources */,
-				4C1A0A61146C8C8A00F3C145 /* Default@2x.png in Resources */,
+				4C8DB630147D7B8000F504E6 /* 72x72.png in Resources */,
+				4C112E5F147D7FCD00029199 /* Default@2x.png in Resources */,
+				4C112E60147D7FD700029199 /* Default.png in Resources */,
+				4C112E62147D7FFA00029199 /* Default-Landscape~ipad.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -427,6 +432,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "netchinese/netchinese-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = "PHONEGAP_FRAMEWORK=YES";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "netchinese/netchinese-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				PRODUCT_NAME = "Net Chinese";
@@ -447,6 +453,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "netchinese/netchinese-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = "PHONEGAP_FRAMEWORK=YES";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "netchinese/netchinese-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				PRODUCT_NAME = "Net Chinese";
@@ -463,14 +470,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Michael Madrid (KX7SD2R3GX)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "867048FE-15CF-4C88-9B22-8DF4855E8AFE";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 			};
@@ -480,6 +487,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
+				ARCHS = (
+					armv6,
+					armv7,
+				);
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Michael Madrid";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Michael Madrid";
 				COPY_PHASE_STRIP = YES;
@@ -488,6 +499,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "netchinese/netchinese-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = "PHONEGAP_FRAMEWORK=YES";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "netchinese/netchinese-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				PRODUCT_NAME = "Net Chinese";

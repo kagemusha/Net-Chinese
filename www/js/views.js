@@ -4,7 +4,7 @@ PG_DEFAULTS = {
 };
 TEXT_INPUT_PG_SEL = "#editCardPage";
 setsPgTmpl = function() {
-  return hamlHtml("" + (page("setsPage", PG_DEFAULTS)) + "\n  " + (pageHeader("Sets")) + "\n  " + (content({
+  return hamlHtml("" + (page("setsPage", PG_DEFAULTS)) + "\n  " + (pageHeader("中 Net Chinese 网")) + "\n  " + (content({
     "class": "pgContent"
   })) + "\n    " + (listview({
     id: "setList",
@@ -115,7 +115,7 @@ studyPgTmpl = function() {
   })) + "\n  " + (content({
     "class": "pgContent",
     "data-theme": "d"
-  })) + "\n    #studyStatsFront\n    #studyPanel\n      .cardPanel.front\n         #front.card_face\n           .textPanel\n              Please wait...");
+  })) + "\n    #studyStatsFront\n    #studyPanel\n      .cardPanel.front\n        #front.card_face\n          #tapMsg\n            Tap for answer\n          .textPanel\n            Please wait...\n");
 };
 answerPgTmpl = function() {
   return hamlHtml("" + (page("answerPage", PG_DEFAULTS)) + "\n  " + (pageHeader("Answer")) + "\n    " + (backButton("Cards", "#setPage")) + "\n    " + (rightButton("Restart", "#studyPage", {

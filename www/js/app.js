@@ -46,9 +46,10 @@ $studyQueue = new StudyQueue({
   hideBack: function(cb) {},
   showFront: function() {
     if (!$studyInit) {
-      return $.mobile.changePage(pageSel("study"), {
+      $.mobile.changePage(pageSel("study"), {
         transition: "pop"
       });
+      return $("#tapMsg").fadeIn(600);
     }
   },
   showCardFields: function(card) {
@@ -59,9 +60,10 @@ $studyQueue = new StudyQueue({
     return $(this.cardBackSel).html(multiline(this.formatCardText(cardBackTmpl(back, front))));
   },
   flipBack: function() {
-    return $.mobile.changePage(pageSel("answer"), {
+    $.mobile.changePage(pageSel("answer"), {
       transition: "flip"
     });
+    return $("#tapMsg").hide();
   },
   onFlip: function(toFront) {
     showMsg(null);
@@ -123,10 +125,8 @@ DATA_REL_DATE_KEY = "dat_rel_dat";
 loadData = function() {
   var lastLoadedDate;
   lastLoadedDate = retrieve(DATA_REL_DATE_KEY);
-  if (!lastLoadedDate || (DATA_REL_DATE > lastLoadedDate)) {
-    populateData(CARD_SET_DATA);
-    return cache(DATA_REL_DATE_KEY, DATA_REL_DATE);
-  }
+  populateData(CARD_SET_DATA);
+  return cache(DATA_REL_DATE_KEY, DATA_REL_DATE);
 };
 initPages = function() {
   var hasData;
@@ -158,7 +158,7 @@ initCallbacks = function() {
   });
   $('#studyPage').live('pageshow', function(event, ui) {
     if (!$showedStudyTip) {
-      popupMsg("Touch card to see answer", 1200);
+      popupMsg("Tap card to see answer", 1200);
       $showedStudyTip = true;
     }
     filterChg();
@@ -492,10 +492,13 @@ populateData = function(cardSets) {
   TABLES[SET_TYPE] = Table.get(SET_TYPE);
   TABLES[CARD_TYPE] = Table.get(CARD_TYPE);
   TABLES[LABEL_TYPE] = Table.get(LABEL_TYPE);
-  TABLES[SET_TYPE].nuke();
-  TABLES[CARD_TYPE].nuke();
-  TABLES[LABEL_TYPE].nuke();
-  TABLES[SET_TYPE];
+  log(TABLES[SET_TYPE].recs.length);
+  if (TABLES[SET_TYPE].recs.length > 0) {
+    log("data populated, not loading");
+    return;
+  } else {
+    log("populating data");
+  }
   _results = [];
   for (_i = 0, _len = cardSets.length; _i < _len; _i++) {
     cardSet = cardSets[_i];

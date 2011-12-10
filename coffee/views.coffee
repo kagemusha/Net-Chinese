@@ -148,9 +148,12 @@ studyPgTmpl = ->
         #studyStatsFront
         #studyPanel
           .cardPanel.front
-             #front.card_face
-               .textPanel
-                  Please wait...
+            #front.card_face
+              #tapMsg
+                Tap for answer
+              .textPanel
+                Please wait...
+
   """
 
 

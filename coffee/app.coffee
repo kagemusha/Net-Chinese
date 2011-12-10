@@ -46,7 +46,9 @@ $studyQueue = new StudyQueue
   getCards: -> $currentSet.cards ,
   hideBack: (cb) ->
   showFront: ->
-    $.mobile.changePage(pageSel("study"), { transition: "pop"})  if !$studyInit
+    if !$studyInit
+      $.mobile.changePage(pageSel("study"), { transition: "pop"})
+      $("#tapMsg").fadeIn 600
   showCardFields: (card) ->
     front = if @backFirst then card.back else card.front
     back = if @backFirst then card.front else card.back
@@ -54,6 +56,7 @@ $studyQueue = new StudyQueue
     $(@cardBackSel).html multiline(@formatCardText(cardBackTmpl(back, front)))
   flipBack: ->
     $.mobile.changePage pageSel("answer"), { transition: "flip"}
+    $("#tapMsg").hide()
   onFlip: (toFront) ->
     showMsg(null) #to clear other msgs, if present
     $("#studyButtons").find("a.ui-btn-active").removeClass("ui-btn-active")
@@ -107,9 +110,9 @@ DATA_REL_DATE_KEY = "dat_rel_dat"
 
 loadData = ->
   lastLoadedDate = retrieve DATA_REL_DATE_KEY
-  if (!lastLoadedDate or (DATA_REL_DATE > lastLoadedDate))
-    populateData CARD_SET_DATA
-    cache DATA_REL_DATE_KEY, DATA_REL_DATE
+  #if (!lastLoadedDate or (DATA_REL_DATE > lastLoadedDate))
+  populateData CARD_SET_DATA
+  cache DATA_REL_DATE_KEY, DATA_REL_DATE
 
 initPages = ->
   TABLES[SET_TYPE] = Table.get(SET_TYPE)
@@ -139,7 +142,7 @@ initCallbacks = ->
 
   $('#studyPage').live 'pageshow',(event, ui) ->
     if !$showedStudyTip
-      popupMsg "Touch card to see answer", 1200
+      popupMsg "Tap card to see answer", 1200
       $showedStudyTip = true
     filterChg()
     refreshTmplById "studyStatsFront", studyStatsTmpl, $studyQueue, false
@@ -390,10 +393,16 @@ populateData=(cardSets) ->
   TABLES[SET_TYPE] = Table.get SET_TYPE
   TABLES[CARD_TYPE] = Table.get CARD_TYPE
   TABLES[LABEL_TYPE] = Table.get LABEL_TYPE
-  TABLES[SET_TYPE].nuke()
-  TABLES[CARD_TYPE].nuke()
-  TABLES[LABEL_TYPE].nuke()
-  TABLES[SET_TYPE]
+  log TABLES[SET_TYPE].recs.length
+  if TABLES[SET_TYPE].recs.length > 0
+      log "data populated, not loading"
+      return
+   else
+      log "populating data"
+  #TABLES[SET_TYPE].nuke()
+  #TABLES[CARD_TYPE].nuke()
+  #TABLES[LABEL_TYPE].nuke()
+  #TABLES[SET_TYPE]
   for cardSet in cardSets
     cardSet = cardSet.card_set if cardSet.card_set
     cards = cardSet.cards
